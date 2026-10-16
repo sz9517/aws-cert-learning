@@ -1,0 +1,11 @@
+{
+  "label": "Domain 1 · 設計安全的架構 (30%)",
+  "position": 2,
+  "collapsible": true,
+  "collapsed": false,
+  "link": {
+    "type": "generated-index",
+    "title": "Domain 1：設計安全的架構",
+    "description": "權重 30%，是 SAA 考試占比最高的領域。涵蓋身分與存取管理、資料加密、網路安全等。"
+  }
+}

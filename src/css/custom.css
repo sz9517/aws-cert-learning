@@ -1,0 +1,212 @@
+/**
+ * 全站樣式。Docusaurus 使用 Infima CSS 框架。
+ * 主色調改成 AWS 橘。
+ */
+
+:root {
+  --ifm-color-primary: #e8830c;
+  --ifm-color-primary-dark: #d1760b;
+  --ifm-color-primary-darker: #c56f0a;
+  --ifm-color-primary-darkest: #a25b08;
+  --ifm-color-primary-light: #ef9324;
+  --ifm-color-primary-lighter: #f19b36;
+  --ifm-color-primary-lightest: #f4af5f;
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --ifm-font-family-base: -apple-system, 'Segoe UI', 'Microsoft JhengHei',
+    'PingFang TC', 'Noto Sans TC', sans-serif;
+}
+
+[data-theme='dark'] {
+  --ifm-color-primary: #ff9f33;
+  --ifm-color-primary-dark: #ff9314;
+  --ifm-color-primary-darker: #ff8c04;
+  --ifm-color-primary-darkest: #d47400;
+  --ifm-color-primary-light: #ffab52;
+  --ifm-color-primary-lighter: #ffb261;
+  --ifm-color-primary-lightest: #ffca8f;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+/* ---------- 名詞白話工具提示 <Term> ---------- */
+.term-gloss {
+  border-bottom: 2px dotted var(--ifm-color-primary);
+  cursor: help;
+  font-weight: 600;
+  position: relative;
+}
+.term-gloss .term-tip {
+  position: absolute;
+  left: 0;
+  top: 150%;
+  width: min(300px, 78vw);
+  background: #1e1e1e;
+  color: #f0f0f0;
+  padding: 11px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.6;
+  z-index: 100;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.28);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s;
+  pointer-events: none;
+  white-space: normal;
+}
+.term-gloss .term-tip strong {
+  color: #ffce80;
+}
+.term-gloss:hover .term-tip,
+.term-gloss.open .term-tip {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ---------- 閃卡 <Flashcards> / <Flashcard> ---------- */
+.flashcards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 14px;
+  margin: 20px 0;
+}
+.flashcard {
+  background: var(--ifm-background-surface-color);
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.flashcard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+.flashcard-term {
+  font-weight: 700;
+  color: var(--ifm-color-primary-darker);
+}
+[data-theme='dark'] .flashcard-term {
+  color: var(--ifm-color-primary);
+}
+.flashcard-def {
+  display: none;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--ifm-color-emphasis-300);
+  font-size: 14px;
+  color: var(--ifm-color-emphasis-800);
+}
+.flashcard.flipped .flashcard-def {
+  display: block;
+}
+
+/* ---------- 練習題 <Quiz> ---------- */
+.quiz {
+  background: var(--ifm-background-surface-color);
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 12px;
+  padding: 20px 22px;
+  margin: 20px 0;
+}
+.quiz-num {
+  font-size: 12px;
+  color: var(--ifm-color-emphasis-600);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.quiz-q {
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+.quiz-opt {
+  display: block;
+  padding: 10px 14px;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: border-color 0.12s, background 0.12s;
+}
+.quiz-opt:hover {
+  border-color: var(--ifm-color-primary);
+}
+.quiz.revealed .quiz-opt {
+  cursor: default;
+}
+.quiz-opt.selected {
+  border-color: var(--ifm-color-primary);
+  background: rgba(232, 131, 12, 0.1);
+  font-weight: 600;
+}
+.quiz-opt.correct {
+  border-color: #2e8555;
+  background: rgba(46, 133, 85, 0.12);
+}
+.quiz-opt.correct::after {
+  content: ' ✓ 正解';
+  color: #2e8555;
+  font-weight: 700;
+  font-size: 13px;
+}
+.quiz-opt.wrong {
+  border-color: #e63946;
+  background: rgba(230, 57, 70, 0.1);
+}
+.quiz-opt.wrong::after {
+  content: ' ✗ 你選的';
+  color: #e63946;
+  font-weight: 700;
+  font-size: 13px;
+}
+.quiz-btn {
+  background: var(--ifm-color-primary);
+  color: #fff;
+  border: none;
+  padding: 9px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 6px;
+}
+.quiz-btn:hover {
+  background: var(--ifm-color-primary-dark);
+}
+.quiz-explain {
+  margin-top: 14px;
+  padding: 14px 16px;
+  background: var(--ifm-color-emphasis-100);
+  border-radius: 8px;
+  border-left: 4px solid #2e8555;
+  font-size: 15px;
+}
+
+/* ---------- 流程圖 .flow ---------- */
+.flow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  background: var(--ifm-color-emphasis-100);
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 12px;
+  padding: 22px;
+  margin: 20px 0;
+}
+.flow-node {
+  background: var(--ifm-background-surface-color);
+  border: 2px solid var(--ifm-color-primary);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.flow-arrow {
+  color: var(--ifm-color-primary-dark);
+  font-size: 22px;
+  font-weight: 700;
+}
