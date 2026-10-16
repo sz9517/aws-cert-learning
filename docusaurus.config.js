@@ -8,7 +8,7 @@ import {themes as prismThemes} from 'prism-react-renderer';
 const config = {
   title: 'AWS Certification Learning',
   tagline: '初學者友善的 AWS 證照中文學習站：考得過，也用得出來',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/favicon.svg',
 
   future: {
     v4: true,
