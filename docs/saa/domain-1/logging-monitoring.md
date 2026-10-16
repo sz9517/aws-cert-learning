@@ -99,6 +99,14 @@ $ aws cloudtrail lookup-events \
 5. [機密管理](./secrets-management.md) — 密碼別寫死
 6. **稽核與監控**（本篇） — 看得見、查得到
 
+<Refs>
+
+- [AWS CloudTrail 使用者指南](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-user-guide.html)
+- [AWS Config 是什麼](https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html)
+- [Amazon GuardDuty 是什麼](https://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html)
+
+</Refs>
+
 ## 下一步
 
 - ⚡ 複習全部：[Domain 1 重點速記 / 閃卡](./flashcards.md)

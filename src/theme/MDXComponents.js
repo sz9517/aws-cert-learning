@@ -4,7 +4,7 @@ import MDXComponents from '@theme-original/MDXComponents';
 import Term from '@site/src/components/Term';
 import Quiz from '@site/src/components/Quiz';
 import {Flashcard, Flashcards} from '@site/src/components/Flashcard';
-import {Analogy, Scenario, Cost, Vocab} from '@site/src/components/Boxes';
+import {Analogy, Scenario, Cost, Vocab, Refs} from '@site/src/components/Boxes';
 
 export default {
   ...MDXComponents,
@@ -16,4 +16,5 @@ export default {
   Scenario,
   Cost,
   Vocab,
+  Refs,
 };

@@ -99,6 +99,14 @@ title: 應用層防護：WAF / Shield / ACM
 - **小專案買 Shield Advanced**：Standard 已自動涵蓋常見 DDoS，別白花一個月三千美金。
 :::
 
+<Refs>
+
+- [AWS WAF 開發人員指南](https://docs.aws.amazon.com/waf/latest/developerguide/what-is-aws-waf.html)
+- [AWS Shield 運作方式](https://docs.aws.amazon.com/waf/latest/developerguide/ddos-overview.html)
+- [AWS Certificate Manager（ACM）](https://docs.aws.amazon.com/acm/latest/userguide/acm-overview.html)
+
+</Refs>
+
 ## 下一步
 
 - 📖 下一篇：[S3 資料安全](./s3-security.md)

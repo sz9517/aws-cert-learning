@@ -103,6 +103,14 @@ $ aws sts assume-role \
 - **為了跨帳號去複製長期金鑰**：這正是要避免的反模式，請一律改用角色 + STS。
 :::
 
+<Refs>
+
+- [IAM 角色（Roles）](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html)
+- [服務控制政策 SCP（AWS Organizations）](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html)
+- [IAM Identity Center 是什麼](https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html)
+
+</Refs>
+
 ## 下一步
 
 - 📖 回顧基礎：[IAM 身分與存取管理](./iam.md)

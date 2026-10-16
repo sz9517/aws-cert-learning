@@ -89,6 +89,13 @@ $ aws secretsmanager get-secret-value \
 - **選錯服務**：只是要省成本放設定值卻用了 Secrets Manager，每個機密每月都在付 $0.40。
 :::
 
+<Refs>
+
+- [AWS Secrets Manager 使用者指南](https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html)
+- [Systems Manager Parameter Store](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html)
+
+</Refs>
+
 ## 下一步
 
 - ⚡ 複習：[Domain 1 重點速記 / 閃卡](./flashcards.md)

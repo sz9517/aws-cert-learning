@@ -89,6 +89,13 @@ $ aws secretsmanager get-secret-value \
 - **Choosing the wrong service**: using Secrets Manager just to store config values means paying $0.40/month per secret unnecessarily.
 :::
 
+<Refs title="📚 Official docs & further reading">
+
+- [AWS Secrets Manager User Guide](https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html)
+- [Systems Manager Parameter Store](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html)
+
+</Refs>
+
 ## Next
 
 - ⚡ Review: [Domain 1 Flashcards](./flashcards.md)

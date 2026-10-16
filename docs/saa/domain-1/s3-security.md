@@ -118,6 +118,13 @@ S3 的安全功能——**封鎖公開存取、貯體政策、版本控制開關
 - **關閉版本控制以為能省錢**，卻失去誤刪救援能力 → 建議保留版本控制，用生命週期規則清理舊版即可。
 :::
 
+<Refs>
+
+- [Amazon S3 安全性](https://docs.aws.amazon.com/AmazonS3/latest/userguide/security.html)
+- [封鎖公開存取（Block Public Access）](https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-block-public-access.html)
+
+</Refs>
+
 ## 下一步
 
 - ⚡ 複習：[Domain 1 重點速記 / 閃卡](./flashcards.md)

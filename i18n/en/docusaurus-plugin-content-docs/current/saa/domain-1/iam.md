@@ -99,6 +99,13 @@ IAM, Roles, and Policies are **completely free** themselves. But this exercise s
 - **Granting `AdministratorAccess` for convenience?** A big no-no in practice; it violates least privilege, and the damage if compromised is unimaginable.
 :::
 
+<Refs title="📚 Official docs & further reading">
+
+- [AWS Docs: What is IAM (IAM User Guide)](https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html)
+- [Security best practices in IAM](https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html)
+
+</Refs>
+
 ## Next
 
 - ⚡ Quick review: [Domain 1 Flashcards](./flashcards.md)

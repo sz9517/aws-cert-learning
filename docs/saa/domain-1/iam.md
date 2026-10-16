@@ -99,6 +99,13 @@ IAM、Role、Policy **本身完全免費**。但這個練習會開到 EC2（可�
 - **一次給 `AdministratorAccess` 圖方便？** 實務大忌，違反最小權限；真的被盜用損失無法想像。
 :::
 
+<Refs>
+
+- [AWS 官方文件：IAM 使用者指南（What is IAM）](https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html)
+- [IAM 安全最佳實務](https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html)
+
+</Refs>
+
 ## 下一步
 
 - ⚡ 快速複習：[Domain 1 重點速記 / 閃卡](/saa/domain-1/flashcards)

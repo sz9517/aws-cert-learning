@@ -99,6 +99,13 @@ Security Groups and NACLs are **completely free** — no charge no matter how ma
 - **Cramming all security into NACLs**: use **SG as your primary** daily control (more intuitive, stateful); use NACLs for subnet-level extra defense or blacklists.
 :::
 
+<Refs title="📚 Official docs & further reading">
+
+- [Security groups](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html)
+- [Network ACLs (NACL)](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html)
+
+</Refs>
+
 ## Next
 
 - ⚡ Review: [Domain 1 Flashcards](./flashcards.md)

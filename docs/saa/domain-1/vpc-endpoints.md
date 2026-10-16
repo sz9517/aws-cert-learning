@@ -104,6 +104,13 @@ $ aws ec2 describe-vpc-endpoints \
 - **誤以為 Endpoint 能連網際網路**：它只通往**特定 AWS 服務**，不是通用的對外上網方案（那是 NAT / IGW 的工作）。
 :::
 
+<Refs>
+
+- [AWS PrivateLink 概念](https://docs.aws.amazon.com/vpc/latest/privatelink/concepts.html)
+- [Gateway 端點（S3／DynamoDB）](https://docs.aws.amazon.com/vpc/latest/privatelink/gateway-endpoints.html)
+
+</Refs>
+
 ## 下一步
 
 - 📖 下一篇：[S3 資料安全](./s3-security.md)

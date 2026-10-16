@@ -124,6 +124,12 @@ $ aws s3api head-object \
 - See **S3 / EBS / RDS encryption, KMS** → it's about **At Rest** encryption.
 :::
 
+<Refs title="📚 Official docs & further reading">
+
+- [AWS KMS Developer Guide](https://docs.aws.amazon.com/kms/latest/developerguide/overview.html)
+
+</Refs>
+
 ## Next
 
 - ⚡ Review: [Domain 1 Flashcards](./flashcards.md)

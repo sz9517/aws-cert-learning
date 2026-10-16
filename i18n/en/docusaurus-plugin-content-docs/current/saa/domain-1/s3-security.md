@@ -118,6 +118,13 @@ S3's security features — **Block Public Access, bucket policies, the versionin
 - **Turning off versioning to "save money"** and losing accidental-delete recovery → keep versioning on and use lifecycle rules to clean old versions.
 :::
 
+<Refs title="📚 Official docs & further reading">
+
+- [Security in Amazon S3](https://docs.aws.amazon.com/AmazonS3/latest/userguide/security.html)
+- [Blocking public access (Block Public Access)](https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-block-public-access.html)
+
+</Refs>
+
 ## Next
 
 - ⚡ Review: [Domain 1 Flashcards](./flashcards.md)

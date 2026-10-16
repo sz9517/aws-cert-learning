@@ -99,6 +99,13 @@ Security Group 和 NACL **本身完全免費**，設定再多規則都不收費�
 - **把所有安全都塞進 NACL**：日常控管請以 **SG 為主**（較直覺、有狀態），NACL 拿來做子網路層的額外防線或黑名單。
 :::
 
+<Refs>
+
+- [安全群組（Security Groups）](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html)
+- [網路 ACL（NACL）](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html)
+
+</Refs>
+
 ## 下一步
 
 - ⚡ 複習：[Domain 1 重點速記 / 閃卡](./flashcards.md)

@@ -99,6 +99,14 @@ You've now covered the main topics of Domain 1, "Design Secure Architectures":
 5. [Secrets Management](./secrets-management.md) — don't hard-code passwords
 6. **Auditing & Monitoring** (this page) — be able to see and investigate
 
+<Refs title="📚 Official docs & further reading">
+
+- [AWS CloudTrail User Guide](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-user-guide.html)
+- [What is AWS Config](https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html)
+- [What is Amazon GuardDuty](https://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html)
+
+</Refs>
+
 ## Next
 
 - ⚡ Review everything: [Domain 1 Flashcards](./flashcards.md)

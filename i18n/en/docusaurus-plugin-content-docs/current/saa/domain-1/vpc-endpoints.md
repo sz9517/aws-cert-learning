@@ -104,6 +104,13 @@ $ aws ec2 describe-vpc-endpoints \
 - **Thinking an endpoint provides general internet access**: it only reaches **specific AWS services**, not the open internet (that's the job of NAT / IGW).
 :::
 
+<Refs title="📚 Official docs & further reading">
+
+- [AWS PrivateLink concepts](https://docs.aws.amazon.com/vpc/latest/privatelink/concepts.html)
+- [Gateway endpoints (S3 / DynamoDB)](https://docs.aws.amazon.com/vpc/latest/privatelink/gateway-endpoints.html)
+
+</Refs>
+
 ## Next
 
 - 📖 Next page: [S3 Data Security](./s3-security.md)

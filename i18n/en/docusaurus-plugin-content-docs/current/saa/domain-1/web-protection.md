@@ -99,6 +99,14 @@ These three services divide up defense of the "application layer."
 - **Buying Shield Advanced for a small project**: Standard already covers common DDoS automatically; don't waste US$3,000/month.
 :::
 
+<Refs title="📚 Official docs & further reading">
+
+- [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/what-is-aws-waf.html)
+- [How AWS Shield works](https://docs.aws.amazon.com/waf/latest/developerguide/ddos-overview.html)
+- [AWS Certificate Manager (ACM)](https://docs.aws.amazon.com/acm/latest/userguide/acm-overview.html)
+
+</Refs>
+
 ## Next
 
 - 📖 Next page: [S3 Data Security](./s3-security.md)

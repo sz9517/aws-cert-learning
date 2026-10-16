@@ -103,6 +103,14 @@ $ aws sts assume-role \
 - **Copying long-term keys for cross-account access**: this is the exact anti-pattern to avoid — always use roles + STS instead.
 :::
 
+<Refs title="📚 Official docs & further reading">
+
+- [IAM roles](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html)
+- [Service control policies (SCPs) — AWS Organizations](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html)
+- [What is IAM Identity Center](https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html)
+
+</Refs>
+
 ## Next
 
 - 📖 Recap the basics: [IAM — Identity and Access Management](./iam.md)

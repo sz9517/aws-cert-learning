@@ -91,6 +91,7 @@ title: VPC 虛擬私有雲
 6. **成本提醒**（`<Cost>`）
 7. **常見錯誤**（`:::warning`）
 8. **閃卡**（`<Flashcards>`）＋ **練習題**（`<Quiz>`）
+9. **官方資料與延伸閱讀**（`<Refs>`，放在文末「下一步」之前）
 
 ---
 
@@ -205,6 +206,22 @@ title: VPC 虛擬私有雲
 ```
 
 - `answer` 是正解的**索引**，從 0 開始：A=0、B=1、**C=2**、D=3。
+
+### 官方資料與延伸閱讀（每篇文末放一個）
+
+放在文章最後、「下一步」之前。裡面用 **Markdown 清單**列官方連結，之後要加連結只要多貼一行即可：
+
+```markdown
+<Refs>
+
+- [AWS 官方文件：IAM 使用者指南](https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html)
+- [IAM 安全最佳實務](https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html)
+
+</Refs>
+```
+
+- 標題預設是「📚 官方資料與延伸閱讀」；英文版請加上 `title="📚 Official docs & further reading"`。
+- 建議放 **AWS 官方文件**為主（最權威、不會過期）。貼上去前最好點一次確認連結能開。
 
 ---
 

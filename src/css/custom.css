@@ -242,6 +242,26 @@
   border: 1px solid var(--ifm-color-emphasis-300);
 }
 
+/* 官方資料與延伸閱讀：AWS 深藍左框 */
+.cbox--refs {
+  background: rgba(35, 47, 62, 0.06);
+  border-left: 4px solid #232f3e;
+  border-radius: 8px;
+}
+.cbox--refs .cbox__title {
+  color: #232f3e;
+}
+[data-theme='dark'] .cbox--refs {
+  background: rgba(255, 255, 255, 0.04);
+  border-left-color: var(--ifm-color-primary);
+}
+[data-theme='dark'] .cbox--refs .cbox__title {
+  color: var(--ifm-color-primary);
+}
+.cbox--refs .cbox__body ul {
+  margin-bottom: 0;
+}
+
 /* ---------- 流程圖 .flow ---------- */
 .flow {
   display: flex;

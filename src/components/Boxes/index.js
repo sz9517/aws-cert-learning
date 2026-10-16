@@ -45,3 +45,22 @@ export function Vocab({title = '📌 先認識這些名詞', children}) {
     </div>
   );
 }
+
+/**
+ * 官方資料與延伸閱讀框。每篇文章底部放一個，裡面用 Markdown 清單列連結：
+ *
+ *   <Refs>
+ *
+ *   - [AWS 官方文件：IAM 使用者指南](https://docs.aws.amazon.com/...)
+ *   - [AWS 最佳實務](https://docs.aws.amazon.com/...)
+ *
+ *   </Refs>
+ */
+export function Refs({title = '📚 官方資料與延伸閱讀', children}) {
+  return (
+    <div className="cbox cbox--refs">
+      {title && <div className="cbox__title">{title}</div>}
+      <div className="cbox__body">{children}</div>
+    </div>
+  );
+}

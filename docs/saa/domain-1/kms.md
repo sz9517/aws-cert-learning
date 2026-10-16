@@ -124,6 +124,12 @@ $ aws s3api head-object \
 - 看到 **S3 / EBS / RDS 加密、KMS** → 在講**靜態加密（At Rest）**
 :::
 
+<Refs>
+
+- [AWS KMS 開發人員指南](https://docs.aws.amazon.com/kms/latest/developerguide/overview.html)
+
+</Refs>
+
 ## 下一步
 
 - ⚡ 複習：[Domain 1 重點速記 / 閃卡](./flashcards.md)
