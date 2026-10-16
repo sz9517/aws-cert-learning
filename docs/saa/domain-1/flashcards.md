@@ -45,3 +45,31 @@ title: 重點速記 / 閃卡
   <Flashcard term="CloudTrail vs CloudWatch">Trail＝誰做了什麼(稽核)；Watch＝系統健不健康(效能監控)。</Flashcard>
   <Flashcard term="AWS Config / GuardDuty">Config＝設定變更與合規；GuardDuty＝智慧威脅偵測。</Flashcard>
 </Flashcards>
+
+## IAM 進階（跨帳號 / STS / SCP）
+
+<Flashcards>
+  <Flashcard term="STS 臨時憑證">有時效、自動過期的憑證。能用它就別用長期金鑰。</Flashcard>
+  <Flashcard term="跨帳號存取">目標帳號建 Role、信任政策列出可信帳號，來源端用 AssumeRole 擔任。不要複製長期金鑰。</Flashcard>
+  <Flashcard term="SCP">組織層級的權限天花板。只「限制」不「給予」，連管理員也擋得住。</Flashcard>
+  <Flashcard term="權限邊界">限制單一使用者／角色的權限上限，常用於委派建角色時防止提權。</Flashcard>
+  <Flashcard term="IAM Identity Center">企業單一登入（前身 AWS SSO），一組帳號登入多個 AWS 帳號。</Flashcard>
+  <Flashcard term="實際權限公式">IAM 給的 ∩ 權限邊界 ∩ SCP，任一層沒放行就被擋。</Flashcard>
+</Flashcards>
+
+## VPC 私密連線（Endpoint）
+
+<Flashcards>
+  <Flashcard term="Gateway 端點">只支援 S3 與 DynamoDB，走路由表，完全免費。要私密又省錢連這兩者時選它。</Flashcard>
+  <Flashcard term="Interface 端點(PrivateLink)">支援其他絕大多數服務，用私有 IP 網卡(ENI)，按時數＋流量計費，要設 Security Group。</Flashcard>
+  <Flashcard term="省掉 NAT">用 S3 Gateway 端點可免走 NAT Gateway，流量留在內網又省流量費。</Flashcard>
+</Flashcards>
+
+## 應用層防護（WAF / Shield / ACM）
+
+<Flashcards>
+  <Flashcard term="WAF">擋第 7 層攻擊：SQL injection、XSS、依國家封鎖、限制請求速率。掛在 CloudFront／ALB／API Gateway。</Flashcard>
+  <Flashcard term="Shield Standard">免費、自動開啟的 DDoS 防護，每個帳號都有。</Flashcard>
+  <Flashcard term="Shield Advanced">月費約 US$3,000，含 24/7 團隊與費用補償，給大型／高風險服務。</Flashcard>
+  <Flashcard term="ACM">免費、自動更新的 HTTPS 憑證。給 CloudFront 用的憑證必須建在 us-east-1。</Flashcard>
+</Flashcards>

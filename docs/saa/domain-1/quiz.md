@@ -9,7 +9,7 @@ title: 原創練習題
 
 <Quiz
   qnum={1}
-  total={8}
+  total={12}
   question="你的應用程式跑在 EC2 上，需要讀取 S3 的檔案。以下哪個做法最符合 AWS 安全最佳實務？"
   options={[
     '把 Access Key 和 Secret Key 直接寫在程式碼裡',
@@ -27,7 +27,7 @@ EC2 應透過 **IAM Role** 取得臨時、會自動輪替的憑證，完全不�
 
 <Quiz
   qnum={2}
-  total={8}
+  total={12}
   question="「工程部」10 位成員需要相同權限，未來新人也要能快速套用。最有效率的做法是？"
   options={[
     '為每個人各自附加一份相同的 Policy',
@@ -45,7 +45,7 @@ EC2 應透過 **IAM Role** 取得臨時、會自動輪替的憑證，完全不�
 
 <Quiz
   qnum={3}
-  total={8}
+  total={12}
   question="某 Policy 允許了操作，但安全團隊要強制禁止特定高風險動作。IAM 的評估邏輯是？"
   options={[
     'Allow 一定勝過 Deny',
@@ -63,7 +63,7 @@ IAM 規則：**預設拒絕 → 有 Allow 才放行 → 明確 Deny 一律擋下
 
 <Quiz
   qnum={4}
-  total={8}
+  total={12}
   question="公司要求能自行控制加密金鑰的權限、自訂輪替週期，並稽核誰使用過金鑰。該選哪種 KMS 金鑰？"
   options={[
     'AWS 擁有的金鑰（AWS owned）',
@@ -81,7 +81,7 @@ IAM 規則：**預設拒絕 → 有 Allow 才放行 → 明確 Deny 一律擋下
 
 <Quiz
   qnum={5}
-  total={8}
+  total={12}
   question="你在 NACL 加了允許 HTTP(80) 進入的規則，但使用者仍連不上網站。最可能的原因是？"
   options={[
     'NACL 是無狀態的，你還沒設定允許回應流量的 outbound 規則',
@@ -99,7 +99,7 @@ IAM 規則：**預設拒絕 → 有 Allow 才放行 → 明確 Deny 一律擋下
 
 <Quiz
   qnum={6}
-  total={8}
+  total={12}
   question="你要確保一個存有客戶個資的 S3 貯體『絕對不會』被意外設成公開。最有效的做法是？"
   options={[
     '把貯體改名成很難猜的名字',
@@ -117,7 +117,7 @@ IAM 規則：**預設拒絕 → 有 Allow 才放行 → 明確 Deny 一律擋下
 
 <Quiz
   qnum={7}
-  total={8}
+  total={12}
   question="應用程式需要在連線 RDS 資料庫時，使用會『自動定期輪替』的密碼。最適合的服務是？"
   options={[
     '把密碼寫在環境變數',
@@ -135,7 +135,7 @@ IAM 規則：**預設拒絕 → 有 Allow 才放行 → 明確 Deny 一律擋下
 
 <Quiz
   qnum={8}
-  total={8}
+  total={12}
   question="稽核時需要查出『哪個使用者在什麼時間刪除了某個資源』。應該看哪個服務？"
   options={[
     'CloudWatch',
@@ -148,6 +148,78 @@ IAM 規則：**預設拒絕 → 有 Allow 才放行 → 明確 Deny 一律擋下
 **正解：B**
 
 **CloudTrail** 記錄「誰、何時、對 AWS 做了什麼 API 操作」，是稽核使用者行為的依據。CloudWatch 是效能監控；Config 看設定變更與合規；GuardDuty 做威脅偵測。
+
+</Quiz>
+
+<Quiz
+  qnum={9}
+  total={12}
+  question="私有子網路裡的 EC2 需要存取 S3，要求流量不經過網際網路，且成本越低越好。最佳做法是？"
+  options={[
+    '架一台 NAT Gateway 讓它連出網際網路再到 S3',
+    '建立 S3 的 Gateway 端點（VPC Endpoint）',
+    '把 EC2 搬到公有子網路並給公有 IP',
+    '開放 S3 貯體為公開存取',
+  ]}
+  answer={1}>
+
+**正解：B**
+
+**S3 Gateway 端點**讓流量全程留在 AWS 內網、不走公網，而且**完全免費**，還能省下 NAT 的流量費。A 要付 NAT 費又繞公網；C、D 都把資源暴露到網際網路，違反安全要求。
+
+</Quiz>
+
+<Quiz
+  qnum={10}
+  total={12}
+  question="你要為一個跑在 SQS 上的應用建立私密連線（不走網際網路）。應使用哪種 VPC 端點？"
+  options={[
+    'Gateway 端點',
+    'Interface 端點（PrivateLink）',
+    'NAT Gateway',
+    '網際網路閘道（IGW）',
+  ]}
+  answer={1}>
+
+**正解：B**
+
+**Gateway 端點只支援 S3 與 DynamoDB**，SQS 這類服務要用 **Interface 端點（PrivateLink）**，它會在子網路放一張私有 IP 網卡。NAT 與 IGW 都是對外上網用，不符合「私密」需求。
+
+</Quiz>
+
+<Quiz
+  qnum={11}
+  total={12}
+  question="你的網站不斷收到夾帶 SQL injection 的請求，想在流量到達應用前就依請求內容過濾。最適合的服務是？"
+  options={[
+    'Security Group',
+    'AWS Shield Standard',
+    'AWS WAF',
+    'NACL',
+  ]}
+  answer={2}>
+
+**正解：C**
+
+**WAF** 專門檢查 HTTP 請求「內容」，能擋 SQL injection、XSS、限制請求速率等第 7 層攻擊。SG／NACL 只看 IP 與埠，看不懂請求內容；Shield 是擋 DDoS 的，不是過濾惡意請求內容。
+
+</Quiz>
+
+<Quiz
+  qnum={12}
+  total={12}
+  question="安全團隊要求：即使某帳號的 IAM 管理員，也絕對不能啟用某個高風險服務。跨多個帳號該用什麼強制？"
+  options={[
+    '在每個使用者身上加一條 Deny 政策',
+    '在 AWS Organizations 設定 SCP（服務控制政策）',
+    '用權限邊界限制每個角色',
+    '把該服務的費用上限設為 0',
+  ]}
+  answer={1}>
+
+**正解：B**
+
+**SCP** 在組織層級設「權限天花板」，涵蓋整個帳號、連管理員都擋得住，是跨帳號強制禁用最適合的工具。A 要逐一維護且新使用者可能漏掉；權限邊界是針對單一對象、不涵蓋整個帳號；設費用上限不是安全控制。
 
 </Quiz>
 
