@@ -9,7 +9,7 @@ Select your answer first, then click "**Show answer & explanation**". Questions 
 
 <Quiz
   qnum={1}
-  total={8}
+  total={12}
   question="Your application runs on EC2 and needs to read files from S3. Which approach best follows AWS security best practices?"
   options={[
     'Hard-code the Access Key and Secret Key in the code',
@@ -27,7 +27,7 @@ EC2 should obtain temporary, auto-rotated credentials via an **IAM Role** with n
 
 <Quiz
   qnum={2}
-  total={8}
+  total={12}
   question="The 10-member Engineering team needs the same permissions, and new hires should inherit them quickly. The most efficient approach is?"
   options={[
     'Attach an identical Policy to each person individually',
@@ -45,7 +45,7 @@ Attach permissions to an **IAM Group**; members get them on joining. A is error-
 
 <Quiz
   qnum={3}
-  total={8}
+  total={12}
   question="A Policy allows an action, but the security team must forcibly block certain high-risk actions. What is IAM's evaluation logic?"
   options={[
     'Allow always wins over Deny',
@@ -63,7 +63,7 @@ IAM rule: **deny by default → allow only with an Allow → an explicit Deny al
 
 <Quiz
   qnum={4}
-  total={8}
+  total={12}
   question="A company must control encryption-key permissions itself, set a custom rotation schedule, and audit who used the key. Which KMS key type?"
   options={[
     'AWS owned key',
@@ -81,7 +81,7 @@ Only a **Customer managed key (CMK)** lets you customize the key policy, control
 
 <Quiz
   qnum={5}
-  total={8}
+  total={12}
   question="You added a NACL rule allowing inbound HTTP(80), but users still can't reach the site. The most likely cause?"
   options={[
     'NACLs are stateless; you haven\'t set an outbound rule allowing the response traffic',
@@ -99,7 +99,7 @@ Only a **Customer managed key (CMK)** lets you customize the key policy, control
 
 <Quiz
   qnum={6}
-  total={8}
+  total={12}
   question="You must ensure an S3 bucket holding customer PII is 'never' accidentally made public. The most effective approach?"
   options={[
     'Rename the bucket to something hard to guess',
@@ -117,7 +117,7 @@ Only a **Customer managed key (CMK)** lets you customize the key policy, control
 
 <Quiz
   qnum={7}
-  total={8}
+  total={12}
   question="An application needs an 'automatically, periodically rotated' password when connecting to RDS. The most suitable service is?"
   options={[
     'Put the password in an environment variable',
@@ -135,7 +135,7 @@ Only a **Customer managed key (CMK)** lets you customize the key policy, control
 
 <Quiz
   qnum={8}
-  total={8}
+  total={12}
   question="During an audit you need to find 'which user deleted a resource and when'. Which service should you check?"
   options={[
     'CloudWatch',
@@ -148,6 +148,78 @@ Only a **Customer managed key (CMK)** lets you customize the key policy, control
 **Correct: B**
 
 **CloudTrail** records "who did what API operation to AWS, and when" — the basis for auditing user behavior. CloudWatch is performance monitoring; Config tracks config changes & compliance; GuardDuty does threat detection.
+
+</Quiz>
+
+<Quiz
+  qnum={9}
+  total={12}
+  question="An EC2 in a private subnet needs to access S3, the traffic must not go over the internet, and cost should be as low as possible. The best approach?"
+  options={[
+    'Stand up a NAT Gateway so it reaches the internet and then S3',
+    'Create a Gateway endpoint (VPC Endpoint) for S3',
+    'Move the EC2 to a public subnet and give it a public IP',
+    'Make the S3 bucket publicly accessible',
+  ]}
+  answer={1}>
+
+**Correct: B**
+
+An **S3 Gateway endpoint** keeps traffic entirely inside the AWS network — never on the public internet — and is **completely free**, even saving the NAT data charges. A pays for NAT and detours over the internet; C and D expose resources to the internet, violating the security requirement.
+
+</Quiz>
+
+<Quiz
+  qnum={10}
+  total={12}
+  question="You need private connectivity (no internet) to an application running on SQS. Which VPC endpoint type should you use?"
+  options={[
+    'Gateway endpoint',
+    'Interface endpoint (PrivateLink)',
+    'NAT Gateway',
+    'Internet Gateway (IGW)',
+  ]}
+  answer={1}>
+
+**Correct: B**
+
+**Gateway endpoints only support S3 and DynamoDB**; a service like SQS needs an **Interface endpoint (PrivateLink)**, which places a private-IP network interface in the subnet. NAT and IGW are both for outbound internet access and don't meet the "private" requirement.
+
+</Quiz>
+
+<Quiz
+  qnum={11}
+  total={12}
+  question="Your site keeps receiving requests carrying SQL injection, and you want to filter by request content before it reaches the app. The most suitable service?"
+  options={[
+    'Security Group',
+    'AWS Shield Standard',
+    'AWS WAF',
+    'NACL',
+  ]}
+  answer={2}>
+
+**Correct: C**
+
+**WAF** specifically inspects HTTP request **content**, blocking layer-7 attacks like SQL injection, XSS, and rate limiting. SG/NACL only look at IP and port and can't read request content; Shield defends against DDoS, not malicious request content.
+
+</Quiz>
+
+<Quiz
+  qnum={12}
+  total={12}
+  question="Security requires that even an account's IAM admin can never enable a certain high-risk service. What enforces this across multiple accounts?"
+  options={[
+    'Add a Deny policy on every user',
+    'Set an SCP (Service Control Policy) in AWS Organizations',
+    'Use a permission boundary on each role',
+    'Set the service\'s cost limit to 0',
+  ]}
+  answer={1}>
+
+**Correct: B**
+
+An **SCP** sets a permissions ceiling at the organization level, covering the whole account — even admins are blocked — making it the right tool to forcibly disable something across accounts. A is error-prone and new users may be missed; a permission boundary targets a single principal, not the whole account; a cost limit isn't a security control.
 
 </Quiz>
 
