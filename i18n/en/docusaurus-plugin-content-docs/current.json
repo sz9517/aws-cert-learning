@@ -1,0 +1,54 @@
+{
+  "version.label": {
+    "message": "Next",
+    "description": "The label for version current"
+  },
+  "sidebar.tutorialSidebar.category.入門必讀": {
+    "message": "Getting Started",
+    "description": "The label for category '入門必讀' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.入門必讀.link.generated-index.title": {
+    "message": "Getting Started",
+    "description": "The generated-index page title for category '入門必讀' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.入門必讀.link.generated-index.description": {
+    "message": "New to the cloud? Start here to build the basic concepts.",
+    "description": "The generated-index page description for category '入門必讀' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.SAA · 解決方案架構師": {
+    "message": "SAA · Solutions Architect",
+    "description": "The label for category 'SAA · 解決方案架構師' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.SAA · 解決方案架構師.link.generated-index.title": {
+    "message": "SAA｜Solutions Architect – Associate",
+    "description": "The generated-index page title for category 'SAA · 解決方案架構師' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.SAA · 解決方案架構師.link.generated-index.description": {
+    "message": "Complete English study notes, hands-on practice, and quizzes for AWS Certified Solutions Architect – Associate (exam code SAA-C03).",
+    "description": "The generated-index page description for category 'SAA · 解決方案架構師' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Domain 1 · 設計安全的架構 (30%)": {
+    "message": "Domain 1 · Design Secure Architectures (30%)",
+    "description": "The label for category 'Domain 1 · 設計安全的架構 (30%)' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Domain 1 · 設計安全的架構 (30%).link.generated-index.title": {
+    "message": "Domain 1: Design Secure Architectures",
+    "description": "The generated-index page title for category 'Domain 1 · 設計安全的架構 (30%)' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Domain 1 · 設計安全的架構 (30%).link.generated-index.description": {
+    "message": "Weighted 30% — the largest domain in the SAA exam. Covers identity and access management, data encryption, network security, and more.",
+    "description": "The generated-index page description for category 'Domain 1 · 設計安全的架構 (30%)' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Domain 2 · 設計具彈性的架構 (26%)": {
+    "message": "Domain 2 · Design Resilient Architectures (26%)",
+    "description": "The label for category 'Domain 2' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Domain 3 · 設計高效能的架構 (24%)": {
+    "message": "Domain 3 · Design High-Performing Architectures (24%)",
+    "description": "The label for category 'Domain 3' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Domain 4 · 設計成本最佳化 (18%)": {
+    "message": "Domain 4 · Design Cost-Optimized Architectures (18%)",
+    "description": "The label for category 'Domain 4' in sidebar 'tutorialSidebar'"
+  }
+}

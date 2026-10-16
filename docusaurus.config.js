@@ -33,10 +33,14 @@ const config = {
     },
   },
 
-  // 網站語言：繁體中文
+  // 網站語言：繁體中文（預設）+ 英文
   i18n: {
     defaultLocale: 'zh-Hant',
-    locales: ['zh-Hant'],
+    locales: ['zh-Hant', 'en'],
+    localeConfigs: {
+      'zh-Hant': {label: '中文'},
+      en: {label: 'English'},
+    },
   },
 
   // 離線本地搜尋（不需要 Algolia 帳號，適合 GitHub Pages）
@@ -92,6 +96,10 @@ const config = {
             sidebarId: 'tutorialSidebar',
             position: 'left',
             label: '學習內容',
+          },
+          {
+            type: 'localeDropdown',
+            position: 'right',
           },
           {
             href: 'https://github.com/sz9517/aws-cert-learning',
