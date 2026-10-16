@@ -39,6 +39,22 @@ const config = {
     locales: ['zh-Hant'],
   },
 
+  // 離線本地搜尋（不需要 Algolia 帳號，適合 GitHub Pages）
+  themes: [
+    [
+      '@easyops-cn/docusaurus-search-local',
+      /** @type {import('@easyops-cn/docusaurus-search-local').PluginOptions} */
+      ({
+        hashed: true,
+        language: ['zh', 'en'],
+        indexDocs: true,
+        indexBlog: false,
+        docsRouteBasePath: '/',
+        highlightSearchTermsOnTargetPage: true,
+      }),
+    ],
+  ],
+
   presets: [
     [
       'classic',
@@ -66,6 +82,10 @@ const config = {
       },
       navbar: {
         title: 'AWS Certification Learning',
+        logo: {
+          alt: 'AWS Certification Learning',
+          src: 'img/logo.svg',
+        },
         items: [
           {
             type: 'docSidebar',

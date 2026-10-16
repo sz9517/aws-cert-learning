@@ -184,6 +184,64 @@
   font-size: 15px;
 }
 
+/* ---------- 彩色說明框 <Analogy>/<Scenario>/<Cost>/<Vocab> ---------- */
+.cbox {
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin: 20px 0;
+}
+.cbox__title {
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.cbox__body > :last-child {
+  margin-bottom: 0;
+}
+
+/* 生活比喻：橘色虛線漸層 */
+.cbox--analogy {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 153, 0, 0.1),
+    rgba(236, 114, 17, 0.05)
+  );
+  border: 1px dashed var(--ifm-color-primary);
+}
+.cbox--analogy .cbox__title {
+  color: var(--ifm-color-primary-darker);
+}
+[data-theme='dark'] .cbox--analogy .cbox__title {
+  color: var(--ifm-color-primary);
+}
+
+/* 真實情境：藍色虛線 */
+.cbox--scenario {
+  background: rgba(75, 159, 230, 0.1);
+  border: 1px dashed #4b9fe6;
+}
+.cbox--scenario .cbox__title {
+  color: #2b7cc4;
+}
+[data-theme='dark'] .cbox--scenario .cbox__title {
+  color: #74b6f0;
+}
+
+/* 成本提醒：紅色左框 */
+.cbox--cost {
+  background: rgba(230, 57, 70, 0.08);
+  border-left: 4px solid #e63946;
+  border-radius: 8px;
+}
+.cbox--cost .cbox__title {
+  color: #e63946;
+}
+
+/* 名詞先修：灰底框 */
+.cbox--vocab {
+  background: var(--ifm-color-emphasis-100);
+  border: 1px solid var(--ifm-color-emphasis-300);
+}
+
 /* ---------- 流程圖 .flow ---------- */
 .flow {
   display: flex;
