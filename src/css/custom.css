@@ -161,6 +161,12 @@
   font-weight: 700;
   font-size: 13px;
 }
+html[lang='en'] .quiz-opt.correct::after {
+  content: ' ✓ Correct';
+}
+html[lang='en'] .quiz-opt.wrong::after {
+  content: ' ✗ Your pick';
+}
 .quiz-btn {
   background: var(--ifm-color-primary);
   color: #fff;
