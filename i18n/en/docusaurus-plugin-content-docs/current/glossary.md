@@ -49,6 +49,33 @@ Not sure what an acronym means? Look it up here. Format: **Acronym ｜ Full name
 | **CRR** | Cross-Region Replication | S3 automatic replication across Regions for off-site DR. |
 | **EFS** | Elastic File System | A file system mountable/shared across multiple AZs (whereas EBS is tied to a single AZ). |
 
+## Domain 3: High-Performing Architectures
+
+| Acronym / term | Full name | Plain explanation |
+| --- | --- | --- |
+| **EC2** | Elastic Compute Cloud | Virtual servers; rent a whole machine — pick it for full OS control / long-running work. |
+| **Lambda** | AWS Lambda | Serverless compute, event-triggered, billed per runtime ms, 15-minute max per run. |
+| **Fargate** | AWS Fargate | Serverless container engine; run ECS/EKS without managing the underlying EC2 nodes. |
+| **ECS / EKS** | Elastic Container Service / Elastic Kubernetes Service | AWS container orchestration services (EKS is managed Kubernetes). |
+| **Placement Group** | — | Instance placement strategy; cluster packs one rack for ultra-low latency, used for HPC. |
+| **EBS** | Elastic Block Store | Persistent block storage; gp3 balanced, io2 highest IOPS, st1 throughput, sc1 cold. |
+| **Instance Store** | — | Physically attached scratch disk; extremely high IOPS but wiped on stop (not persistent). |
+| **FSx** | Amazon FSx | Managed file-system family; for Windows uses SMB, for Lustre serves HPC high throughput. |
+| **RDS** | Relational Database Service | Managed relational databases (MySQL/PostgreSQL and others). |
+| **Aurora** | Amazon Aurora | MySQL/PostgreSQL-compatible, several times RDS performance, storage auto-scales. |
+| **DynamoDB** | Amazon DynamoDB | Serverless NoSQL with single-digit ms latency and near-unlimited scale. |
+| **DAX** | DynamoDB Accelerator | A microsecond in-memory cache purpose-built for DynamoDB. |
+| **ElastiCache** | Amazon ElastiCache | Managed in-memory cache; Redis is feature-rich/persistent, Memcached is simple multi-threaded. |
+| **CloudFront** | — | CDN that caches content at edge locations to speed up global access. |
+| **Global Accelerator** | — | Uses the AWS backbone + anycast static IPs to speed the connection path; great for non-HTTP TCP/UDP. |
+| **Kinesis Data Streams** | — | Real-time streaming; multiple consumers read the same data, replayable, scales with shards. |
+| **Firehose** | Amazon Data Firehose | Near-real-time auto-loading of streams into S3/Redshift/OpenSearch, no code. |
+| **Shard** | — | The throughput-scaling unit of a Kinesis stream. |
+| **Partition Key** | — | The key DynamoDB uses to spread data; must be high-cardinality to avoid hot partitions. |
+| **Hot Partition** | — | A bottleneck caused by traffic concentrating on a few keys. |
+| **Multipart Upload** | — | Uploads a large file to S3 in parallel parts, resumable. |
+| **Transfer Acceleration** | — | Speeds up cross-Region S3 uploads via edge locations. |
+
 :::tip
 This table will keep expanding as content for each domain grows.
 :::

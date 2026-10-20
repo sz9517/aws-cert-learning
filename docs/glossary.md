@@ -49,6 +49,33 @@ sidebar_label: 📖 名詞與服務對照表
 | **CRR** | Cross-Region Replication | S3 跨區域自動複寫，用於異地備援。 |
 | **EFS** | Elastic File System | 可多個可用區共享掛載的檔案系統（EBS 則綁單一 AZ）。 |
 
+## Domain 3：高效能架構
+
+| 縮寫／名詞 | 英文全名 | 白話說明 |
+| --- | --- | --- |
+| **EC2** | Elastic Compute Cloud | 虛擬伺服器，租一整台機器，需完整 OS 控制／長時間執行時選它。 |
+| **Lambda** | AWS Lambda | 無伺服器運算，事件觸發、按執行毫秒計費，單次最長 15 分鐘。 |
+| **Fargate** | AWS Fargate | 無伺服器容器引擎，跑 ECS／EKS 但免管底層 EC2 節點。 |
+| **ECS / EKS** | Elastic Container Service／Elastic Kubernetes Service | AWS 的容器編排服務（EKS 為託管 Kubernetes）。 |
+| **Placement Group** | — | 執行個體擺放策略；cluster 擠同機架取得超低延遲，用於 HPC。 |
+| **EBS** | Elastic Block Store | 持久區塊儲存；gp3 均衡、io2 最高 IOPS、st1 吞吐、sc1 冷儲存。 |
+| **Instance Store** | — | 實體直連的暫存碟，IOPS 極高但關機即消失（不持久）。 |
+| **FSx** | Amazon FSx | 託管檔案系統家族；for Windows 走 SMB、for Lustre 供 HPC 高吞吐。 |
+| **RDS** | Relational Database Service | 託管關聯式資料庫（MySQL／PostgreSQL 等）。 |
+| **Aurora** | Amazon Aurora | 相容 MySQL／PostgreSQL、效能數倍於 RDS、儲存自動擴展。 |
+| **DynamoDB** | Amazon DynamoDB | 無伺服器 NoSQL，個位數毫秒延遲、近乎無限擴展。 |
+| **DAX** | DynamoDB Accelerator | DynamoDB 專用的微秒級記憶體快取。 |
+| **ElastiCache** | Amazon ElastiCache | 託管記憶體快取；Redis 功能豐富／可持久，Memcached 單純多執行緒。 |
+| **CloudFront** | — | CDN，把內容快取到邊緣節點，加速全球存取。 |
+| **Global Accelerator** | — | 用 AWS 骨幹＋anycast 固定 IP 加速連線路徑，適合非 HTTP 的 TCP/UDP。 |
+| **Kinesis Data Streams** | — | 即時串流，多消費者可讀同一份、可重播，以分片擴展吞吐。 |
+| **Firehose** | Amazon Data Firehose | 近即時把串流自動載入 S3／Redshift／OpenSearch，免寫程式。 |
+| **Shard** | — | Kinesis 串流的吞吐擴展單位（分片）。 |
+| **Partition Key** | — | DynamoDB 用來分散資料的鍵，基數要高才能避免熱分區。 |
+| **Hot Partition** | — | 流量集中打在少數鍵造成的瓶頸（熱分區）。 |
+| **Multipart Upload** | — | 把大型檔案切段平行上傳 S3，可斷點續傳。 |
+| **Transfer Acceleration** | — | S3 透過邊緣節點加速跨區域上傳。 |
+
 :::tip
 這張表會隨著各領域內容增加而持續擴充。
 :::

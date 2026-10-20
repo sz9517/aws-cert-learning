@@ -2,5 +2,11 @@
   "label": "Domain 3 · 設計高效能的架構 (24%)",
   "position": 4,
   "collapsible": true,
-  "collapsed": true
+  "collapsed": false,
+  "link": {
+    "type": "generated-index",
+    "slug": "/saa/domain-3",
+    "title": "Domain 3：設計高效能的架構",
+    "description": "權重 24%，是 SAA 考試占比最高的領域。涵蓋運算選型、儲存效能選型、資料庫選型、快取加速、內容傳遞與全球加速、高效能解耦與資料串流，以及可擴展的網路與儲存模式。"
+  }
 }
