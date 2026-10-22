@@ -9,7 +9,7 @@ title: 原創練習題
 
 <Quiz
   qnum={1}
-  total={20}
+  total={24}
   question="某新創開發一個圖片上傳後自動產生縮圖的功能。流量極不規律，有時整天沒人用、有時幾分鐘湧入上千張。團隊不想管理任何伺服器，且希望「只為實際用量付費」。最合適的運算方案是？"
   options={[
     '開一台大型 EC2 隨時待命處理',
@@ -27,7 +27,7 @@ title: 原創練習題
 
 <Quiz
   qnum={2}
-  total={20}
+  total={24}
   question="某企業要把一套需要完整作業系統控制、長時間常駐、並安裝了特殊授權軟體的舊系統搬上雲。負載長期穩定可預測。下列哪個運算選項最合適？"
   options={[
     'AWS Lambda',
@@ -45,7 +45,7 @@ title: 原創練習題
 
 <Quiz
   qnum={3}
-  total={20}
+  total={24}
   question="某團隊的應用程式已經容器化，想在 AWS 上跑，但「完全不想管理底層的 EC2 節點、也不想處理修補與擴縮」。最符合需求的做法是？"
   options={[
     '自建 EC2 叢集並手動安裝 Docker',
@@ -63,7 +63,7 @@ title: 原創練習題
 
 <Quiz
   qnum={4}
-  total={20}
+  total={24}
   question="某金融交易系統的資料庫需要「可持久保留、且提供最高的每秒輸入輸出（IOPS）與最低延遲」。下列哪種儲存最適合？"
   options={[
     'EBS gp3 通用型 SSD',
@@ -81,7 +81,7 @@ title: 原創練習題
 
 <Quiz
   qnum={5}
-  total={20}
+  total={24}
   question="某內容管理系統有數十台 Linux EC2 需要「同時讀寫同一份共享檔案」，且儲存容量要能隨檔案增加自動擴展、免預先配置。應選用哪項服務？（Choose TWO 的敘述中，選出最正確的一項組合描述）"
   options={[
     'Amazon EFS，可被多台 Linux 同時掛載且容量自動擴展',
@@ -99,7 +99,7 @@ title: 原創練習題
 
 <Quiz
   qnum={6}
-  total={20}
+  total={24}
   question="一個部署在美國的 S3 儲存貯體，常有位於亞洲與歐洲的使用者要上傳數 GB 的大型檔案，目前上傳又慢又常中斷。下列哪兩項做法最能提升上傳效能與可靠度？（Choose TWO）"
   options={[
     '啟用 S3 Transfer Acceleration，透過邊緣節點加速跨區上傳',
@@ -118,7 +118,7 @@ title: 原創練習題
 
 <Quiz
   qnum={7}
-  total={20}
+  total={24}
   question="某機器學習團隊需要一個「極高吞吐、供 HPC 運算節點暫存大量資料集」的共享檔案系統，資料可在工作結束後清除。最適合的服務是？"
   options={[
     'Amazon EFS 標準模式',
@@ -136,7 +136,7 @@ title: 原創練習題
 
 <Quiz
   qnum={8}
-  total={20}
+  total={24}
   question="某 Windows 檔案伺服器要搬上 AWS，應用程式依賴 SMB 通訊協定與 Active Directory 整合。下列哪項服務最合適？"
   options={[
     'Amazon EFS',
@@ -154,7 +154,7 @@ title: 原創練習題
 
 <Quiz
   qnum={9}
-  total={20}
+  total={24}
   question="某遊戲後端需要一個「可支撐數百萬使用者、以玩家 ID 為鍵做查詢、延遲要穩定在個位數毫秒、且能自動擴展不想管伺服器」的資料庫。最適合的是？"
   options={[
     'Amazon RDS for MySQL 單一執行個體',
@@ -172,7 +172,7 @@ title: 原創練習題
 
 <Quiz
   qnum={10}
-  total={20}
+  total={24}
   question="某電商的 RDS 資料庫寫入正常，但「大量商品瀏覽（讀取）」在尖峰時把主資料庫拖垮。希望在「最少應用程式改動」下提升讀取效能。最適合的做法是？"
   options={[
     '把 RDS 執行個體換成更大的機型就好',
@@ -190,7 +190,7 @@ title: 原創練習題
 
 <Quiz
   qnum={11}
-  total={20}
+  total={24}
   question="某企業要一套「相容 MySQL、但效能與吞吐要遠高於標準 RDS、儲存能自動擴展、並具企業級可用性」的關聯式資料庫。最適合的是？"
   options={[
     'Amazon Aurora（MySQL 相容）',
@@ -208,7 +208,7 @@ title: 原創練習題
 
 <Quiz
   qnum={12}
-  total={20}
+  total={24}
   question="某應用程式大量讀取 DynamoDB，相同的熱門項目一直被重複查詢，團隊希望把這些讀取延遲「從毫秒再降到微秒」，且盡量少改程式。最適合的做法是？"
   options={[
     '在前面加一層 Amazon ElastiCache for Memcached',
@@ -226,7 +226,7 @@ title: 原創練習題
 
 <Quiz
   qnum={13}
-  total={20}
+  total={24}
   question="某即時排行榜功能需要一個「支援排序結構、具持久化與複製、可當作排行榜與計數器」的記憶體資料儲存。最適合的是？"
   options={[
     'Amazon ElastiCache for Memcached',
@@ -244,7 +244,7 @@ title: 原創練習題
 
 <Quiz
   qnum={14}
-  total={20}
+  total={24}
   question="某媒體網站有大量圖片與影片，使用者遍布全球，常抱怨離來源伺服器遠的地區載入很慢。希望「把可快取的內容送到離使用者最近處」以降低延遲。最適合的服務是？"
   options={[
     'AWS Global Accelerator',
@@ -262,7 +262,7 @@ title: 原創練習題
 
 <Quiz
   qnum={15}
-  total={20}
+  total={24}
   question="某線上遊戲使用自訂的 UDP 通訊協定，需要「全球玩家都能以最低延遲連到最近的 AWS 進入點，並提供固定的靜態 IP 供防火牆白名單」，內容不需快取。最適合的服務是？"
   options={[
     'Amazon CloudFront',
@@ -280,7 +280,7 @@ title: 原創練習題
 
 <Quiz
   qnum={16}
-  total={20}
+  total={24}
   question="某公司要處理即時點擊流資料，需求為：「多個不同的下游系統要各自讀取同一份資料、且必須能在數小時內重播（reprocess）」。最適合的服務是？"
   options={[
     'Amazon SQS 標準佇列',
@@ -298,7 +298,7 @@ title: 原創練習題
 
 <Quiz
   qnum={17}
-  total={20}
+  total={24}
   question="某團隊想把串流進來的日誌「近乎即時、且免寫程式維運」地自動載入到 Amazon S3 與 Redshift 做後續分析。最適合的服務是？"
   options={[
     'Amazon Kinesis Data Streams 自行寫消費者程式',
@@ -316,7 +316,7 @@ title: 原創練習題
 
 <Quiz
   qnum={18}
-  total={20}
+  total={24}
   question="某團隊的 DynamoDB 資料表在尖峰時出現節流（throttling），調查發現流量集中打在少數幾個分區鍵值上（熱分區）。下列哪兩項做法最能改善？（Choose TWO）"
   options={[
     '重新設計使用高基數（分散度高）的分區鍵，讓流量平均分布',
@@ -335,7 +335,7 @@ title: 原創練習題
 
 <Quiz
   qnum={19}
-  total={20}
+  total={24}
   question="某應用的讀取流量在尖峰暴增且有大量「重複的相同查詢」拖垮 RDS。團隊希望用「最具成本效益」的組合同時分攤讀取並降低重複查詢的延遲。下列哪兩項最適合？（Choose TWO）"
   options={[
     '建立 RDS 讀取複本分攤讀取流量',
@@ -354,7 +354,7 @@ title: 原創練習題
 
 <Quiz
   qnum={20}
-  total={20}
+  total={24}
   question="某資料分析平台要「每秒攝取數百萬筆遙測事件、吸收突發尖峰、並讓後端批次處理不被打爆」。下列哪個服務最適合作為高吞吐的即時攝取層？"
   options={[
     'Amazon Kinesis Data Streams',
@@ -367,6 +367,78 @@ title: 原創練習題
 **正解：A**
 
 「每秒數百萬事件 + 吸收尖峰 + 即時攝取 + 讓後端按自己步調處理」是 **Kinesis Data Streams** 的典型用途（以分片擴展吞吐、作為緩衝層）。直接寫 RDS（B）會被尖峰打爆；S3 單一前綴逐筆寫（C）不適合高併發即時攝取；AWS Config 是資源合規稽核、與此無關。
+
+</Quiz>
+
+<Quiz
+  qnum={21}
+  total={24}
+  question="某資安團隊把應用程式的存取日誌每天自動匯入 S3，已累積數 TB。某次事件後，他們只想「臨時用標準 SQL 查一下這些日誌找出可疑 IP」，不想為了查一次就特地建資料庫、也不想管理任何伺服器。最具成本效益的做法是？"
+  options={[
+    '把 S3 日誌先載入 Amazon RDS 再下 SQL 查詢',
+    '使用 Amazon Athena 直接對 S3 的日誌下 SQL 查詢',
+    '啟動一個 Amazon Redshift 叢集載入全部日誌後查詢',
+    '在 EC2 上自建資料庫並匯入日誌再查詢',
+  ]}
+  answer={1}>
+
+**正解：B**
+
+「無伺服器、免建資料庫、直接用標準 SQL 查 S3 裡的日誌、只偶爾查一次、按掃描量付費」正是 **Athena** 的招牌場景。A、C、D 都得先把資料搬進某個資料庫或自建環境、還要持續維運與付費，為了偶爾查一次成本與營運負擔都過高；其中 C 的 Redshift 叢集一開著就持續計費，更不划算。
+
+</Quiz>
+
+<Quiz
+  qnum={22}
+  total={24}
+  question="某零售企業的交易全部寫進 Amazon RDS（OLTP），運作正常。現在商業智慧團隊要「針對 PB 級的歷史交易資料跑又大又複雜的彙總報表（OLAP）」，例如過去三年各地區、各品類的營收趨勢。為了不拖垮交易資料庫並取得最佳分析效能，最適合的服務是？"
+  options={[
+    '直接在正式環境的 RDS 上執行複雜的分析查詢',
+    '為 RDS 增設讀取複本（Read Replica）來跑報表',
+    '把資料載入 Amazon Redshift 資料倉儲做分析',
+    '改用 Amazon DynamoDB 儲存歷史交易以利分析',
+  ]}
+  answer={2}>
+
+**正解：C**
+
+「PB 級、又大又複雜的分析彙總報表、OLAP」正是雲端資料倉儲 **Redshift** 的定位，採欄式儲存、專為大規模分析設計。A 直接在 OLTP 的 RDS 上跑重分析會拖垮交易；B 的讀取複本仍是列式的 OLTP 引擎、不擅長 PB 級複雜彙總；D 的 DynamoDB 是 NoSQL 鍵值儲存、不適合複雜分析查詢。記住：日常交易用 RDS（OLTP），大規模分析報表用 Redshift（OLAP）。
+
+</Quiz>
+
+<Quiz
+  qnum={23}
+  total={24}
+  question="某資料團隊的原始資料散落在 S3，格式雜亂，必須先「擷取、清理、轉換（ETL）成乾淨格式，並建立一份中繼資料目錄（Data Catalog）供 Athena 與 Redshift 查詢引擎直接使用」。團隊希望全程無伺服器、不要自己管理 ETL 主機。最適合的服務是？"
+  options={[
+    'AWS Glue',
+    'Amazon QuickSight',
+    'Amazon Kinesis Data Streams',
+    '在 EC2 上自寫批次 ETL 腳本並手動維護結構描述',
+  ]}
+  answer={0}>
+
+**正解：A**
+
+「無伺服器 ETL（擷取、轉換、載入）＋ 建立資料目錄供查詢引擎使用」正是 **Glue** 的兩大本職：它幫你清理轉換資料，並把中繼資料登記到 Data Catalog，讓 Athena、Redshift 知道怎麼讀資料。B 的 QuickSight 是最後做視覺化儀表板、不做 ETL；C 的 Kinesis 是即時串流攝取、非 ETL 與資料目錄；D 自建腳本營運負擔最高、又得自己維護結構描述。
+
+</Quiz>
+
+<Quiz
+  qnum={24}
+  total={24}
+  question="資料經過整理與分析後，某公司的主管希望「每天打開就能看到一組互動式圖表與儀表板，掌握各地區營收與關鍵指標」，資料來源包含 Athena 與 Redshift。團隊想用無伺服器的方式提供這類商業智慧（BI）視覺化，最少營運負擔。最適合的服務是？"
+  options={[
+    '把查詢結果匯出成 CSV 再用試算表手動製圖',
+    '在 EC2 上自建一套開源 BI 平台並自行維運',
+    'Amazon QuickSight',
+    'Amazon CloudWatch 儀表板',
+  ]}
+  answer={2}>
+
+**正解：C**
+
+「把分析結果做成互動式圖表與儀表板給人看、BI 視覺化、無伺服器、可連 Athena 與 Redshift」正是 **QuickSight** 的定位。A 手動製圖費工又無法即時互動；B 自建 BI 平台營運負擔最高；D 的 CloudWatch 儀表板是監控系統指標（CPU、延遲等）用的、不是商業資料的 BI 分析儀表板。
 
 </Quiz>
 

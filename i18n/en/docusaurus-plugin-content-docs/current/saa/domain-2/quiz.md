@@ -9,7 +9,7 @@ Pick your answer first, then click **Show answer & explanation**. This page mirr
 
 <Quiz
   qnum={1}
-  total={20}
+  total={26}
   question="A company runs a web application on several EC2 instances in a single Availability Zone (AZ), behind an Application Load Balancer. The company wants the service to stay available if a single AZ fails, with the fewest architectural changes. Which approach is MOST appropriate?"
   options={[
     'Switch to a larger EC2 instance type and add resources per instance',
@@ -27,7 +27,7 @@ The core of high availability is eliminating the single point of failure by span
 
 <Quiz
   qnum={2}
-  total={20}
+  total={26}
   question="A gaming company needs a load balancer to handle millions of TCP connections per second at extremely low latency, and a partner firewall only allows a whitelisted 'fixed static IP'. Which option fits best?"
   options={[
     'Application Load Balancer (ALB)',
@@ -45,7 +45,7 @@ The core of high availability is eliminating the single point of failure by span
 
 <Quiz
   qnum={3}
-  total={20}
+  total={26}
   question="An e-commerce site is busy during the day and nearly idle late at night. The company wants to automatically add and remove EC2 instances based on actual traffic to maintain performance MOST cost-effectively, with no manual intervention. Which approach is best?"
   options={[
     'Permanently run the maximum number of instances needed at peak',
@@ -63,7 +63,7 @@ The core of high availability is eliminating the single point of failure by span
 
 <Quiz
   qnum={4}
-  total={20}
+  total={26}
   question="During promotions, an order system is flooded with requests that overwhelm the backend. The company wants to decouple the front and back ends, lose no requests during spikes, and let the backend process at its own capacity. Which approach is best?"
   options={[
     'Raise the maximum connection limit on the database',
@@ -81,7 +81,7 @@ An **SQS** queue is the classic buffering/decoupling solution: requests queue up
 
 <Quiz
   qnum={5}
-  total={20}
+  total={26}
   question="A company has an environment in each of two Regions: a primary and a standby. It requires that when the primary environment fails its health check, user traffic is routed to the standby automatically, then back once the primary recovers. Which Route 53 configuration should be used?"
   options={[
     'Weighted routing, 50% to each side',
@@ -99,7 +99,7 @@ An **SQS** queue is the classic buffering/decoupling solution: requests queue up
 
 <Quiz
   qnum={6}
-  total={20}
+  total={26}
   question="An internal reporting system can tolerate a recovery time of 'several hours', and a once-daily backup is sufficient. The company wants the disaster-recovery approach with the LOWEST ongoing cost. Which DR strategy fits best?"
   options={[
     'Multi-Site Active/Active (multiple sites running at once)',
@@ -117,7 +117,7 @@ The stem stresses "several-hour RTO acceptable" and "LOWEST ongoing cost". **Bac
 
 <Quiz
   qnum={7}
-  total={20}
+  total={26}
   question="For a production RDS database, the company requires automatic failover when the primary instance fails, minimizing downtime. Which should be enabled?"
   options={[
     'Create a Read Replica',
@@ -135,7 +135,7 @@ The stem stresses "several-hour RTO acceptable" and "LOWEST ongoing cost". **Bac
 
 <Quiz
   qnum={8}
-  total={20}
+  total={26}
   question="A reporting system generates heavy 'read-only' queries against RDS, slowing the write performance of the primary database. The company wants to offload the read traffic while affecting the primary as little as possible. Which approach is best?"
   options={[
     'Enable a Multi-AZ deployment so the standby serves reads',
@@ -153,7 +153,7 @@ The stem stresses "several-hour RTO acceptable" and "LOWEST ongoing cost". **Bac
 
 <Quiz
   qnum={9}
-  total={20}
+  total={26}
   question="A company wants to point the zone apex example.com at an Application Load Balancer, following AWS best practice. Which DNS record should be created?"
   options={[
     'A CNAME record pointing to the DNS name of the ALB',
@@ -171,7 +171,7 @@ The **zone apex cannot use CNAME** (a DNS-spec limitation); use a Route 53 **Ali
 
 <Quiz
   qnum={10}
-  total={20}
+  total={26}
   question="A company wants to design a three-tier web application to be highly available so it can withstand a 'single Availability Zone failure'. Which TWO measures directly achieve this goal? (Choose TWO)"
   options={[
     'Configure the EC2 Auto Scaling Group to span multiple Availability Zones',
@@ -190,7 +190,7 @@ HA hinges on **eliminating the single point of failure across multiple AZs**: sp
 
 <Quiz
   qnum={11}
-  total={20}
+  total={26}
   question="When an order is placed, a system must notify several downstream services at once, and it requires that 'no notification message is lost even if a downstream service is temporarily offline'. Which TWO choices fit best together? (Choose TWO)"
   options={[
     'Create an Amazon SNS topic and have the order service publish a message when the event occurs',
@@ -209,7 +209,7 @@ HA hinges on **eliminating the single point of failure across multiple AZs**: sp
 
 <Quiz
   qnum={12}
-  total={20}
+  total={26}
   question="A company wants a fleet of EC2 instances to automatically replace failed instances and automatically adjust the count based on traffic, with no manual effort. Which TWO settings together achieve this? (Choose TWO)"
   options={[
     'Use an Auto Scaling Group with a target tracking policy to maintain a target metric',
@@ -228,7 +228,7 @@ HA hinges on **eliminating the single point of failure across multiple AZs**: sp
 
 <Quiz
   qnum={13}
-  total={20}
+  total={26}
   question="A payment system requires that messages are processed in strict send order and that the same message is never processed twice. Which Amazon SQS queue fits best?"
   options={[
     'A Standard Queue, because it has the highest throughput',
@@ -246,7 +246,7 @@ A **FIFO queue** guarantees strict first-in-first-out ordering and de-duplicatio
 
 <Quiz
   qnum={14}
-  total={20}
+  total={26}
   question="A queue occasionally contains poison-pill messages that fail no matter what, and constant retries block later processing. The company wants to automatically isolate these repeatedly failing messages for later manual analysis. Which approach is best?"
   options={[
     'Simply delete every message that fails to process',
@@ -264,7 +264,7 @@ A **Dead-Letter Queue (DLQ)** with `maxReceiveCount` moves repeatedly failing me
 
 <Quiz
   qnum={15}
-  total={20}
+  total={26}
   question="A global service is deployed in multiple Regions, and the company wants users to automatically connect to the Region with the lowest network latency for the best performance. Which Route 53 routing policy should be used?"
   options={[
     'Weighted routing',
@@ -282,7 +282,7 @@ A **Dead-Letter Queue (DLQ)** with `maxReceiveCount` moves repeatedly failing me
 
 <Quiz
   qnum={16}
-  total={20}
+  total={26}
   question="An online transaction system requires disaster recovery with an RTO of a few minutes and a very low RPO, but does not want to pay for a fully symmetric active/active deployment matching production. Which DR strategy fits best?"
   options={[
     'Backup & Restore (only back up normally, restore when needed)',
@@ -300,7 +300,7 @@ A **Dead-Letter Queue (DLQ)** with `maxReceiveCount` moves repeatedly failing me
 
 <Quiz
   qnum={17}
-  total={20}
+  total={26}
   question="An internal system has traffic that spikes at 9 AM and drops sharply after 6 PM on every business day — a regular, predictable pattern. The company wants enough capacity ready before the peak and automatic scale-in off-peak to save cost. Which Auto Scaling approach fits best?"
   options={[
     'Use only Simple Scaling, reacting after CPU exceeds a threshold',
@@ -318,7 +318,7 @@ When the traffic pattern is regular and predictable, **Scheduled Scaling** pre-p
 
 <Quiz
   qnum={18}
-  total={20}
+  total={26}
   question="A company must meet a compliance DR requirement: objects in an S3 bucket must be automatically replicated to another Region to prevent data loss if a single Region suffers a large-scale failure. Which approach fits best?"
   options={[
     'Enable Same-Region Replication (SRR) to another bucket in the same Region',
@@ -336,7 +336,7 @@ When the traffic pattern is regular and predictable, **Scheduled Scaling** pre-p
 
 <Quiz
   qnum={19}
-  total={20}
+  total={26}
   question="A company is releasing a new version with two needs: (1) send 10% of traffic to the new version and the rest to the old version for a canary test; (2) automatically reroute to a standby endpoint when an endpoint fails its health check. Which TWO Route 53 routing policies fit these two needs respectively? (Choose TWO)"
   options={[
     'Weighted routing: split 10%/90% of traffic between the new and old versions by weight',
@@ -355,7 +355,7 @@ Canary "split by ratio" uses **Weighted routing (A)**; "automatic failover on a 
 
 <Quiz
   qnum={20}
-  total={20}
+  total={26}
   question="A system must broadcast events one-to-many to several downstream services, and the entire path must preserve strict ordering and remove duplicates. Which TWO settings together achieve this? (Choose TWO)"
   options={[
     'Use an SNS FIFO topic to publish events, ensuring ordering and de-duplication at the publisher',
@@ -369,6 +369,115 @@ Canary "split by ratio" uses **Weighted routing (A)**; "automatic failover on a 
 **Correct answer: A, B**
 
 End-to-end ordering plus de-duplication needs an **SNS FIFO topic (A)** together with **SQS FIFO queue subscriptions (B)** — both ends must be FIFO to preserve strict ordering and de-dup all the way. Standard topics/queues (C, D) are at-least-once with best-effort ordering and break the guarantee; E sorting in the downstream is unreliable.
+
+</Quiz>
+
+<Quiz
+  qnum={21}
+  total={26}
+  question="A company runs backend instances in a private subnet of its VPC. These instances must not be reachable from the internet, but they must be able to initiate outbound connections to download OS updates and call external APIs. The team wants a fully AWS-managed, maintenance-free solution that is automatically highly available within an AZ. Which approach is MOST appropriate?"
+  options={[
+    'Add a 0.0.0.0/0 route to an Internet Gateway (IGW) in the private subnet route table',
+    'Create a NAT Gateway in a public subnet and point the private subnet 0.0.0.0/0 route to it',
+    'Launch your own EC2 instance as a NAT Instance in the private subnet to forward traffic',
+    'Assign a public IP to every private instance so they can reach the internet directly',
+  ]}
+  answer={1}>
+
+**Correct: B**
+
+To let a private subnet reach out (outbound only, no inbound), the standard answer is a **NAT Gateway** placed in a **public subnet**, with the private subnet 0.0.0.0/0 route pointing to it. A NAT Gateway is fully AWS-managed and automatically highly available within an AZ, meeting the maintenance-free requirement. A points the private subnet at an IGW, which turns it into a public subnet and exposes it to inbound traffic. C, a NAT Instance, requires you to operate and fail-over yourself (high operational overhead). D assigns public IPs, exposing instances to inbound connections, which violates the no-inbound requirement.
+
+</Quiz>
+
+<Quiz
+  qnum={22}
+  total={26}
+  question="A company already has more than a dozen VPCs on AWS and the number keeps growing. These VPCs need to communicate with one another and with the on-premises data center. The team originally connected them pairwise with VPC peering, but the number of connections exploded and routing became hard to manage. Which approach BEST simplifies the architecture and scales well?"
+  options={[
+    'Keep creating a VPC peering connection for every pair of VPCs that must communicate',
+    'Introduce a Transit Gateway as a hub and connect all VPCs and on-premises to it',
+    'Merge all services into one large VPC to eliminate the need for interconnection',
+    'Create one NAT Gateway per VPC to forward traffic between them',
+  ]}
+  answer={1}>
+
+**Correct: B**
+
+A **Transit Gateway (TGW)** provides a hub-and-spoke model: each VPC and the on-premises network connect to the TGW hub once and then reach each other transitively through it. It scales and stays manageable as VPCs grow, and natively supports on-premises connectivity (VPN / Direct Connect). A, pairwise peering, needs N×(N-1)/2 connections for N VPCs and is non-transitive, which is exactly the pain the question wants to escape. C, merging into one big VPC, is impractical and disrupts security and IP planning. D, NAT Gateways, are for outbound internet access and cannot interconnect VPCs.
+
+</Quiz>
+
+<Quiz
+  qnum={23}
+  total={26}
+  question="A financial company wants to connect its on-premises data center to AWS. The requirement is a long-term dedicated connection with high throughput, consistently low latency, and predictable bandwidth that is not affected by public internet congestion. With cost as a secondary concern, which connection option is MOST appropriate?"
+  options={[
+    'Site-to-Site VPN, establishing an encrypted tunnel over the internet',
+    'AWS Direct Connect dedicated line',
+    'VPC peering connection',
+    'NAT Gateway with an Elastic IP',
+  ]}
+  answer={1}>
+
+**Correct: B**
+
+**Direct Connect (DX)** is a physical dedicated line leased from a carrier that does not traverse the public internet, providing stable, low-latency, high-bandwidth and predictable connectivity, exactly matching the financial firm need for a long-term dedicated link. A, Site-to-Site VPN, runs over the public internet; although cheap and fast to provision, its latency and stability are subject to internet fluctuation, so it does not satisfy the hard low-latency requirement. C, VPC peering, is for VPC-to-VPC traffic and is unrelated to on-premises connectivity. D, NAT Gateway, only handles outbound internet access from a private subnet and is not a hybrid connectivity solution.
+
+</Quiz>
+
+<Quiz
+  qnum={24}
+  total={26}
+  question="A company has VPC A peered with VPC B, and VPC B peered with VPC C. Instances in VPC A cannot reach VPC C over private IPs at all. The team confirms both peering connections themselves are healthy. Which of the following is the MOST likely reason?"
+  options={[
+    'VPC peering is non-transitive, so A cannot reach C through B; a separate peering connection between A and C is required',
+    'Peering connections take several hours to take effect, so simply wait for connectivity',
+    'An Internet Gateway must be enabled in VPC B before A can reach C through B',
+    'Setting all three VPC CIDRs to be identical will let traffic route transitively',
+  ]}
+  answer={0}>
+
+**Correct: A**
+
+**VPC peering is non-transitive**: A peered with B and B peered with C does not mean A can reach C. Every pair of VPCs that must communicate needs its own peering connection, so to let A reach C you must create a separate peering between A and C (and when there are many VPCs, a Transit Gateway is easier to manage). B is wrong: peering takes effect once established, so this is not a waiting issue. C is wrong: an IGW is for internet access and does not make peering transitive. D is worse: peering requires the two sides to have non-overlapping CIDRs, so identical CIDRs make the connection impossible to establish at all.
+
+</Quiz>
+
+<Quiz
+  qnum={25}
+  total={26}
+  question="A media company needs to migrate 200 TB of archived historical video from on-premises to Amazon S3. It has only ordinary commercial internet bandwidth, and uploading over the network is estimated to take several months. The company wants to complete the migration as fast as possible. Which approach is MOST appropriate?"
+  options={[
+    'Use AWS DataSync to transfer online incrementally to S3 over the internet',
+    'Order an AWS Snowball Edge device, write the data offline, and ship it back to AWS to import into S3',
+    'Deploy a Storage Gateway File Gateway to mount S3 long term',
+    'Use AWS DMS with SCT to migrate the video files to S3',
+  ]}
+  answer={1}>
+
+**Correct: B**
+
+When the data volume is TB-to-PB scale and **bandwidth is insufficient so a network transfer would take months**, shipping a physical device offline with **Snowball Edge** is fastest: write the data to the device, ship it back to AWS, and AWS imports it into S3, free from the outbound bandwidth limit. A, DataSync, is an online transfer and is bottlenecked by exactly the insufficient bandwidth. C, Storage Gateway, is a hybrid solution for keeping on-premises coexisting with and continuously using cloud storage, not a one-time bulk migration tool. D, DMS with SCT, is a database migration tool and is unrelated to migrating video files.
+
+</Quiz>
+
+<Quiz
+  qnum={26}
+  total={26}
+  question="A company is driving hybrid cloud and migration with two parallel needs: (1) its on-premises backup system still uses physical tapes, and it wants to back up to the cloud without replacing the existing backup software; (2) it must migrate an on-premises Oracle database to Amazon Aurora PostgreSQL with as little downtime as possible during the migration. Which TWO options are, respectively, MOST appropriate? (Choose TWO)"
+  options={[
+    'Deploy Storage Gateway Tape Gateway to emulate a virtual tape library and keep the existing backup software while storing backups in the cloud',
+    'Use AWS DMS with the Schema Conversion Tool (SCT) for a heterogeneous migration, using ongoing replication to achieve near-zero downtime',
+    'Order a Snowball Edge and ship the on-premises daily tape backups offline',
+    'Use DataSync to copy the Oracle database files directly into Aurora',
+    'Replace the database migration tooling with a Site-to-Site VPN connection',
+  ]}
+  answer={[0, 1]}>
+
+**Correct: A, B**
+
+Need (1), keeping the existing backup software, replacing physical tapes, and backing up to the cloud, is exactly what **Storage Gateway Tape Gateway (A)** is for: it emulates a virtual tape library (VTL) so the backup software thinks it is still writing tapes while data actually lands in S3 / Glacier. Need (2), moving Oracle to Aurora PostgreSQL (engine change) with minimal downtime, calls for **DMS with SCT (B)**: SCT converts the incompatible schema and DMS keeps syncing via ongoing change data capture (CDC) up to cutover for near-zero downtime. C, Snowball, is a one-time offline bulk transfer and is unsuited to a daily backup flow. D, DataSync, moves files and cannot turn an Oracle database into Aurora. E, a VPN, is just network connectivity, not a database migration tool.
 
 </Quiz>
 

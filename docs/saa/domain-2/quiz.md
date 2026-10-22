@@ -9,7 +9,7 @@ title: 原創練習題
 
 <Quiz
   qnum={1}
-  total={20}
+  total={26}
   question="某公司的 Web 應用程式目前部署在單一可用區（AZ）內的多台 EC2 上，前面有一個 Application Load Balancer。公司希望在「單一 AZ 發生故障時服務仍可用」，且架構變更越少越好。下列哪個做法最合適？"
   options={[
     '改用規格更大的 EC2 機型並增加每台資源',
@@ -27,7 +27,7 @@ title: 原創練習題
 
 <Quiz
   qnum={2}
-  total={20}
+  total={26}
   question="某遊戲公司需要一個負載平衡器處理每秒數百萬筆 TCP 連線、延遲要極低，而且合作廠商的防火牆只允許白名單中的「固定靜態 IP」。最適合的方案是？"
   options={[
     'Application Load Balancer（ALB）',
@@ -45,7 +45,7 @@ title: 原創練習題
 
 <Quiz
   qnum={3}
-  total={20}
+  total={26}
   question="某電商網站白天流量高、深夜幾乎沒人。公司希望依實際流量自動增減 EC2 數量，以「最具成本效益」的方式維持效能，且不需人工介入。最合適的做法是？"
   options={[
     '固定開啟尖峰所需的最大台數',
@@ -63,7 +63,7 @@ title: 原創練習題
 
 <Quiz
   qnum={4}
-  total={20}
+  total={26}
   question="某訂單系統在促銷時瞬間湧入大量請求，常壓垮後端服務。公司希望「解耦前後端、在尖峰時不遺失任何請求」，並讓後端依自身處理能力消化。最合適的做法是？"
   options={[
     '提高資料庫的最大連線數上限',
@@ -81,7 +81,7 @@ title: 原創練習題
 
 <Quiz
   qnum={5}
-  total={20}
+  total={26}
   question="某公司在兩個 Region 各有一套環境：主要環境與待命環境。公司要求當主要環境的健康檢查失敗時，使用者流量能「自動」導向待命環境，恢復後再切回。應使用 Route 53 的哪種設定？"
   options={[
     '加權路由，兩邊各設 50%',
@@ -99,7 +99,7 @@ title: 原創練習題
 
 <Quiz
   qnum={6}
-  total={20}
+  total={26}
   question="某內部報表系統可容忍「數小時」的復原時間，資料每日備份一次即可。公司希望災難復原方案的「平時成本最低」。最合適的 DR 策略是？"
   options={[
     'Multi-Site Active/Active（多站同時運作）',
@@ -117,7 +117,7 @@ title: 原創練習題
 
 <Quiz
   qnum={7}
-  total={20}
+  total={26}
   question="某正式環境的 RDS 資料庫，公司要求「在主執行個體發生故障時能自動容錯移轉」、將停機時間降到最低。應啟用下列何者？"
   options={[
     '建立一個 Read Replica（唯讀複本）',
@@ -135,7 +135,7 @@ title: 原創練習題
 
 <Quiz
   qnum={8}
-  total={20}
+  total={26}
   question="某報表系統對 RDS 產生大量「唯讀查詢」，拖慢了主資料庫的寫入效能。公司希望「分攤讀取流量」且盡量不影響主資料庫。最合適的做法是？"
   options={[
     '啟用 Multi-AZ 部署，讓備援執行個體分攤讀取',
@@ -153,7 +153,7 @@ title: 原創練習題
 
 <Quiz
   qnum={9}
-  total={20}
+  total={26}
   question="某公司要讓根網域 example.com（zone apex）指向一個 Application Load Balancer，並符合 AWS 最佳實務。應建立下列哪種 DNS 記錄？"
   options={[
     '指向 ALB DNS 名稱的 CNAME 記錄',
@@ -171,7 +171,7 @@ title: 原創練習題
 
 <Quiz
   qnum={10}
-  total={20}
+  total={26}
   question="某公司要將一個三層式 Web 應用程式設計成高可用，以承受「單一可用區故障」。下列哪兩項措施能直接達成此目標？（選兩項）"
   options={[
     '將 EC2 的 Auto Scaling Group 設定為橫跨多個可用區',
@@ -190,7 +190,7 @@ title: 原創練習題
 
 <Quiz
   qnum={11}
-  total={20}
+  total={26}
   question="某系統在「訂單成立」時要同時通知多個下游服務，且要求「即使某個下游服務暫時離線，也不能遺失通知訊息」。下列哪兩項組合最適合？（選兩項）"
   options={[
     '建立一個 Amazon SNS 主題，讓訂單服務在事件發生時發布訊息',
@@ -209,7 +209,7 @@ title: 原創練習題
 
 <Quiz
   qnum={12}
-  total={20}
+  total={26}
   question="某公司希望一組 EC2 車隊能「自動替換故障的執行個體」並「依流量自動調整數量」，全程免人工。下列哪兩項設定能共同達成？（選兩項）"
   options={[
     '使用 Auto Scaling Group，並設定目標追蹤擴展策略維持目標指標',
@@ -228,7 +228,7 @@ title: 原創練習題
 
 <Quiz
   qnum={13}
-  total={20}
+  total={26}
   question="某支付系統要求訊息「嚴格依照送出的順序處理，且同一筆不可被重複處理」。下列哪種 Amazon SQS 佇列最適合？"
   options={[
     '標準佇列（Standard Queue），因為吞吐量最高',
@@ -246,7 +246,7 @@ title: 原創練習題
 
 <Quiz
   qnum={14}
-  total={20}
+  total={26}
   question="某佇列中偶爾會有「怎麼處理都失敗」的毒丸訊息，不斷重試卡住後續處理。公司希望把這類反覆失敗的訊息自動隔離、之後再人工分析。最合適的做法是？"
   options={[
     '直接刪除所有處理失敗的訊息',
@@ -264,7 +264,7 @@ title: 原創練習題
 
 <Quiz
   qnum={15}
-  total={20}
+  total={26}
   question="某全球服務在多個 Region 都有部署，公司希望使用者「自動連到網路延遲最低的 Region」以獲得最佳效能。應使用 Route 53 的哪種路由策略？"
   options={[
     '加權路由（Weighted）',
@@ -282,7 +282,7 @@ title: 原創練習題
 
 <Quiz
   qnum={16}
-  total={20}
+  total={26}
   question="某線上交易系統的災難復原要求「RTO 數分鐘、RPO 很低」，但不想負擔與正式環境「完全對等雙活」的成本。最合適的 DR 策略是？"
   options={[
     'Backup & Restore（平時只備份，需要時再還原）',
@@ -300,7 +300,7 @@ title: 原創練習題
 
 <Quiz
   qnum={17}
-  total={20}
+  total={26}
   question="某內部系統每個工作日「上午 9 點流量固定暴增、晚上 6 點後驟減」，規律且可預測。公司希望在尖峰前就備妥足夠容量、離峰自動縮減以省錢。最合適的 Auto Scaling 做法是？"
   options={[
     '只用簡單擴展（Simple Scaling），等 CPU 超標才反應',
@@ -318,7 +318,7 @@ title: 原創練習題
 
 <Quiz
   qnum={18}
-  total={20}
+  total={26}
   question="某公司要滿足法遵的災難復原需求：S3 貯體的物件要「自動複寫到另一個 Region」，以防單一 Region 發生大規模故障時資料遺失。最合適的做法是？"
   options={[
     '開啟同區域複寫（SRR）到同一 Region 的另一個貯體',
@@ -336,7 +336,7 @@ title: 原創練習題
 
 <Quiz
   qnum={19}
-  total={20}
+  total={26}
   question="某公司要發布新版本，需求有二：(1) 先把「10% 流量」導到新版、其餘到舊版做金絲雀測試；(2) 當某個端點健康檢查失敗時能「自動」改導到備援端點。下列哪兩種 Route 53 路由策略分別最適合？（選兩項）"
   options={[
     '加權路由（Weighted）：依權重把 10%／90% 流量分給新舊版',
@@ -355,7 +355,7 @@ title: 原創練習題
 
 <Quiz
   qnum={20}
-  total={20}
+  total={26}
   question="某系統要「一對多廣播」事件給多個下游服務，且全程必須「嚴格保持順序並去除重複」。下列哪兩項設定能共同達成？（選兩項）"
   options={[
     '使用 SNS FIFO 主題發布事件，確保發布端的順序與去重',
@@ -369,6 +369,115 @@ title: 原創練習題
 **正解：A、B**
 
 端到端「順序＋去重」需 **SNS FIFO 主題（A）** 搭配 **SQS FIFO 佇列訂閱（B）**，兩端都是 FIFO 才能一路維持嚴格順序與去重。標準主題／標準佇列（C、D）是「至少一次、順序盡力而為」，會破壞保證；E 下游自行排序不可靠。
+
+</Quiz>
+
+<Quiz
+  qnum={21}
+  total={26}
+  question="某公司在 VPC 的私有子網路中跑了一批後端主機，這些主機不需要被外界連入，但必須能主動連出網際網路下載作業系統更新與呼叫外部 API。團隊希望用 AWS 全代管、免維護又能自動高可用的方式達成。最合適的做法是？"
+  options={[
+    '在私有子網路的路由表加一條 0.0.0.0/0 指向網際網路閘道（IGW）',
+    '在公有子網路建立 NAT Gateway，並把私有子網路的 0.0.0.0/0 指向它',
+    '自行在私有子網路開一台 EC2 當 NAT Instance 轉送流量',
+    '為每台私有主機配發公有 IP，讓它們直接連外',
+  ]}
+  answer={1}>
+
+**正解：B**
+
+私有子網路要「只出不進」地連外，標準解是在**公有子網路**建立 **NAT Gateway**，再把私有子網路的 `0.0.0.0/0` 指向它；NAT Gateway 由 AWS 全代管、在單一 AZ 內自動高可用，符合免維護需求。A 把私有子網路直接指向 IGW 會讓它變成公有子網路、也等於開放外界連入，不符需求；C 的 NAT Instance 要自己維運、還得自己處理容錯，營運負擔高；D 配公有 IP 等於讓主機暴露於外界主動連入，違反「不需被連入」的安全要求。
+
+</Quiz>
+
+<Quiz
+  qnum={22}
+  total={26}
+  question="某企業在 AWS 上已有十幾個 VPC，而且數量還會持續增加，這些 VPC 彼此之間、以及與地端機房之間都需要互通。團隊原本用 VPC 對等連線兩兩相接，但連線條數暴增、路由難以管理。最能簡化架構又好擴充的做法是？"
+  options={[
+    '繼續為每一對需要互通的 VPC 建立 VPC Peering 對等連線',
+    '導入 Transit Gateway 作為中樞，讓所有 VPC 與地端都連到它',
+    '把所有服務合併搬進同一個大 VPC 以免除互連需求',
+    '為每個 VPC 各開一個 NAT Gateway 來轉送彼此流量',
+  ]}
+  answer={1}>
+
+**正解：B**
+
+**Transit Gateway（TGW）** 是中樞輻輳（hub-and-spoke）架構：每個 VPC 以及地端網路都只要連到 TGW 這個中樞一次，彼此即可透過它遞移互通，VPC 再多也好擴充、好管理，並原生支援併接地端（VPN／Direct Connect）。A 的 Peering 兩兩相接在 N 個 VPC 時需 `N×(N-1)/2` 條、且不可遞移，正是題目要擺脫的痛點；C 合併大 VPC 不切實際且牽動安全與 IP 規劃；D 的 NAT Gateway 是連外用途，不能用來做 VPC 之間互通。
+
+</Quiz>
+
+<Quiz
+  qnum={23}
+  total={26}
+  question="某金融公司要把地端資料中心接進 AWS，需求是流量大、要求穩定低延遲且頻寬可預測的長期專屬連線，不希望受公用網際網路壅塞影響。以成本為次要考量下，最合適的連線方式是？"
+  options={[
+    'Site-to-Site VPN，透過網際網路建立加密通道',
+    'AWS Direct Connect 專線',
+    'VPC Peering 對等連線',
+    'NAT Gateway 搭配彈性 IP',
+  ]}
+  answer={1}>
+
+**正解：B**
+
+**Direct Connect（DX）** 是向電信商租用的實體專線，不走公用網際網路，提供穩定、低延遲、高頻寬且可預測的連線，正符合金融業對長期專屬連線的要求。A 的 Site-to-Site VPN 走公用網際網路，雖便宜又能快速佈建，但延遲與穩定度會受網路波動影響，不適合「穩定低延遲」的硬需求；C 的 VPC Peering 是 VPC 之間互通、與地端連線無關；D 的 NAT Gateway 只負責私有子網路出站連外，不是混合連線方案。
+
+</Quiz>
+
+<Quiz
+  qnum={24}
+  total={26}
+  question="某公司有 VPC A 與 VPC B 透過對等連線互通，VPC B 又與 VPC C 透過對等連線互通。現在 VPC A 的主機完全無法用私有 IP 連到 VPC C。團隊檢查發現兩條對等連線本身都正常。最可能的原因是下列何者？"
+  options={[
+    'VPC Peering 不可遞移，A 無法透過 B 連到 C，需在 A 與 C 之間另建一條對等連線',
+    '對等連線需要數小時才會生效，等候即可自動連通',
+    '必須在 VPC B 開啟網際網路閘道，A 才能經由 B 連到 C',
+    '把三個 VPC 的 CIDR 設成完全相同就能讓流量自動遞移',
+  ]}
+  answer={0}>
+
+**正解：A**
+
+**VPC Peering 不可遞移（non-transitive）**：A 連 B、B 連 C，不代表 A 能連 C。每一對想互通的 VPC 都要各自建立一條對等連線，因此要讓 A 連到 C，必須在 A 與 C 之間另建一條（VPC 一多時改用 Transit Gateway 更好管理）。B 錯，對等連線建立後即生效，不是等候問題；C 錯，IGW 是連外用途、不會讓 Peering 變成可遞移；D 更錯，對等連線要求兩端 **CIDR 不可重疊**，設成相同反而完全無法建立。
+
+</Quiz>
+
+<Quiz
+  qnum={25}
+  total={26}
+  question="某媒體公司要把地端的 200 TB 歷史影片歸檔遷移到 Amazon S3，對外只有一般商用網路頻寬，若走網路上傳估計要好幾個月。公司希望用最快完成遷移的方式。最合適的做法是？"
+  options={[
+    '使用 AWS DataSync 透過網際網路線上增量傳輸到 S3',
+    '訂購 AWS Snowball Edge 裝置，把資料離線寫入後寄回 AWS 匯入 S3',
+    '部署 Storage Gateway 檔案閘道長期掛載 S3',
+    '用 AWS DMS 搭配 SCT 把影片檔案遷移到 S3',
+  ]}
+  answer={1}>
+
+**正解：B**
+
+當資料量達 TB～PB 級、而且**頻寬不足、走網路要好幾個月**時，離線寄送實體裝置的 **Snowball Edge** 最快：把資料寫入裝置後寄回 AWS，由 AWS 匯入 S3，不受對外頻寬限制。A 的 DataSync 是線上傳輸，正好卡在頻寬不足這個瓶頸；C 的 Storage Gateway 是讓地端「長期共存、持續使用」雲端儲存的混合方案，不是一次性大批遷移工具；D 的 DMS＋SCT 是**資料庫**遷移工具，與影片檔案遷移無關。
+
+</Quiz>
+
+<Quiz
+  qnum={26}
+  total={26}
+  question="某公司在推動混合雲與遷移，有兩項並行需求：(1) 地端的備份系統仍在用實體磁帶，想改成備份到雲端但不想更換既有的備份軟體；(2) 要把一套地端 Oracle 資料庫遷移到 Amazon Aurora PostgreSQL，且遷移期間要盡量不中斷服務。下列哪兩項組合分別最適合？（Choose TWO）"
+  options={[
+    '部署 Storage Gateway 的磁帶閘道（Tape Gateway）模擬虛擬磁帶櫃，沿用既有備份軟體把備份存到雲端',
+    '使用 AWS DMS 搭配 Schema Conversion Tool（SCT）做異質遷移並以持續複寫達成近乎零停機',
+    '訂購 Snowball Edge 離線寄送地端每日的磁帶備份',
+    '使用 DataSync 把 Oracle 資料庫檔案直接複製到 Aurora',
+    '以 Site-to-Site VPN 連線取代資料庫遷移工具',
+  ]}
+  answer={[0, 1]}>
+
+**正解：A、B**
+
+需求 (1)「沿用既有備份軟體、取代實體磁帶、備份上雲」正是 **Storage Gateway 磁帶閘道（Tape Gateway）（A）** 的定位，它模擬虛擬磁帶櫃（VTL），讓備份軟體以為還在寫磁帶，實際存到 S3／Glacier。需求 (2)「Oracle 搬到 Aurora PostgreSQL（換引擎）又要少停機」則要 **DMS＋SCT（B）**：SCT 轉換不相容的結構，DMS 以持續複寫（CDC）在切換前不停同步，達成近乎零停機。C 的 Snowball 是一次性離線搬大量資料、不適合每日備份流程；D 的 DataSync 搬的是檔案、無法把 Oracle 資料庫直接變成 Aurora；E 的 VPN 只是網路連線、不是資料庫遷移工具。
 
 </Quiz>
 

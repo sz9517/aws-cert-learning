@@ -9,7 +9,7 @@ Pick your answer first, then click "**Show answer & explanation**". This page mi
 
 <Quiz
   qnum={1}
-  total={20}
+  total={24}
   question="A startup builds a feature that auto-generates a thumbnail after each image upload. Traffic is very spiky: idle for a whole day, then thousands of images in a few minutes. The team wants to manage no servers and pay only for actual usage. Which compute option fits best?"
   options={[
     'Run one large EC2 on standby all the time',
@@ -27,7 +27,7 @@ Spiky, event-driven, short tasks, plus "no servers to manage and pay per use" is
 
 <Quiz
   qnum={2}
-  total={20}
+  total={24}
   question="An enterprise is migrating a legacy system that needs full OS control, runs continuously for long periods, and has specially licensed software installed. The load is steady and predictable over time. Which compute option is most suitable?"
   options={[
     'AWS Lambda',
@@ -45,7 +45,7 @@ Needing "full OS control + long-running + special licensed software + steady loa
 
 <Quiz
   qnum={3}
-  total={20}
+  total={24}
   question="A team has already containerized its application and wants to run it on AWS, but wants to manage none of the underlying EC2 nodes, patching, or scaling. Which approach best fits?"
   options={[
     'Build an EC2 cluster and install Docker manually',
@@ -63,7 +63,7 @@ Needing "full OS control + long-running + special licensed software + steady loa
 
 <Quiz
   qnum={4}
-  total={20}
+  total={24}
   question="A financial trading database needs storage that is persistent and delivers the highest IOPS with the lowest latency. Which storage fits best?"
   options={[
     'EBS gp3 general-purpose SSD',
@@ -81,7 +81,7 @@ The requirement "persistent + highest IOPS + lowest latency" points to **io2 Blo
 
 <Quiz
   qnum={5}
-  total={20}
+  total={24}
   question="A content management system has dozens of Linux EC2 instances that must read and write the same shared files at the same time, and the capacity should auto-scale as files grow with no pre-provisioning. Which service should be chosen?"
   options={[
     'Amazon EFS, mountable by many Linux hosts at once with auto-scaling capacity',
@@ -99,7 +99,7 @@ The requirement "persistent + highest IOPS + lowest latency" points to **io2 Blo
 
 <Quiz
   qnum={6}
-  total={20}
+  total={24}
   question="An S3 bucket in the US frequently receives multi-GB uploads from users in Asia and Europe, and those uploads are slow and often interrupted. Which TWO actions best improve upload performance and reliability? (Choose TWO)"
   options={[
     'Enable S3 Transfer Acceleration to speed cross-region uploads via edge locations',
@@ -118,7 +118,7 @@ Slow cross-border large uploads call for **Transfer Acceleration (A)**, which ro
 
 <Quiz
   qnum={7}
-  total={20}
+  total={24}
   question="A machine learning team needs a shared file system with extremely high throughput to stage large datasets for HPC compute nodes, and the data can be discarded after the job finishes. Which service fits best?"
   options={[
     'Amazon EFS standard mode',
@@ -136,7 +136,7 @@ Slow cross-border large uploads call for **Transfer Acceleration (A)**, which ro
 
 <Quiz
   qnum={8}
-  total={20}
+  total={24}
   question="A Windows file server is moving to AWS, and the application relies on the SMB protocol and Active Directory integration. Which service is most suitable?"
   options={[
     'Amazon EFS',
@@ -154,7 +154,7 @@ Slow cross-border large uploads call for **Transfer Acceleration (A)**, which ro
 
 <Quiz
   qnum={9}
-  total={20}
+  total={24}
   question="A gaming backend needs a database that can support millions of users, looks up records by player ID, keeps latency steady at single-digit milliseconds, and auto-scales with no servers to manage. Which fits best?"
   options={[
     'A single Amazon RDS for MySQL instance',
@@ -172,7 +172,7 @@ Slow cross-border large uploads call for **Transfer Acceleration (A)**, which ro
 
 <Quiz
   qnum={10}
-  total={20}
+  total={24}
   question="An e-commerce RDS database writes fine, but heavy product-browsing reads overwhelm the primary at peak. The team wants to boost read performance with minimal application change. Which approach fits best?"
   options={[
     'Just resize the RDS instance to a larger type',
@@ -190,7 +190,7 @@ Heavy read load that needs to be offloaded points straight to a **Read Replica**
 
 <Quiz
   qnum={11}
-  total={20}
+  total={24}
   question="An enterprise wants a relational database that is MySQL-compatible but with far higher performance and throughput than standard RDS, with storage that auto-scales and enterprise-grade availability. Which fits best?"
   options={[
     'Amazon Aurora (MySQL-compatible)',
@@ -208,7 +208,7 @@ Heavy read load that needs to be offloaded points straight to a **Read Replica**
 
 <Quiz
   qnum={12}
-  total={20}
+  total={24}
   question="An application reads heavily from DynamoDB, repeatedly querying the same hot items, and the team wants to push those read latencies from milliseconds down to microseconds with minimal code change. Which approach fits best?"
   options={[
     'Put an Amazon ElastiCache for Memcached layer in front',
@@ -226,7 +226,7 @@ Heavy read load that needs to be offloaded points straight to a **Read Replica**
 
 <Quiz
   qnum={13}
-  total={20}
+  total={24}
   question="A real-time leaderboard feature needs an in-memory data store that supports sorted structures, has persistence and replication, and can act as a leaderboard and counters. Which fits best?"
   options={[
     'Amazon ElastiCache for Memcached',
@@ -244,7 +244,7 @@ Heavy read load that needs to be offloaded points straight to a **Read Replica**
 
 <Quiz
   qnum={14}
-  total={20}
+  total={24}
   question="A media site has many images and videos with users worldwide, who often complain of slow loads in regions far from the origin server. The goal is to deliver cacheable content as close to users as possible to cut latency. Which service fits best?"
   options={[
     'AWS Global Accelerator',
@@ -262,7 +262,7 @@ Heavy read load that needs to be offloaded points straight to a **Read Replica**
 
 <Quiz
   qnum={15}
-  total={20}
+  total={24}
   question="An online game uses a custom UDP protocol and needs players worldwide to connect to the nearest AWS entry point with the lowest latency, plus fixed static IPs for firewall allow-lists, with no content caching required. Which service fits best?"
   options={[
     'Amazon CloudFront',
@@ -280,7 +280,7 @@ Heavy read load that needs to be offloaded points straight to a **Read Replica**
 
 <Quiz
   qnum={16}
-  total={20}
+  total={24}
   question="A company processes real-time clickstream data with this requirement: several different downstream systems must each read the same data, and it must be replayable (reprocessable) for several hours. Which service fits best?"
   options={[
     'Amazon SQS standard queue',
@@ -298,7 +298,7 @@ Heavy read load that needs to be offloaded points straight to a **Read Replica**
 
 <Quiz
   qnum={17}
-  total={20}
+  total={24}
   question="A team wants to auto-load incoming streaming logs into Amazon S3 and Redshift for later analysis, near-real-time and with no code to write or operate. Which service fits best?"
   options={[
     'Amazon Kinesis Data Streams with a custom consumer app',
@@ -316,7 +316,7 @@ Heavy read load that needs to be offloaded points straight to a **Read Replica**
 
 <Quiz
   qnum={18}
-  total={20}
+  total={24}
   question="A DynamoDB table throttles at peak, and investigation shows traffic concentrated on a few partition key values (a hot partition). Which TWO actions best improve this? (Choose TWO)"
   options={[
     'Redesign with a high-cardinality (well-distributed) partition key so traffic spreads evenly',
@@ -335,7 +335,7 @@ The root cause of a hot partition is a poorly distributed partition key, so **re
 
 <Quiz
   qnum={19}
-  total={20}
+  total={24}
   question="An application sees read traffic spike at peak with many repeated identical queries overwhelming RDS. The team wants the most cost-effective combination to both offload reads and cut the latency of repeated queries. Which TWO fit best? (Choose TWO)"
   options={[
     'Create an RDS Read Replica to offload read traffic',
@@ -354,7 +354,7 @@ Offloading reads points to a **Read Replica (A)**; cutting the latency and datab
 
 <Quiz
   qnum={20}
-  total={20}
+  total={24}
   question="A data analytics platform needs to ingest millions of telemetry events per second, absorb sudden spikes, and keep backend batch processing from being overwhelmed. Which service best serves as the high-throughput real-time ingestion layer?"
   options={[
     'Amazon Kinesis Data Streams',
@@ -367,6 +367,78 @@ Offloading reads points to a **Read Replica (A)**; cutting the latency and datab
 **正解：A**
 
 "Millions of events per second + absorb spikes + real-time ingestion + let the backend work at its own pace" is the typical use of **Kinesis Data Streams** (scale throughput with shards, act as a buffer). Writing straight to RDS (B) gets overwhelmed by spikes; one-at-a-time writes to a single S3 prefix (C) suit neither high concurrency nor real-time ingestion; AWS Config (D) is for resource compliance auditing and is unrelated.
+
+</Quiz>
+
+<Quiz
+  qnum={21}
+  total={24}
+  question="A security team automatically ingests application access logs into S3 every day and has accumulated several TB. After an incident, they just want to run a quick ad hoc standard-SQL query over these logs to find suspicious IPs. They do not want to stand up a database just for a one-off query, and do not want to manage any servers. Which approach is the most cost-effective?"
+  options={[
+    'Load the S3 logs into Amazon RDS first and then run SQL queries',
+    'Use Amazon Athena to run SQL queries directly against the logs in S3',
+    'Launch an Amazon Redshift cluster, load all the logs, then query',
+    'Build your own database on EC2, import the logs, and query',
+  ]}
+  answer={1}>
+
+**Correct: B**
+
+Serverless, no database to create, standard SQL directly over logs in S3, only an occasional query, pay per data scanned, this is the signature **Athena** scenario. A, C, and D all require moving the data into some database or self-managed environment, with ongoing operations and cost, which is excessive overhead for an occasional one-off query; in particular, a Redshift cluster bills while it is running, making C even less economical.
+
+</Quiz>
+
+<Quiz
+  qnum={22}
+  total={24}
+  question="A retail enterprise writes all transactions into Amazon RDS (OLTP), which works fine. Now the business intelligence team needs to run large, complex aggregation reports (OLAP) over PB-scale historical transaction data, such as revenue trends by region and category over the past three years. To avoid overloading the transaction database and to get the best analytical performance, which service is most suitable?"
+  options={[
+    'Run the complex analytical queries directly on the production RDS',
+    'Add a Read Replica to RDS and run the reports on it',
+    'Load the data into an Amazon Redshift data warehouse for analysis',
+    'Switch to Amazon DynamoDB to store historical transactions for analysis',
+  ]}
+  answer={2}>
+
+**Correct: C**
+
+PB-scale, large and complex analytical aggregation reports, OLAP, is exactly the role of the cloud data warehouse **Redshift**, which uses columnar storage and is purpose-built for large-scale analysis. A runs heavy analytics directly on the OLTP RDS and would overload transactions; B is still a row-based OLTP engine and is poor at PB-scale complex aggregation; D is a NoSQL key-value store unsuited to complex analytical queries. Remember: day-to-day transactions use RDS (OLTP), large-scale analytical reporting uses Redshift (OLAP).
+
+</Quiz>
+
+<Quiz
+  qnum={23}
+  total={24}
+  question="A data team has raw data scattered across S3 in messy formats. It must first be extracted, cleaned, and transformed (ETL) into a tidy format, and a metadata catalog (Data Catalog) must be built so that query engines such as Athena and Redshift can use it directly. The team wants the whole process to be serverless and does not want to manage ETL hosts. Which service fits best?"
+  options={[
+    'AWS Glue',
+    'Amazon QuickSight',
+    'Amazon Kinesis Data Streams',
+    'Write custom batch ETL scripts on EC2 and maintain the schema manually',
+  ]}
+  answer={0}>
+
+**Correct: A**
+
+Serverless ETL (extract, transform, load) plus building a data catalog for query engines is exactly the two core jobs of **Glue**: it cleans and transforms the data and registers the metadata in the Data Catalog so that Athena and Redshift know how to read it. B, QuickSight, is for final visualization dashboards and does no ETL; C, Kinesis, is real-time streaming ingestion, not ETL or a data catalog; D, self-built scripts, has the highest operational overhead and still requires you to maintain the schema yourself.
+
+</Quiz>
+
+<Quiz
+  qnum={24}
+  total={24}
+  question="After the data has been prepared and analyzed, executives at a company want to open a set of interactive charts and dashboards every day to track revenue and key metrics by region, with data sources including Athena and Redshift. The team wants to deliver this kind of business intelligence (BI) visualization in a serverless way with the least operational overhead. Which service is most suitable?"
+  options={[
+    'Export the query results to CSV and build charts manually in a spreadsheet',
+    'Build and operate your own open-source BI platform on EC2',
+    'Amazon QuickSight',
+    'Amazon CloudWatch dashboards',
+  ]}
+  answer={2}>
+
+**Correct: C**
+
+Turning analytical results into interactive charts and dashboards for people, BI visualization, serverless, able to connect to Athena and Redshift, is exactly the role of **QuickSight**. A is manual and not interactive or near real time; B, a self-built BI platform, has the highest operational overhead; D, CloudWatch dashboards, are for monitoring system metrics (CPU, latency, etc.), not BI analytics dashboards for business data.
 
 </Quiz>
 
