@@ -43,13 +43,37 @@
     "message": "Domain 2 · Design Resilient Architectures (26%)",
     "description": "The label for category 'Domain 2' in sidebar 'tutorialSidebar'"
   },
+  "sidebar.tutorialSidebar.category.Domain 2 · 設計具彈性的架構 (26%).link.generated-index.title": {
+    "message": "Domain 2: Design Resilient (Highly Available) Architectures",
+    "description": "The generated-index page title for category 'Domain 2' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Domain 2 · 設計具彈性的架構 (26%).link.generated-index.description": {
+    "message": "Weighted 26% — the second-largest domain in the SAA exam. Covers high-availability design, multiple Availability Zones, load balancing, auto scaling, decoupling, DNS routing, and backup and disaster recovery.",
+    "description": "The generated-index page description for category 'Domain 2' in sidebar 'tutorialSidebar'"
+  },
   "sidebar.tutorialSidebar.category.Domain 3 · 設計高效能的架構 (24%)": {
     "message": "Domain 3 · Design High-Performing Architectures (24%)",
     "description": "The label for category 'Domain 3' in sidebar 'tutorialSidebar'"
   },
+  "sidebar.tutorialSidebar.category.Domain 3 · 設計高效能的架構 (24%).link.generated-index.title": {
+    "message": "Domain 3: Design High-Performing Architectures",
+    "description": "The generated-index page title for category 'Domain 3' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Domain 3 · 設計高效能的架構 (24%).link.generated-index.description": {
+    "message": "Weighted 24%. Covers compute selection, storage performance selection, database selection, caching, content delivery and global acceleration, high-performance decoupling and data streaming, and scalable network and storage patterns.",
+    "description": "The generated-index page description for category 'Domain 3' in sidebar 'tutorialSidebar'"
+  },
   "sidebar.tutorialSidebar.category.Domain 4 · 設計成本最佳化 (18%)": {
     "message": "Domain 4 · Design Cost-Optimized Architectures (18%)",
     "description": "The label for category 'Domain 4' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Domain 4 · 設計成本最佳化 (18%).link.generated-index.title": {
+    "message": "Domain 4: Design Cost-Optimized Architectures",
+    "description": "The generated-index page title for category 'Domain 4' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Domain 4 · 設計成本最佳化 (18%).link.generated-index.description": {
+    "message": "Weighted 18%. Covers compute pricing models, S3 storage classes and lifecycle, data transfer costs, cost monitoring and governance, database and network costs, and pulling it together into a cost-optimization decision process.",
+    "description": "The generated-index page description for category 'Domain 4' in sidebar 'tutorialSidebar'"
   },
   "sidebar.tutorialSidebar.category.考前衝刺與模擬考": {
     "message": "Exam Prep & Mock Exam",
@@ -62,5 +86,17 @@
   "sidebar.tutorialSidebar.category.考前衝刺與模擬考.link.generated-index.description": {
     "message": "Once you have finished all four domains, skim the exam cram sheet to lock in the keyword-to-answer trade-offs, then take a 65-question full mock exam to test yourself and get used to the pacing.",
     "description": "The generated-index page description for category '考前衝刺與模擬考' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.動手做實驗室": {
+    "message": "Hands-on Labs",
+    "description": "The label for category '動手做實驗室' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.動手做實驗室.link.generated-index.title": {
+    "message": "Hands-on Labs",
+    "description": "The generated-index page title for category '動手做實驗室' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.動手做實驗室.link.generated-index.description": {
+    "message": "After the concepts, build them with your own hands. Each lab is a self-contained mini-project — from a VPC, IAM roles, and a highly available site to database failover. Remember to clean up resources after each lab to avoid charges.",
+    "description": "The generated-index page description for category '動手做實驗室' in sidebar 'tutorialSidebar'"
   }
 }

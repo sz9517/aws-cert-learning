@@ -1,0 +1,12 @@
+{
+  "label": "動手做實驗室",
+  "position": 5,
+  "collapsible": true,
+  "collapsed": false,
+  "link": {
+    "type": "generated-index",
+    "slug": "/labs",
+    "title": "動手做實驗室",
+    "description": "讀完觀念後，親手把它們蓋出來。每個實驗都是獨立的小專案——從 VPC、IAM 角色、高可用網站到資料庫容錯——照著步驟做一次，印象最深。每個實驗做完都記得清理資源，避免產生費用。"
+  }
+}
