@@ -1,0 +1,12 @@
+{
+  "label": "架構實戰",
+  "position": 6,
+  "collapsible": true,
+  "collapsed": false,
+  "link": {
+    "type": "generated-index",
+    "slug": "/architecture",
+    "title": "架構實戰：把服務組成完整架構",
+    "description": "SAA 的核心能力是「聰明地組合服務」。這一區用幾個典型情境，把前面學的單一服務串成完整、可用的架構，培養看到需求就能畫出架構的直覺。"
+  }
+}

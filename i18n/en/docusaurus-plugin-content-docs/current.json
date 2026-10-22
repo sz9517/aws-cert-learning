@@ -98,5 +98,17 @@
   "sidebar.tutorialSidebar.category.動手做實驗室.link.generated-index.description": {
     "message": "After the concepts, build them with your own hands. Each lab is a self-contained mini-project — from a VPC, IAM roles, and a highly available site to database failover. Remember to clean up resources after each lab to avoid charges.",
     "description": "The generated-index page description for category '動手做實驗室' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.架構實戰": {
+    "message": "Reference Architectures",
+    "description": "The label for category '架構實戰' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.架構實戰.link.generated-index.title": {
+    "message": "Reference Architectures: Putting Services Together",
+    "description": "The generated-index page title for category '架構實戰' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.架構實戰.link.generated-index.description": {
+    "message": "The core SAA skill is combining services wisely. This section uses a few classic scenarios to assemble the individual services you have learned into complete, working architectures — building the instinct to sketch an architecture straight from the requirements.",
+    "description": "The generated-index page description for category '架構實戰' in sidebar 'tutorialSidebar'"
   }
 }
