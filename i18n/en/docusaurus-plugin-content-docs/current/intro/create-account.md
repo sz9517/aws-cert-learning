@@ -1,0 +1,149 @@
+---
+sidebar_position: 7
+title: "Create Your AWS Account & Secure It"
+---
+
+# Create Your AWS Account & Secure It
+
+> This page walks a complete beginner through opening an AWS account from scratch, and then locking down the "security basics" the moment the account is created — the most important, and most frequently skipped, step.
+
+<Analogy title="🔑 Analogy: you just got the keys to a new home — what do you do first?">
+
+You just bought a new house and the builder hands you the keys. Exciting — but **the first thing to do isn't moving in the furniture. It's changing the locks and setting up the alarm, and above all, never leaving the "master key" (the one that opens every room) lying around or carrying it on you every day.**
+
+An AWS account is exactly the same. The moment you create it, you hold a "master key" that can control the entire account and run up your credit card. Securing it first matters a hundred times more than rushing to spin up services.
+
+</Analogy>
+
+:::note[💬 Reading tip]
+Whenever you see a term with a <Term desc="Like this! Hover over any dotted term (tap on mobile) and a plain explanation pops up.">dotted underline</Term>, hover over it for a plain-language explanation.
+:::
+
+## Why is the "first step" the most important?
+
+Many beginners open an account and immediately rush to play with services, leaving security "for later". The problem: stories of leaked AWS accounts are everywhere — someone accidentally pushes a key to GitHub, their account gets hijacked for crypto mining within hours, and a five-figure bill arrives at the end of the month.
+
+Security setup isn't an advanced topic — it's **basic housekeeping you should finish on day one**. The good news: everything taught here is **completely free**, and you can get it all done in about half an hour.
+
+## Registering your account: an overview
+
+Before signing up, have three things ready:
+
+| What you need | Notes and reminders |
+| --- | --- |
+| **An email address** | This becomes your account's <Term en="Root user" desc="The highest-privilege user, signed in with the email you registered with.">Root user</Term> login. **Pick a mailbox you'll keep receiving mail at long-term** (not one your employer might reclaim, nor a disposable one) — password resets and security notices all rely on it. |
+| **A credit/debit card** | AWS runs a **small verification charge** (usually around US$1, later refunded or reversed) to confirm the card is valid. Normal usage within the <Term en="Free Tier" desc="AWS's plan that gives beginners a set allowance of free usage; you're only charged beyond it.">Free Tier</Term> usually won't actually cost you money. |
+| **A phone** | During sign-up you'll complete a **phone verification** by SMS or voice call to confirm you're a real person. |
+
+The flow roughly is: go to the AWS website and click "Create an account" → enter your email and account name → fill in contact and payment details → complete phone verification → choose a support plan (the free **Basic** plan is fine). Just follow the screens; it takes about 10 minutes.
+
+:::tip[💡 One reminder]
+The account name and contact details can all be changed later, so don't overthink them. The one thing to choose carefully is **that email** — it's bound to your Root user and is a hassle to change.
+:::
+
+## How dangerous is the Root user?
+
+The moment registration completes, AWS automatically creates a <Term en="Root user" desc="Signs in with the registration email, holds the account's highest privileges, and cannot be restricted by any permission policy.">Root user</Term> — the very email you just signed up with.
+
+**The Root user holds the highest privileges in the account and can do anything**: shut down every service, delete all your data, change the payment method, even close the entire account. And **no permission policy can restrict it.**
+
+<Analogy title="🏢 Back to the building analogy">
+
+If your AWS account is an office building, **the Root user is the big boss who built it and holds the master key**. That key opens every door and every safe. Precisely because it's so all-powerful, you must never use it for daily work — lose it or get it stolen, and the whole building is no longer yours.
+
+</Analogy>
+
+:::warning[🚨 A leaked Root = your whole account hijacked]
+Once the Root email and password leak, someone can **fully take over your account**: hijack compute resources for crypto mining (bill explodes), wipe your data, and lock you out. **So the most important thing next is to add an extra lock to Root, and from now on stop using Root for daily work.**
+:::
+
+## 🔒 The "do it right now" security checklist
+
+This is the heart of this page. Right after creating your account, before touching any service, complete the following four things **in order**. All free.
+
+### Step 1: Turn on MFA for the Root user
+
+<Term en="Multi-Factor Authentication" desc="At login, besides your password you also enter a rotating code generated by a phone app — an extra lock.">MFA (Multi-Factor Authentication)</Term> means that at login, **a password alone isn't enough — you must also enter a 6-digit code generated on your phone**. So even if your password is stolen, an attacker without your phone still can't get in. This is the most effective, highest-priority step for protecting Root.
+
+#### 🛠️ Hands-on: turn on MFA for Root
+
+1. First install an authenticator app on your phone (e.g. Google Authenticator or Microsoft Authenticator)
+2. Sign in to the AWS console with the Root email
+3. Click your account name in the top-right → choose **Security credentials**
+4. Find the **Multi-factor authentication (MFA)** section → click **Assign MFA device**
+5. Choose **Authenticator app** → use your phone app to scan the QR code on screen
+6. The app starts showing a rotating 6-digit code; **enter two consecutive codes** (to confirm time sync) → done
+
+From now on, Root login will ask for the app's code in addition to the password.
+
+:::tip[💡 Keep a backup]
+Tie the authenticator app to the phone you carry, and pay attention to the app's own backup/cloud-sync feature. If you lose the phone with no backup, recovering Root is painful.
+:::
+
+### Step 2: Create an everyday IAM admin identity
+
+Once Root is locked down, the second thing is: **from now on, never use Root for daily work**. So what do you use instead? Create a dedicated "everyday admin" identity.
+
+You have two options:
+
+- **Option A (traditional, most intuitive): create an <Term en="Identity and Access Management" desc="AWS's service for managing who can do what to which resources; completely free.">IAM</Term> user**, grant it admin permissions, and sign in as that IAM user from then on.
+- **Option B (AWS's current recommendation): enable <Term en="IAM Identity Center" desc="AWS's service for centrally managing sign-in identities, offering a single portal and better multi-account management; formerly AWS SSO.">IAM Identity Center</Term>** and use it to create your everyday login identity. It gives you a single sign-in portal and is handier once you manage multiple accounts or team members.
+
+For a beginner with a single account, **Option A is the quickest to get going** — let's do it once below.
+
+#### 🛠️ Hands-on: create an everyday IAM admin
+
+1. Sign in to the console as Root → type `IAM` in the search bar → open the IAM service
+2. On the left click **Users** → **Create user**
+3. Give it a memorable name (e.g. `my-admin`) and tick **Provide user access to the AWS Management Console**
+4. For permissions: choose **Attach policies directly** → select `AdministratorAccess`
+5. Once created, **turn on MFA for this IAM user too** (same steps as above, from the user's Security credentials page)
+6. Sign out of Root and sign in with this IAM user's sign-in URL and credentials
+
+<Analogy title="🔑 Why the extra step?">
+
+It's like the big boss (Root) issuing themselves an "admin staff badge" (the IAM admin). Day to day, tapping that staff badge is enough; the all-powerful master key (Root) is locked in the safe and only comes out for the rare few things only it can do, like changing the payment method or closing the account.
+
+</Analogy>
+
+:::warning[⚠️ About "least privilege"]
+Here, for beginner convenience, we granted `AdministratorAccess` (full admin). But remember the core idea of AWS security — the **principle of least privilege**: grant only the minimum permissions needed to do the job. Once you're comfortable, create more tightly scoped identities for different purposes rather than making everything an admin. **And use Root so rarely it's practically never.**
+:::
+
+### Step 3: Set an account alias and choose your main working Region
+
+This step makes future work smoother.
+
+**Set an account alias**: by default, the IAM user sign-in URL contains a 12-digit account ID that's hard to remember. You can set a memorable **account alias** to replace it.
+
+#### 🛠️ Hands-on: set an account alias
+
+1. Open the **IAM** service → **Dashboard** on the left
+2. Find the account alias under the **AWS Account** section → click **Create/Edit**
+3. Set a globally unique alias (e.g. `mika-lab`), and your sign-in URL becomes the memorable `mika-lab.signin.aws.amazon.com`
+
+**Choose your main working Region**: a <Term en="Region" desc="A geographic area where AWS has data centers, e.g. Tokyo, Seoul, N. Virginia.">Region</Term> is the geographic location of AWS's data centers. Pick one **closest to you or your users** as your main working Region (users in Taiwan often choose Tokyo `ap-northeast-1` or Seoul `ap-northeast-2` for lower latency). You can switch it in the top-right of the console; when creating services, always note which Region you're currently in.
+
+:::note[📌 Why pay attention to Region?]
+Many beginners panic — "where did my resources go?" — when in fact they've simply **switched to a different Region**. Resources are stored per Region, so building the habit of always working in the same Region avoids a lot of confusion.
+:::
+
+### Step 4: (Preview) set up billing alerts
+
+One last life-saving task: **set up billing alerts** so that when spending crosses a threshold you set, you get an automatic email — avoiding a shock bill at month's end. There's quite a bit to cover, so we'll dedicate the next page to it.
+
+## How this ties to the exam
+
+What you just did — protecting Root, MFA, an IAM user, least privilege — is exactly the core of the **Security domain (Domain 1)** repeatedly tested on the SAA (Solutions Architect) exam. Questions often ask "which approach best follows security best practices?", and "**don't use Root for daily work, enable MFA, follow least privilege**" is almost always the standard answer. IAM also has more advanced constructs like Groups, Policies, and Roles, which the Security domain covers in depth later.
+
+**Get today's steps right, and you've not only protected your own account — you've already built the exam's favorite security concepts into muscle memory.**
+
+<Refs title="📚 Official docs & further reading">
+
+- [AWS Docs: Creating and activating an AWS account](https://docs.aws.amazon.com/accounts/latest/reference/manage-acct-creating.html)
+- [AWS Docs: Root user security best practices](https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html#lock-away-credentials)
+- [AWS Docs: Enable MFA for the root user](https://docs.aws.amazon.com/IAM/latest/UserGuide/enable-virt-mfa-for-root.html)
+
+</Refs>
+
+👉 Next: [Billing Alerts & Free Tier: Avoid Surprise Bills](./billing-free-tier.md)
