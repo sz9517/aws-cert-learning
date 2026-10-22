@@ -50,5 +50,17 @@
   "sidebar.tutorialSidebar.category.Domain 4 · 設計成本最佳化 (18%)": {
     "message": "Domain 4 · Design Cost-Optimized Architectures (18%)",
     "description": "The label for category 'Domain 4' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.考前衝刺與模擬考": {
+    "message": "Exam Prep & Mock Exam",
+    "description": "The label for category '考前衝刺與模擬考' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.考前衝刺與模擬考.link.generated-index.title": {
+    "message": "Exam Prep & Mock Exam",
+    "description": "The generated-index page title for category '考前衝刺與模擬考' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.考前衝刺與模擬考.link.generated-index.description": {
+    "message": "Once you have finished all four domains, skim the exam cram sheet to lock in the keyword-to-answer trade-offs, then take a 65-question full mock exam to test yourself and get used to the pacing.",
+    "description": "The generated-index page description for category '考前衝刺與模擬考' in sidebar 'tutorialSidebar'"
   }
 }

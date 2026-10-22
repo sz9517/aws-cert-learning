@@ -67,6 +67,14 @@ sidebar_label: 📖 名詞與服務對照表
 | **DAX** | DynamoDB Accelerator | DynamoDB 專用的微秒級記憶體快取。 |
 | **ElastiCache** | Amazon ElastiCache | 託管記憶體快取；Redis 功能豐富／可持久，Memcached 單純多執行緒。 |
 | **CloudFront** | — | CDN，把內容快取到邊緣節點，加速全球存取。 |
+| **Global Accelerator** | — | 用 AWS 骨幹＋anycast 固定 IP 加速連線路徑，適合非 HTTP 的 TCP/UDP。 |
+| **Kinesis Data Streams** | — | 即時串流，多消費者可讀同一份、可重播，以分片擴展吞吐。 |
+| **Firehose** | Amazon Data Firehose | 近即時把串流自動載入 S3／Redshift／OpenSearch，免寫程式。 |
+| **Shard** | — | Kinesis 串流的吞吐擴展單位（分片）。 |
+| **Partition Key** | — | DynamoDB 用來分散資料的鍵，基數要高才能避免熱分區。 |
+| **Hot Partition** | — | 流量集中打在少數鍵造成的瓶頸（熱分區）。 |
+| **Multipart Upload** | — | 把大型檔案切段平行上傳 S3，可斷點續傳。 |
+| **Transfer Acceleration** | — | S3 透過邊緣節點加速跨區域上傳。 |
 
 ## Domain 4：成本最佳化
 
@@ -91,14 +99,6 @@ sidebar_label: 📖 名詞與服務對照表
 | **VPC Endpoint** | VPC 端點 | Gateway Endpoint 免費存取 S3／DynamoDB、省 NAT 與傳輸費。 |
 | **Direct Connect** | — | 到 AWS 的專線，前期成本高但大流量長期較省、傳輸費低。 |
 | **Right-Sizing** | 右規模 | 把過大／閒置資源調到合適大小；用 Compute Optimizer／Trusted Advisor 找。 |
-| **Global Accelerator** | — | 用 AWS 骨幹＋anycast 固定 IP 加速連線路徑，適合非 HTTP 的 TCP/UDP。 |
-| **Kinesis Data Streams** | — | 即時串流，多消費者可讀同一份、可重播，以分片擴展吞吐。 |
-| **Firehose** | Amazon Data Firehose | 近即時把串流自動載入 S3／Redshift／OpenSearch，免寫程式。 |
-| **Shard** | — | Kinesis 串流的吞吐擴展單位（分片）。 |
-| **Partition Key** | — | DynamoDB 用來分散資料的鍵，基數要高才能避免熱分區。 |
-| **Hot Partition** | — | 流量集中打在少數鍵造成的瓶頸（熱分區）。 |
-| **Multipart Upload** | — | 把大型檔案切段平行上傳 S3，可斷點續傳。 |
-| **Transfer Acceleration** | — | S3 透過邊緣節點加速跨區域上傳。 |
 
 :::tip
 這張表會隨著各領域內容增加而持續擴充。

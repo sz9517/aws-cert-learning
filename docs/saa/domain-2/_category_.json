@@ -5,6 +5,7 @@
   "collapsed": false,
   "link": {
     "type": "generated-index",
+    "slug": "/saa/domain-2",
     "title": "Domain 2：設計具彈性（高可用）的架構",
     "description": "權重 26%，是 SAA 考試占比第二高的領域。涵蓋高可用設計、多可用區、負載平衡、自動擴展、解耦、DNS 路由、備份與災難復原等。"
   }
