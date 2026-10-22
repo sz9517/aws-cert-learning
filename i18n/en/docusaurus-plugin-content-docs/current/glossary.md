@@ -76,6 +76,30 @@ Not sure what an acronym means? Look it up here. Format: **Acronym ｜ Full name
 | **Multipart Upload** | — | Uploads a large file to S3 in parallel parts, resumable. |
 | **Transfer Acceleration** | — | Speeds up cross-Region S3 uploads via edge locations. |
 
+## Domain 4: Cost Optimization
+
+| Acronym / term | Full name | Plain explanation |
+| --- | --- | --- |
+| **On-Demand** | — | Pay as you go, no commitment, most flexible but highest unit price. |
+| **RI** | Reserved Instance | Commit for 1 or 3 years for a discount; Standard saves more, Convertible can change instance type. |
+| **Savings Plans** | — | Commit to an hourly spend ($/hr) for a discount; Compute SP is most flexible, EC2 Instance SP saves most. |
+| **Spot** | Spot Instance | Uses spare AWS capacity, up to ~90% off, can be interrupted (2-minute notice); good for fault-tolerant/batch work. |
+| **Dedicated Host** | — | A whole physical server for your sole use, for compliance or BYOL; most expensive. |
+| **Intelligent-Tiering** | S3 Intelligent-Tiering | Auto-moves objects to cheaper tiers by access frequency; first choice when access is unknown. |
+| **Glacier** | S3 Glacier | Archive storage; Instant/Flexible/Deep Archive — colder is cheaper but slower to retrieve. |
+| **Lifecycle** | Lifecycle policy | Auto-transitions objects to cheaper classes or expires (deletes) them. |
+| **Cost Explorer** | — | Visualize spending trends and find the costliest services. |
+| **Budgets** | AWS Budgets | Set cost/usage thresholds that alert when exceeded (forecasted budgets supported). |
+| **CUR** | Cost and Usage Report | The most granular line-item billing data, exported to S3 for analysis. |
+| **Cost Allocation Tags** | — | Split costs to departments/projects via tags (must be activated first). |
+| **Consolidated Billing** | — | One bill across an Organization; volume discounts aggregate and RI/SP are shared. |
+| **Cost Anomaly Detection** | — | Uses machine learning to flag abnormal spending spikes automatically. |
+| **Aurora Serverless v2** | — | Aurora that auto-scales by usage; good for variable/intermittent load. |
+| **NAT Gateway** | — | Lets private subnets reach out; per-hour plus per-GB processing fee, costly at high volume. |
+| **VPC Endpoint** | — | Gateway Endpoint reaches S3/DynamoDB for free, skipping NAT and transfer fees. |
+| **Direct Connect** | — | A dedicated line to AWS; high upfront cost but cheaper long-term at high volume with lower transfer fees. |
+| **Right-Sizing** | — | Adjust oversized/idle resources to the right size; find them with Compute Optimizer/Trusted Advisor. |
+
 :::tip
 This table will keep expanding as content for each domain grows.
 :::

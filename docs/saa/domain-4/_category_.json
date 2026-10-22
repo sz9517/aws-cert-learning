@@ -2,5 +2,11 @@
   "label": "Domain 4 · 設計成本最佳化 (18%)",
   "position": 5,
   "collapsible": true,
-  "collapsed": true
+  "collapsed": false,
+  "link": {
+    "type": "generated-index",
+    "slug": "/saa/domain-4",
+    "title": "Domain 4：設計成本最佳化的架構",
+    "description": "權重 18%。涵蓋運算計費模式、S3 儲存類別與生命週期、資料傳輸成本、成本監控與治理、資料庫與網路成本，以及把這些整合成一套判斷流程的成本最佳化架構決策。"
+  }
 }

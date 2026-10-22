@@ -67,6 +67,30 @@ sidebar_label: 📖 名詞與服務對照表
 | **DAX** | DynamoDB Accelerator | DynamoDB 專用的微秒級記憶體快取。 |
 | **ElastiCache** | Amazon ElastiCache | 託管記憶體快取；Redis 功能豐富／可持久，Memcached 單純多執行緒。 |
 | **CloudFront** | — | CDN，把內容快取到邊緣節點，加速全球存取。 |
+
+## Domain 4：成本最佳化
+
+| 縮寫／名詞 | 英文全名 | 白話說明 |
+| --- | --- | --- |
+| **On-Demand** | 隨需 | 用多少付多少、免承諾、最彈性但單價最貴。 |
+| **RI** | Reserved Instance | 預留執行個體；承諾 1／3 年換折扣，Standard 折多、Convertible 可換機型。 |
+| **Savings Plans** | — | 承諾每小時固定用量（$/hr）換折扣；Compute SP 最彈性、EC2 Instance SP 折最深。 |
+| **Spot** | Spot Instance | 用 AWS 閒置算力，最高省約 90%，可能被中斷（2 分鐘通知），適合容錯／批次。 |
+| **Dedicated Host** | 專用主機 | 獨占整台實體主機，供合規或自備授權（BYOL），最貴。 |
+| **Intelligent-Tiering** | S3 智慧分層 | 自動依存取頻率搬到便宜層，存取頻率未知時首選。 |
+| **Glacier** | S3 Glacier | 封存儲存；Instant／Flexible／Deep Archive 越冷越便宜、取回越慢。 |
+| **Lifecycle** | 生命週期政策 | 自動把物件 transition 降級或 expiration 刪除。 |
+| **Cost Explorer** | — | 視覺化分析花費趨勢、找出花最多的服務。 |
+| **Budgets** | AWS Budgets | 對成本／用量設門檻，超過就告警（可用預測型）。 |
+| **CUR** | Cost and Usage Report | 最細的逐行帳單明細，輸出到 S3 分析。 |
+| **Cost Allocation Tags** | 成本分攤標籤 | 用標籤把成本拆到部門／專案（需先啟用）。 |
+| **Consolidated Billing** | 合併帳單 | Organizations 一張總帳單，量折扣加總、RI／SP 共享。 |
+| **Cost Anomaly Detection** | 成本異常偵測 | 用機器學習自動抓花費異常暴增。 |
+| **Aurora Serverless v2** | — | 依用量自動伸縮的 Aurora，適合變動／間歇負載。 |
+| **NAT Gateway** | — | 讓私有子網連外；每小時＋每 GB 處理費，流量大時很貴。 |
+| **VPC Endpoint** | VPC 端點 | Gateway Endpoint 免費存取 S3／DynamoDB、省 NAT 與傳輸費。 |
+| **Direct Connect** | — | 到 AWS 的專線，前期成本高但大流量長期較省、傳輸費低。 |
+| **Right-Sizing** | 右規模 | 把過大／閒置資源調到合適大小；用 Compute Optimizer／Trusted Advisor 找。 |
 | **Global Accelerator** | — | 用 AWS 骨幹＋anycast 固定 IP 加速連線路徑，適合非 HTTP 的 TCP/UDP。 |
 | **Kinesis Data Streams** | — | 即時串流，多消費者可讀同一份、可重播，以分片擴展吞吐。 |
 | **Firehose** | Amazon Data Firehose | 近即時把串流自動載入 S3／Redshift／OpenSearch，免寫程式。 |
