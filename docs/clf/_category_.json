@@ -1,0 +1,12 @@
+{
+  "label": "CLF · 雲端從業者",
+  "position": 7,
+  "collapsible": true,
+  "collapsed": false,
+  "link": {
+    "type": "generated-index",
+    "slug": "/clf",
+    "title": "CLF｜AWS Certified Cloud Practitioner 雲端從業者",
+    "description": "AWS Certified Cloud Practitioner（CLF-C02）是最入門的基礎級證照——偏廣度與觀念、不考複雜架構，很適合完全新手，或 PM、業務、主管等非工程職當第一張證照。本區把四大領域重點濃縮成幾篇，並附原創練習題。"
+  }
+}

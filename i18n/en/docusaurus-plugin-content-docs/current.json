@@ -110,5 +110,17 @@
   "sidebar.tutorialSidebar.category.架構實戰.link.generated-index.description": {
     "message": "The core SAA skill is combining services wisely. This section uses a few classic scenarios to assemble the individual services you have learned into complete, working architectures — building the instinct to sketch an architecture straight from the requirements.",
     "description": "The generated-index page description for category '架構實戰' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.CLF · 雲端從業者": {
+    "message": "CLF · Cloud Practitioner",
+    "description": "The label for category 'CLF · 雲端從業者' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.CLF · 雲端從業者.link.generated-index.title": {
+    "message": "CLF | AWS Certified Cloud Practitioner",
+    "description": "The generated-index page title for category 'CLF · 雲端從業者' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.CLF · 雲端從業者.link.generated-index.description": {
+    "message": "AWS Certified Cloud Practitioner (CLF-C02) is the entry-level foundational certification — broad and concept-focused, with no complex architecture — a great first cert for complete beginners or non-engineering roles such as PMs, sales, and managers. This section distills the four domains into a few pages plus original practice questions.",
+    "description": "The generated-index page description for category 'CLF · 雲端從業者' in sidebar 'tutorialSidebar'"
   }
 }
