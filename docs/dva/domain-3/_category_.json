@@ -1,0 +1,12 @@
+{
+  "label": "Domain 3 · 測試與部署 (22%)",
+  "position": 4,
+  "collapsible": true,
+  "collapsed": false,
+  "link": {
+    "type": "generated-index",
+    "slug": "/dva/domain-3",
+    "title": "Domain 3：測試與部署",
+    "description": "權重 22%。掌握把應用自動測試、建置、部署上線的開發流程：CI/CD（CodePipeline/CodeBuild/CodeDeploy）、基礎設施即程式碼（CloudFormation/SAM/CDK）、容器部署、部署策略，以及 C03 新增的 AI 輔助測試。"
+  }
+}

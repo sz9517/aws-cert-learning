@@ -158,5 +158,17 @@
   "sidebar.tutorialSidebar.category.Domain 2 · 安全 (26%).link.generated-index.description": {
     "message": "Weighted 26%. Covers authentication and authorization (IAM, Cognito), encryption (KMS, in transit and at rest), secrets management (Secrets Manager / Parameter Store), and request signing with temporary credentials — all from a developer's perspective.",
     "description": "The generated-index page description for category 'Domain 2 · 安全 (26%)' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Domain 3 · 測試與部署 (22%)": {
+    "message": "Domain 3 · Testing and Deployment (22%)",
+    "description": "The label for category 'Domain 3 · 測試與部署 (22%)' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Domain 3 · 測試與部署 (22%).link.generated-index.title": {
+    "message": "Domain 3: Testing and Deployment",
+    "description": "The generated-index page title for category 'Domain 3 · 測試與部署 (22%)' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Domain 3 · 測試與部署 (22%).link.generated-index.description": {
+    "message": "Weighted 22%. The development flow for automatically testing, building, and deploying apps: CI/CD (CodePipeline/CodeBuild/CodeDeploy), Infrastructure as Code (CloudFormation/SAM/CDK), container deployment, deployment strategies, and the AI-assisted testing added in C03.",
+    "description": "The generated-index page description for category 'Domain 3 · 測試與部署 (22%)' in sidebar 'tutorialSidebar'"
   }
 }
