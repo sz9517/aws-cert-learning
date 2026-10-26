@@ -2,7 +2,7 @@
 slug: /
 title: Welcome
 sidebar_position: 1
-sidebar_label: 🏠 Home
+sidebar_label: Home
 ---
 
 # AWS Certification Learning
@@ -28,6 +28,6 @@ This site is designed for people who have **never touched AWS, or even the cloud
 - Learn about the exam 👉 [SAA Exam Info & Study Plan](./saa/exam-info.md)
 - Begin the first topic 👉 [Domain 1: IAM — Identity and Access Management](./saa/domain-1/iam.md)
 
-:::info About the content
+:::info[About the content]
 All content consists of **original study notes**, compiled from the official AWS exam guide, official documentation, and publicly available official sample questions. Practice questions are **originally written** in the style of the official exam — they are not real exam questions. AWS and related marks are trademarks of Amazon.com, Inc.
 :::

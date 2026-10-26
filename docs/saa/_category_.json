@@ -1,6 +1,7 @@
 {
   "label": "SAA · 解決方案架構師",
-  "position": 3,
+  "position": 4,
+  "className": "sidebar-primary",
   "collapsible": true,
   "collapsed": false,
   "link": {

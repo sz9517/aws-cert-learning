@@ -1,6 +1,7 @@
 {
   "label": "架構實戰",
   "position": 6,
+  "className": "sidebar-secondary",
   "collapsible": true,
   "collapsed": false,
   "link": {

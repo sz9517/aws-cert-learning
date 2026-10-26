@@ -268,6 +268,30 @@ html[lang='en'] .quiz-opt.wrong::after {
   margin-bottom: 0;
 }
 
+/* ---------- 側邊欄層級（主次顯示比重） ---------- */
+/* 主課程（SAA）：粗體、主色、稍大，當作目錄的主軸 */
+li.sidebar-primary > .menu__list-item-collapsible > .menu__link,
+li.sidebar-primary > .menu__link {
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: var(--ifm-color-primary-darker);
+}
+[data-theme='dark'] li.sidebar-primary > .menu__list-item-collapsible > .menu__link,
+[data-theme='dark'] li.sidebar-primary > .menu__link {
+  color: var(--ifm-color-primary);
+}
+
+/* 輔助內容（實驗室／架構實戰／CLF／名詞表）：縮小、灰階，視覺退到次要 */
+li.sidebar-secondary > .menu__list-item-collapsible > .menu__link,
+li.sidebar-secondary > .menu__link {
+  font-size: 0.85rem;
+  color: var(--ifm-color-emphasis-600);
+}
+/* 輔助區塊與主課程之間留一點間距，讓主次分群更清楚 */
+li.sidebar-secondary {
+  margin-top: 0.35rem;
+}
+
 /* ---------- 流程圖 .flow ---------- */
 .flow {
   display: flex;
@@ -293,4 +317,107 @@ html[lang='en'] .quiz-opt.wrong::after {
   color: var(--ifm-color-primary-dark);
   font-size: 22px;
   font-weight: 700;
+}
+
+/* ---------- 認證學習路線圖 /roadmap ---------- */
+.roadmap {
+  margin: 28px 0;
+}
+.roadmap-tier {
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 14px;
+  padding: 16px 18px 20px;
+  margin-bottom: 4px;
+  background: var(--ifm-background-surface-color);
+}
+.roadmap-tier__label {
+  font-weight: 800;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  color: var(--ifm-color-emphasis-800);
+  margin-bottom: 14px;
+}
+.roadmap-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 12px;
+}
+.roadmap-grid--1col {
+  grid-template-columns: 1fr;
+}
+.roadmap-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 10px;
+  background: var(--ifm-background-color);
+  text-decoration: none;
+  color: var(--ifm-font-color-base);
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+}
+.roadmap-card__name {
+  font-weight: 700;
+}
+.roadmap-card__desc {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--ifm-color-emphasis-700);
+}
+.roadmap-card__code {
+  margin-top: auto;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ifm-color-emphasis-600);
+  font-family: var(--ifm-font-family-monospace);
+}
+/* 可點擊的卡（本站有教） */
+a.roadmap-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  text-decoration: none;
+  color: var(--ifm-font-color-base);
+}
+.roadmap-card--covered {
+  border: 2px solid var(--ifm-color-primary);
+  background: linear-gradient(
+    135deg,
+    rgba(232, 131, 12, 0.1),
+    rgba(232, 131, 12, 0.03)
+  );
+}
+.roadmap-badge {
+  align-self: flex-start;
+  font-size: 11px;
+  font-weight: 800;
+  color: #fff;
+  background: var(--ifm-color-primary);
+  border-radius: 999px;
+  padding: 2px 9px;
+  margin-bottom: 2px;
+}
+.roadmap-badge--inline {
+  display: inline-block;
+  vertical-align: middle;
+}
+.roadmap-arrow {
+  text-align: center;
+  font-weight: 700;
+  color: var(--ifm-color-primary-dark);
+  margin: 12px 0;
+  font-size: 0.9rem;
+}
+[data-theme='dark'] .roadmap-arrow {
+  color: var(--ifm-color-primary);
+}
+.roadmap-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+@media (max-width: 760px) {
+  .roadmap-row {
+    grid-template-columns: 1fr;
+  }
 }

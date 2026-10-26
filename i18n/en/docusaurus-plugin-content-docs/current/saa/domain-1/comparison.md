@@ -7,7 +7,7 @@ title: Service Comparison & Exam Cheat Sheet
 
 > This page distills the **most easily confused** services in Domain 1 (Security) into comparison tables for an efficient last-minute review. Each table ends with a one-line "**How to choose on the exam**" tip — when you see the keyword in a question stem, you can map straight to the answer.
 
-:::tip How to use this page
+:::tip[How to use this page]
 Read the topic pages first to build the concepts, then use this page for your final review. For each table, remember the cell that **only that service can do** — that is usually the deciding point in a question.
 :::
 

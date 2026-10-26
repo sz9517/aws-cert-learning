@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+sidebar_position: 5
 title: "Exam Day & Online Proctoring Prep"
 ---
 
@@ -7,7 +7,7 @@ title: "Exam Day & Online Proctoring Prep"
 
 You've covered all four domains and worked through the mock exams. What's left is the **final hurdle** — and it tests something other than knowledge: it tests whether you can **avoid tripping up on exam day**. Showing up late, bringing the wrong ID, losing your internet connection, having a room that doesn't meet the rules... none of this has anything to do with AWS architecture, yet any of it can get your session cancelled. This page walks you through everything to prepare the day before and the day of, so you can simply show up and let your preparation do the work.
 
-:::tip How to use this page
+:::tip[How to use this page]
 Skim it about a week out and schedule your prep tasks, then run through the checklist again the day before. Pay extra attention if you chose **online proctoring** — its rules are much stricter than taking the exam at a test center.
 :::
 
@@ -25,7 +25,7 @@ SAA-C03 can be taken two ways, and you choose when you register. Neither is stri
 | Strictness | Fairly simple — just check in on arrival | Stricter: rules for the room, desk, camera, and leaving the frame |
 | Best for | Anyone unsure their home setup qualifies, or who wants it hassle-free | People far from a test center who prefer a familiar setting |
 
-:::info Confirm with official sources
+:::info[Confirm with official sources]
 Whether both options are available, which centers you can book, and the supported languages and time slots for online proctoring all vary by region. Register and choose your method based on the latest info from the [AWS Certification registration page](https://www.aws.training/certification) and [Pearson VUE](https://home.pearsonvue.com/aws).
 :::
 
@@ -41,11 +41,11 @@ Online proctoring is where things most often go wrong — if your setup doesn't 
 - **Photograph your room and ID at check-in**: Check-in asks you to show your ID on camera and pan the webcam around the room (desk surface, under the desk, walls) to prove the space is clear before the proctor lets you begin.
 - **Check in 30 minutes early**: Check-in and the environment checks take time, so start the check-in process about **30 minutes early** to avoid a last-minute rush.
 
-:::warning The easiest OnVUE mistakes to make
+:::warning[The easiest OnVUE mistakes to make]
 A phone left on the desk, a family member wandering in, headphones still on, a second monitor still running — any of these can get the proctor to stop you on the spot. Clear your desk and room completely beforehand, and put your phone somewhere out of sight.
 :::
 
-:::info Confirm with official sources
+:::info[Confirm with official sources]
 OnVUE's system requirements, allowed/prohibited items, break rules, and check-in flow are updated from time to time. Before your exam, go by the latest version of the [Pearson VUE OnVUE guide](https://home.pearsonvue.com/aws/onvue).
 :::
 
@@ -57,7 +57,7 @@ Taking it at a center is much easier, but don't get complacent:
 - **Arrive early to check in**: Allow time for travel and check-in — aim to arrive about **30 minutes early** to get familiar with the room, use the restroom, and settle your nerves.
 - **Use the locker**: Personal items (phone, bag, books, watch, jacket, etc.) usually have to go in a <Term en="locker" desc="a lockable storage locker provided by the test center for items not allowed in the exam room">locker</Term> the center provides; they can't come into the exam area.
 
-:::info Confirm with official sources
+:::info[Confirm with official sources]
 Allowed items, storage rules, and accepted ID types differ slightly by center. Go by the actual rules of your Pearson VUE center and your booking confirmation.
 :::
 
@@ -71,7 +71,7 @@ Once the exam actually starts, the strategy matches what you practiced on the [c
 - **Read multi-answer questions carefully**: If it says "**Choose TWO**," pick **exactly two** — selecting fewer or more counts as wrong.
 - **You can switch the interface language**: You can toggle the interface between languages while answering, so you can compare against the original English when a translation is unclear. For SAA you can choose **Traditional Chinese**.
 
-:::tip Pacing yourself
+:::tip[Pacing yourself]
 On the first pass, answer everything you know and flag the uncertain ones; on the second pass, focus on the flagged questions; save a few minutes at the end to check that multi-answer questions have the right number of selections and that you didn't misread a qualifier.
 :::
 
@@ -81,13 +81,13 @@ On the first pass, answer everything you know and flag the uncertain ones; on th
 - **Official results come later**: Your full score report and digital **badge** (electronic badge) arrive afterward via email / your AWS certification account — not instantly.
 - **Passing score is 720 / 1000**: The scale maxes out at 1000, and **720** is passing. Scoring is scaled, so what matters is clearing the overall line.
 
-:::info Confirm with official sources
+:::info[Confirm with official sources]
 When results are published, the score report format, and the badge delivery process can change. Go by your AWS certification account and official notifications.
 :::
 
 ## A Note on Mindset
 
-:::tip The night before
+:::tip[The night before]
 - **Sleep matters most**: A good night's sleep helps your performance far more than cramming a few extra pages.
 - **Don't cram late into the night**: The night before, at most do a relaxed skim of your cram notes — don't force in new material and wear yourself out, or you'll lose points to fatigue.
 - **Trust your prep**: You've been through all four domains and the mock exams. Take a breath and just let your preparation show.

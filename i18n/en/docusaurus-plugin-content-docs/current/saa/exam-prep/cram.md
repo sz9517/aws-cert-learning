@@ -7,7 +7,7 @@ title: Exam Cram Sheet
 
 This is your "**last mile**" cheat sheet for the day before the exam: you have finished all four domains, and this page distills the most-tested, most-confused points into a single page to skim before you walk in. There is only one way to use it — **spot the keyword in the question stem and map it straight to the answer direction**, no reasoning from scratch.
 
-:::tip Exam mindset
+:::tip[Exam mindset]
 SAA-C03 is almost all **scenario-based selection**: you get a business scenario and all four options often "technically work." What actually forces the choice is the **qualifier** in the stem (most cost-effective, least operational overhead, highly available, real-time...). Circle the qualifier first, then eliminate options — far more efficient than reading the whole scenario head-down.
 :::
 
@@ -20,7 +20,7 @@ SAA-C03 is almost all **scenario-based selection**: you get a business scenario 
 | **D3 Design High-Performing Architectures** | **24%** | Right service for the job, add caching, scale horizontally, pick by load pattern |
 | **D4 Design Cost-Optimized Architectures** | **18%** | Commit for discounts, move cold data down tiers, prefer managed and free endpoints |
 
-:::info Weight equals time allocation
+:::info[Weight equals time allocation]
 D1 Security has the highest weight (30%) and the best payoff — when reviewing, lock in IAM, encryption, and VPC security first so you do not drop points.
 :::
 
@@ -112,7 +112,7 @@ For each pair, just remember the **one deciding line**.
 
 ## Exam-taking tactics
 
-:::tip Read this one more time before you walk in
+:::tip[Read this one more time before you walk in]
 - **Grab the qualifier first, then read the options**: words like MOST/LEAST/MUST decide the correct answer — do not get lured by a pretty option that ignores the qualifier.
 - **Elimination**: in a four-option question you can usually drop two obviously wrong ones first (violates HA, violates least privilege, wrong service for the job), then compare the remaining two on the qualifier.
 - **Read multi-select questions carefully**: if it says "**Choose TWO**," select exactly two — no more, no less; too few or too many both count as wrong.

@@ -1,7 +1,8 @@
 ---
-sidebar_position: 4
+sidebar_position: 8
 title: 名詞與服務對照表
-sidebar_label: 📖 名詞與服務對照表
+sidebar_label: 名詞與服務對照表
+sidebar_class_name: sidebar-secondary
 ---
 
 # 名詞與服務對照表

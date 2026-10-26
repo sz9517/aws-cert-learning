@@ -7,7 +7,7 @@ title: Service Comparison & Exam Cheat Sheet
 
 > This page collects the **most easily confused** services in Domain 3 (high-performing architectures) into comparison tables — the most efficient thing to skim right before the exam. Each table is followed by a one-line "**How to pick on the exam**" tip: spot the keyword in the question stem and map it straight to the answer.
 
-:::tip How to use this page
+:::tip[How to use this page]
 High-performance questions are almost always about "**selection trade-offs**": options that all solve the problem are placed together, and a qualifier like "highest performance / lowest latency / highest throughput / least operational overhead" forces you to choose. Remember the one cell each service "alone can do" — that is your decision point.
 :::
 

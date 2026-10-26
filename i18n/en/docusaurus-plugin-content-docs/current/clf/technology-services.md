@@ -112,6 +112,35 @@ Now let's organize the most common services by "category." **For now, just recog
 **CloudWatch tells you "how the system is performing" (metrics, logs); CloudTrail tells you "who did what" (auditing).** One is like a dashboard, the other like a dashcam.
 :::
 
+### 📨 Messaging & Integration: how services talk to each other and decouple
+
+| Service | What it does in one line |
+| --- | --- |
+| **<Term en="Simple Queue Service" desc="A message queue service that decouples systems and buffers traffic.">SQS</Term>** | Message queue: line up work in a queue to absorb spikes and decouple; each message is processed once |
+| **<Term en="Simple Notification Service" desc="A publish/subscribe push service that sends notifications to many subscribers.">SNS</Term>** | Publish/subscribe: push one message out to many subscribers (email, SMS, other services) |
+| **<Term en="Amazon EventBridge" desc="An event bus that routes events to different targets by rules.">EventBridge</Term>** | Event bus: route events to the right target service automatically, based on rules |
+
+### 🤖 AI/ML: let applications see, hear, and generate
+
+| Service | What it does in one line |
+| --- | --- |
+| **<Term en="Amazon SageMaker" desc="A managed, end-to-end platform to build, train, and deploy machine learning models.">SageMaker</Term>** | One-stop platform: build, train, and deploy your own machine learning models |
+| **<Term en="Amazon Bedrock" desc="A managed service to build generative AI apps via APIs to various foundation models.">Bedrock</Term>** | Call various foundation models (FMs) via API to build generative AI apps quickly |
+| **<Term en="Amazon Q" desc="The generative AI assistant of AWS for development and business Q&A.">Amazon Q</Term>** | The generative AI assistant of AWS (helps you code, look things up, and answer questions) |
+| **<Term en="Amazon Rekognition" desc="An image and video analysis service that recognizes faces, objects, and scenes.">Rekognition</Term>** | Image/video analysis: faces, objects, and scene recognition |
+
+### 📦 Migration & Transfer: move existing data and systems to the cloud
+
+| Service | What it does in one line |
+| --- | --- |
+| **<Term en="AWS Snow Family" desc="Physical devices that ship large amounts of data to the cloud offline.">Snow Family</Term>** | When bandwidth is short, ship petabyte-scale data to the cloud on a physical device (e.g. Snowball) |
+| **<Term en="AWS DataSync" desc="A service that syncs large amounts of files to AWS online, automatically.">DataSync</Term>** | Move large amounts of files to AWS over the network, automatically |
+| **<Term en="AWS Database Migration Service" desc="A service that migrates databases to AWS, including heterogeneous migrations.">DMS</Term>** | Database migration service, even across different engines (heterogeneous) |
+
+:::info[🔑 Do not mix up SQS and SNS]
+**SQS is a "queue" — a message waits in line and is pulled and processed once by a consumer (one-to-one, decoupling and buffering); SNS is a "broadcast" — the same message is pushed out one-to-many to all subscribers.** This difference is a favorite on the exam.
+:::
+
 ## 4. Technical Support & Learning Resources
 
 When you hit a problem, AWS offers several channels to find answers and health-check your environment.

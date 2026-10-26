@@ -1,0 +1,127 @@
+---
+title: AWS Certification Roadmap
+description: A map of every AWS certification and the recommended order to earn them.
+---
+
+import Link from '@docusaurus/Link';
+
+# AWS Certification Roadmap
+
+AWS certifications come in several levels, from entry to expert. This map shows **every certification available**, **what each one tests**, and the **recommended order** to tackle them. The ones marked <span className="roadmap-badge roadmap-badge--inline">★ Covered here</span> link straight into this site's full course.
+
+:::tip[See the official version]
+This map is a simplified version put together by this site. For AWS's full official certification overview (with details on every exam and the latest changes), see 👉 the [official AWS Certification page](https://aws.amazon.com/certification/), and for each exam's official guide, the [AWS Certification Exam Guides](https://docs.aws.amazon.com/aws-certification/latest/examguides/aws-certification-exam-guides.html).
+:::
+
+<div className="roadmap">
+
+<div className="roadmap-tier">
+  <div className="roadmap-tier__label">🟢 Foundational</div>
+  <div className="roadmap-grid">
+    <Link className="roadmap-card roadmap-card--covered" to="/clf">
+      <span className="roadmap-badge">★ Covered here</span>
+      <span className="roadmap-card__name">Cloud Practitioner</span>
+      <span className="roadmap-card__desc">Broad-but-shallow cloud basics: core services, billing, security, and the value of the cloud. Role-independent and ideal for complete beginners.</span>
+      <span className="roadmap-card__code">CLF-C02</span>
+    </Link>
+    <div className="roadmap-card">
+      <span className="roadmap-card__name">AI Practitioner</span>
+      <span className="roadmap-card__desc">Foundational concepts and use cases for AI, ML, and generative AI — aimed at business and technical people who want to understand AI.</span>
+      <span className="roadmap-card__code">AIF-C01</span>
+    </div>
+  </div>
+</div>
+
+<div className="roadmap-arrow">↓ The recommended first cert — build your cloud foundation</div>
+
+<div className="roadmap-tier">
+  <div className="roadmap-tier__label">🔵 Associate</div>
+  <div className="roadmap-grid">
+    <Link className="roadmap-card roadmap-card--covered" to="/saa/exam-info">
+      <span className="roadmap-badge">★ Covered here</span>
+      <span className="roadmap-card__name">Solutions Architect</span>
+      <span className="roadmap-card__desc">Design secure, highly available, performant, and cost-effective systems on AWS. The most popular and widely recognized cert.</span>
+      <span className="roadmap-card__code">SAA-C03</span>
+    </Link>
+    <div className="roadmap-card">
+      <span className="roadmap-card__name">Developer</span>
+      <span className="roadmap-card__desc">Build, deploy, and debug applications using AWS services, SDKs, and APIs — with a focus on serverless and integration.</span>
+      <span className="roadmap-card__code">DVA-C02</span>
+    </div>
+    <div className="roadmap-card">
+      <span className="roadmap-card__name">CloudOps Engineer</span>
+      <span className="roadmap-card__desc">Deploy, monitor, manage, and operate workloads on AWS — focused on operations, automation, and troubleshooting.</span>
+      <span className="roadmap-card__code">SOA-C03</span>
+    </div>
+    <div className="roadmap-card">
+      <span className="roadmap-card__name">Data Engineer</span>
+      <span className="roadmap-card__desc">Build data pipelines and data stores on AWS: ingest, transform, store, and govern data.</span>
+      <span className="roadmap-card__code">DEA-C01</span>
+    </div>
+    <div className="roadmap-card">
+      <span className="roadmap-card__name">Machine Learning Engineer</span>
+      <span className="roadmap-card__desc">Implement and operate AI/ML solutions on AWS: model building, training, deployment, and monitoring.</span>
+      <span className="roadmap-card__code">MLA-C02</span>
+    </div>
+  </div>
+</div>
+
+<div className="roadmap-arrow">↓ Advanced — best attempted after some hands-on experience</div>
+
+<div className="roadmap-row">
+  <div className="roadmap-tier">
+    <div className="roadmap-tier__label">🟣 Professional</div>
+    <div className="roadmap-grid roadmap-grid--1col">
+      <div className="roadmap-card">
+        <span className="roadmap-card__name">Solutions Architect – Professional</span>
+        <span className="roadmap-card__desc">Design complex, enterprise-grade distributed architectures, covering multi-account, migration, cost, and governance trade-offs.</span>
+        <span className="roadmap-card__code">SAP-C02</span>
+      </div>
+      <div className="roadmap-card">
+        <span className="roadmap-card__name">DevOps Engineer</span>
+        <span className="roadmap-card__desc">Use automation (CI/CD, IaC, monitoring) to provision, run, and operate distributed systems.</span>
+        <span className="roadmap-card__code">DOP-C02</span>
+      </div>
+      <div className="roadmap-card">
+        <span className="roadmap-card__name">Generative AI Developer</span>
+        <span className="roadmap-card__desc">Advanced skills to design, build, and deploy generative AI solutions (e.g. Bedrock, RAG, agents).</span>
+        <span className="roadmap-card__code">AIP-C01</span>
+      </div>
+    </div>
+  </div>
+  <div className="roadmap-tier">
+    <div className="roadmap-tier__label">🟠 Specialty</div>
+    <div className="roadmap-grid roadmap-grid--1col">
+      <div className="roadmap-card">
+        <span className="roadmap-card__name">Advanced Networking</span>
+        <span className="roadmap-card__desc">Design and implement advanced AWS and hybrid networking: hybrid connectivity, routing, security, and optimization.</span>
+        <span className="roadmap-card__code">ANS-C01</span>
+      </div>
+      <div className="roadmap-card">
+        <span className="roadmap-card__name">Security</span>
+        <span className="roadmap-card__desc">Security expertise for AWS workloads and applications: identity, detection, data protection, and incident response.</span>
+        <span className="roadmap-card__code">SCS-C03</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+:::note[There is also a business-focused cert]
+Beyond the technical tracks above, AWS offers the business-oriented **AI Business Strategist (AIB-C01)**, aimed at roles that turn AI capabilities into business outcomes — no engineering background required.
+:::
+
+## 🧭 Suggested path for beginners
+
+1. **Brand new to the cloud** → start with <Link to="/clf">Cloud Practitioner (CLF-C02)</Link> to build the big picture and vocabulary fast.
+2. **Aiming for an architect / IT role** → focus on <Link to="/saa/exam-info">Solutions Architect – Associate (SAA-C03)</Link>, the most popular and widely recognized cert.
+3. **Going further** → pick a Professional or Specialty based on your career path; for an AI focus, follow the AI Practitioner → GenAI Developer track.
+
+:::tip[Covered on this site]
+Full English courses, labs, and original practice questions for **CLF-C02** and **SAA-C03**. The rest are on the map so you can see the whole journey.
+:::
+
+:::warning[Exam codes change]
+AWS revises exams periodically (e.g. C02 → C03). This page reflects the 2026 versions; always confirm on the [official AWS Certification page](https://aws.amazon.com/certification/) before registering.
+:::

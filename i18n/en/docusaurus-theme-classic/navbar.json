@@ -7,12 +7,12 @@
     "message": "AWS Certification Learning",
     "description": "The alt text of navbar logo"
   },
-  "item.label.學習內容": {
-    "message": "Learn",
-    "description": "Navbar item with label 學習內容"
-  },
   "item.label.GitHub": {
     "message": "GitHub",
     "description": "Navbar item with label GitHub"
+  },
+  "item.label.學習路線圖": {
+    "message": "Roadmap",
+    "description": "Navbar item with label 學習路線圖"
   }
 }

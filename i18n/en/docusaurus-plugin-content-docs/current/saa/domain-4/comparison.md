@@ -7,7 +7,7 @@ title: Service Comparison & Exam Cheat Sheet
 
 > This page collects the **most easily confused** services and pricing models in Domain 4 (cost-optimized design) into comparison tables — the most efficient thing to skim right before the exam. Each table is followed by a one-line "**How to choose on the exam**" tip: spot the keyword in the question stem and map it straight to the answer.
 
-:::tip How to use this page
+:::tip[How to use this page]
 Cost-optimization questions are almost always about "**selection trade-offs**": options that all work are placed together, and a qualifier like "lowest cost / least operational overhead / commit for a discount / tolerant of interruption" forces you to choose. Remember the one cell that tells you what each option "commits to, saves, and sacrifices" — that is your decision point.
 :::
 

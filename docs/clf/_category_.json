@@ -1,6 +1,7 @@
 {
   "label": "CLF · 雲端從業者",
-  "position": 7,
+  "position": 3,
+  "className": "sidebar-primary",
   "collapsible": true,
   "collapsed": false,
   "link": {

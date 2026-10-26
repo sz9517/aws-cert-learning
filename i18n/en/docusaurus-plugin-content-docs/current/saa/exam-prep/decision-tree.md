@@ -1,5 +1,5 @@
 ---
-sidebar_position: 5
+sidebar_position: 2
 title: "Service Selection Decision Trees"
 ---
 
@@ -7,7 +7,7 @@ title: "Service Selection Decision Trees"
 
 This page turns the most commonly tested **selection questions** on SAA-C03 into a set of decision trees. In the exam, spot the requirement keywords in the question stem, then walk the tree **one question at a time** to quickly land on the right service, instead of reasoning from scratch.
 
-:::tip How to use this page
+:::tip[How to use this page]
 Every tree works the same way: **first circle the requirement keywords in the stem** (Do you need OS control? No operations? Cross-Region?), then start at the top of the tree and ask yourself one yes/no question at each branch until you reach a leaf. When you study, read each path out loud as a single sentence ("need X and Y → pick Z") so it becomes a reflex on exam day.
 :::
 
@@ -130,7 +130,7 @@ Delivery / performance need
 └─ Spread database reads ─────────────────────────→ Read Replica
 ```
 
-:::info Telling CloudFront and Global Accelerator apart
+:::info[Telling CloudFront and Global Accelerator apart]
 See "cacheable, website, video, static content" and it's **CloudFront**; see "non-HTTP, gaming, needs a static (Anycast) IP, no caching" and it's **Global Accelerator**.
 :::
 
@@ -211,7 +211,7 @@ Security need
    └─ DDoS ───────────────────────────────────────→ Shield
 ```
 
-:::note This page is just a round-up
+:::note[This page is just a round-up]
 Decision trees are for **quickly locating a direction** in the exam. For each service's details, billing traps, and the head-to-head comparisons that trip people up, go back to the domain articles and the [exam cram notes](./cram.md). The real deciding point is always the **qualifier** in the stem (most cost-effective, least operational overhead, highly available, real-time...) — circle the qualifier first, then walk the tree.
 :::
 

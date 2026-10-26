@@ -7,7 +7,7 @@ title: Full Mock Exam B (65 questions)
 
 This is the **second** full-length mock: the questions are entirely different from the first one, meant to add practice volume and test whether it has all come together. 65 questions across all four domains, with question style and weighting modeled on SAA-C03. Pick your answer first, then click "**Show answer & explanation**" to compare. All questions are **original**, written in the official style (scenario stems + qualifiers + some multiple-answer), and are **not real exam questions**.
 
-:::info Suggested exam conditions
+:::info[Suggested exam conditions]
 - **Count / time**: 65 questions, suggested limit of **130 minutes** (about 2 minutes per question).
 - **Passing score**: the official bar is **720 / 1000**; for this mock, treat about 47 correct (72 percent) as your pass line.
 - **Domain distribution** (mirrors the official weighting): Domain 1 Security Q1-20, Domain 2 Resilience/HA Q21-37, Domain 3 High Performance Q38-52, Domain 4 Cost Q53-65.
@@ -15,7 +15,7 @@ This is the **second** full-length mock: the questions are entirely different fr
 - It is best to finish [the first Full Mock Exam](./mock-exam.md) before taking this one.
 :::
 
-:::tip How to answer
+:::tip[How to answer]
 Circle the **qualifier** in the stem first (most cost-effective, least operational overhead, highly available, most secure, real-time, lowest latency...), then eliminate options. Guess and flag anything you are stuck on, and bank the points you know first. Review the keyword-to-answer reflexes in the [Exam Cram Sheet](./cram.md) if needed.
 :::
 

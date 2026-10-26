@@ -1,7 +1,8 @@
 ---
-sidebar_position: 4
+sidebar_position: 8
 title: Glossary & Services
-sidebar_label: 📖 Glossary & Services
+sidebar_label: Glossary & Services
+sidebar_class_name: sidebar-secondary
 ---
 
 # Glossary & Services

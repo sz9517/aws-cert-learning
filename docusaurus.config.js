@@ -92,10 +92,9 @@ const config = {
         },
         items: [
           {
-            type: 'docSidebar',
-            sidebarId: 'tutorialSidebar',
+            to: '/roadmap',
             position: 'left',
-            label: '學習內容',
+            label: '學習路線圖',
           },
           {
             type: 'localeDropdown',

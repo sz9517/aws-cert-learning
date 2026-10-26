@@ -112,6 +112,35 @@ title: 雲端技術與服務（Cloud Technology & Services）
 **CloudWatch 看「系統表現好不好」（指標、日誌）；CloudTrail 看「誰做了什麼操作」（稽核）。** 一個像儀表板，一個像行車記錄器。
 :::
 
+### 📨 訊息與整合（Messaging）：服務之間怎麼傳話、怎麼解耦
+
+| 服務 | 一句用途 |
+| --- | --- |
+| **<Term en="Simple Queue Service" desc="訊息佇列服務，讓系統之間解耦、緩衝流量。">SQS</Term>** | 訊息佇列：把工作先排進隊伍，削峰、解耦，一則訊息被處理一次 |
+| **<Term en="Simple Notification Service" desc="發布／訂閱的推播服務，一對多送出通知。">SNS</Term>** | 發布／訂閱：一則訊息一對多推播給多個訂閱者（Email、簡訊、其他服務） |
+| **<Term en="Amazon EventBridge" desc="事件匯流排，依規則把事件路由到不同目標。">EventBridge</Term>** | 事件匯流排：依規則把事件自動路由到對應的目標服務 |
+
+### 🤖 AI／機器學習（AI/ML）：讓應用「會看、會聽、會生成」
+
+| 服務 | 一句用途 |
+| --- | --- |
+| **<Term en="Amazon SageMaker" desc="建置、訓練、部署機器學習模型的一站式託管平台。">SageMaker</Term>** | 一站式平台：建置、訓練、部署自己的機器學習模型 |
+| **<Term en="Amazon Bedrock" desc="透過 API 使用各家基礎模型（FM）打造生成式 AI 應用的託管服務。">Bedrock</Term>** | 用 API 呼叫各種基礎模型（FM），快速打造生成式 AI 應用 |
+| **<Term en="Amazon Q" desc="AWS 的生成式 AI 助理，可協助開發與商務問答。">Amazon Q</Term>** | AWS 的生成式 AI 助理（協助寫程式、查資料、問答） |
+| **<Term en="Amazon Rekognition" desc="影像與影片分析服務，可辨識人臉、物件與場景。">Rekognition</Term>** | 影像／影片分析：人臉、物件、場景辨識 |
+
+### 📦 遷移與傳輸（Migration）：把既有資料與系統搬上雲
+
+| 服務 | 一句用途 |
+| --- | --- |
+| **<Term en="AWS Snow Family" desc="用實體裝置把大量資料離線寄送搬上雲的服務。">Snow 家族</Term>** | 頻寬不足時，用實體裝置把 PB 等級資料「寄」上雲（如 Snowball） |
+| **<Term en="AWS DataSync" desc="線上大量、自動把檔案同步到 AWS 的服務。">DataSync</Term>** | 走網路大量、自動地把檔案同步搬到 AWS |
+| **<Term en="AWS Database Migration Service" desc="把資料庫遷移到 AWS 的服務，支援異質遷移。">DMS</Term>** | 資料庫遷移服務，連不同引擎的異質遷移都能做 |
+
+:::info[🔑 SQS 與 SNS 別搞混]
+**SQS 是「佇列」——訊息先排隊、被某個消費者取走處理一次（一對一、解耦緩衝）；SNS 是「廣播」——同一則訊息一對多推播給所有訂閱者。** 面試與考試最愛考這個差異。
+:::
+
 ## 四、技術支援與學習資源
 
 遇到問題時，AWS 提供多種管道幫你找答案、健檢環境。

@@ -2,7 +2,7 @@
 slug: /
 title: 歡迎
 sidebar_position: 1
-sidebar_label: 🏠 首頁
+sidebar_label: 首頁
 ---
 
 # AWS Certification Learning
@@ -28,6 +28,6 @@ sidebar_label: 🏠 首頁
 - 想了解考試 👉 [SAA 考試資訊與讀書計畫](/saa/exam-info)
 - 開始第一個主題 👉 [Domain 1：IAM 身分與存取管理](/saa/domain-1/iam)
 
-:::info 關於內容來源
+:::info[關於內容來源]
 本站內容為**原創學習筆記**，依據 AWS 官方考試指南、官方文件與官方公開的 Sample Questions 整理；練習題為仿官方風格**自行原創**，非真實考題。AWS 與相關標誌為 Amazon.com, Inc. 之商標。
 :::

@@ -7,7 +7,7 @@ title: Service Comparison & Exam Cheat Sheet
 
 > This page distills the **most easily confused** services in Domain 2 (Resilience / High Availability) into comparison tables for an efficient last-minute review. Each table ends with a one-line "**How to choose on the exam**" tip — when you see the keyword in a question stem, you can map straight to the answer.
 
-:::tip How to use this page
+:::tip[How to use this page]
 HA questions are almost always about **trade-offs in selection**: options that all solve the problem are placed together, and a qualifier like "MOST cost-effective / MOST highly available / LEAST operational overhead" forces the choice. Remember the cell that only one service can do — that is the deciding point.
 :::
 
