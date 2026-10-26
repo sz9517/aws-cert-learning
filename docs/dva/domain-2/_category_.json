@@ -1,0 +1,12 @@
+{
+  "label": "Domain 2 · 安全 (26%)",
+  "position": 3,
+  "collapsible": true,
+  "collapsed": false,
+  "link": {
+    "type": "generated-index",
+    "slug": "/dva/domain-2",
+    "title": "Domain 2：安全",
+    "description": "權重 26%。從開發者視角掌握 AWS 上的驗證與授權（IAM、Cognito）、加密（KMS、傳輸中與靜態）、機密管理（Secrets Manager / Parameter Store），以及簽署請求與臨時憑證。"
+  }
+}

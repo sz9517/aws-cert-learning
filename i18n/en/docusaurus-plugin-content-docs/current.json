@@ -146,5 +146,17 @@
   "sidebar.tutorialSidebar.category.Domain 1 · 用 AWS 服務開發 (30%).link.generated-index.description": {
     "message": "Weighted 30% — the largest domain in DVA. Covers Lambda, API Gateway, DynamoDB, S3/SDK, and event-driven decoupling from a developer's perspective, plus the AI-assisted development added in C03.",
     "description": "The generated-index page description for category 'Domain 1 · 用 AWS 服務開發 (30%)' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Domain 2 · 安全 (26%)": {
+    "message": "Domain 2 · Security (26%)",
+    "description": "The label for category 'Domain 2 · 安全 (26%)' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Domain 2 · 安全 (26%).link.generated-index.title": {
+    "message": "Domain 2: Security",
+    "description": "The generated-index page title for category 'Domain 2 · 安全 (26%)' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Domain 2 · 安全 (26%).link.generated-index.description": {
+    "message": "Weighted 26%. Covers authentication and authorization (IAM, Cognito), encryption (KMS, in transit and at rest), secrets management (Secrets Manager / Parameter Store), and request signing with temporary credentials — all from a developer's perspective.",
+    "description": "The generated-index page description for category 'Domain 2 · 安全 (26%)' in sidebar 'tutorialSidebar'"
   }
 }
