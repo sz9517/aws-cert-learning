@@ -1,0 +1,12 @@
+{
+  "label": "Domain 4 · 疑難排解與最佳化 (22%)",
+  "position": 5,
+  "collapsible": true,
+  "collapsed": false,
+  "link": {
+    "type": "generated-index",
+    "slug": "/dva/domain-4",
+    "title": "Domain 4：疑難排解與最佳化",
+    "description": "權重 22%。學會把應用「觀測、除錯、調快」：CloudWatch 日誌與指標、X-Ray 分散式追蹤、重試與指數退避等錯誤處理、效能與成本最佳化，以及 C03 新增的 AI 輔助除錯。"
+  }
+}
