@@ -56,6 +56,10 @@ Goal: launch a Multi-AZ RDS, note the writer endpoint, then manually trigger one
 10. **Connectivity**: keep the **default VPC**; to make the optional EC2 verification easier, you can put the RDS and the EC2 in the **same VPC**. Beginners can leave this at the defaults.
 11. Leave everything else at the defaults → click **Create database**.
 
+:::note[🤔 Why enable Multi-AZ?]
+You might think: it's just practice, wouldn't single-AZ be cheaper? We enable Multi-AZ on purpose because **high availability itself is exactly what this lab tests** — without a standby, there's nothing to fail over to, so you'd never see "the primary goes down and another machine takes over" happen. Multi-AZ keeps a **synchronous** standby in another AZ (a write isn't "done" until both copies succeed), so it is always in step with the primary and ready to take over instantly; that consistency is precisely why no data is lost when it switches later. Reading the concept a hundred times is no match for making it fail over once with your own hands.
+:::
+
 :::tip[💡 A cheaper approach]
 You can also pick **Single-AZ** in step 6 first, get the database up, confirm you can do the steps, and then go to **Modify** to switch it to Multi-AZ. That way you're only running one instance up front — handy when you really want to save money. You only need the failover test below after switching to Multi-AZ.
 :::
@@ -71,15 +75,27 @@ lab5-multiaz.abcd1234.ap-northeast-1.rds.amazonaws.com
 
 14. On the **Configuration** tab, confirm **Multi-AZ: Yes**, and note the **Availability Zone the primary is currently in (e.g. ap-northeast-1a)** — after the failover this will change to the other one.
 
+:::note[🤔 Why note the endpoint and not the IP?]
+Every RDS instance has its own underlying IP, but during a failover the primary **moves entirely to a different machine** whose IP is not the same as the old one — so if you hard-code an IP in your application, it stops connecting after a failover. The **endpoint is a fixed DNS name that never changes**, and RDS quietly repoints it at whatever the current primary is. So you always connect to the endpoint and let RDS handle "which machine is the primary right now" — which is exactly what Step 3 verifies.
+:::
+
+**What you should see**: `Multi-AZ` shows `Yes`, and you've noted the current AZ (e.g. `ap-northeast-1a`). The endpoint is a DNS name ending in `.rds.amazonaws.com`, not a numeric IP.
+
 ### Step 3: Manually trigger a failover (Reboot with failover)
 
 This is the key "drill" step: instead of waiting for a real failure, you make RDS switch to the standby on purpose.
+
+:::note[🤔 Why does manually triggering a failover prove high availability?]
+You can't schedule a real AZ outage to test with, but "Reboot with failover" effectively **simulates the primary going down for you**: RDS promotes the current standby to the new primary, following the exact same flow as a real failure. Seeing with your own eyes that "the primary changed AZ, the endpoint didn't change, and the data is still there" means you've personally verified that this high-availability mechanism actually works — far more reliable than reading the docs.
+:::
 
 15. In the database list, select your instance → **Actions › Reboot**.
 16. In the dialog that appears, **check "Reboot with failover"** → confirm.
 17. Watch the **Status** change to `Rebooting`, then return to `Available`.
 18. Click into the database → look at the **Events** tab, where you'll see entries like **"Multi-AZ instance failover started / completed"**, proving a failover really did happen.
 19. Back on the **Configuration** tab, check the **Availability Zone** — the primary has now **moved to the other AZ (e.g. from ap-northeast-1a to ap-northeast-1c)** — yet your **endpoint hasn't changed one character**.
+
+**What you should see**: the Events tab shows two entries, `failover started` and `completed`; the Configuration tab's AZ has **switched to the other one** (the AZ you noted in Step 2 is now different); the endpoint DNS name is **unchanged, character for character**. The whole switch takes about **60 to 120 seconds**, and during that window the connection **drops briefly** (it is not zero-downtime — see the pitfalls below).
 
 :::info[🎯 This is the whole point of Multi-AZ: the endpoint doesn't change]
 Notice what just happened: the primary actually switched to **a different machine in a different Availability Zone**, but the **endpoint you connect to didn't change at all**. Under the hood RDS repointed that endpoint at the new primary. This means your **application doesn't need to change its connection string or be redeployed** — the failover is nearly invisible to the app. That's exactly why Multi-AZ is such a clean high-availability solution.
@@ -98,6 +114,17 @@ mysql> SELECT VERSION();
 ```
 
 When a failover happens the connection **drops briefly**, but reconnecting with the **same endpoint** fixes it immediately — an app with basic reconnect logic rides right through it.
+
+**What you should see**: after connecting, `SELECT VERSION();` returns the database version. If you keep a connection open on the EC2 and trigger a failover at the same time, you'll see the connection **drop with an error**, and re-running the command (same endpoint) reconnects after about 1 to 2 minutes.
+
+:::warning[🚑 Common pitfalls]
+These four are the most common misunderstandings in this lab — and the ones most likely to make you pick the wrong exam answer or blow up your bill:
+
+- **Thinking Multi-AZ can share read traffic**: **it can't.** The standby serves **no reads at all** under normal operation — it just stands by. Spreading out read traffic is the job of a **Read Replica**. Confusing these two is the most common exam trap.
+- **Thinking failover is zero-downtime**: **it isn't.** You just watched the switch take **60 to 120 seconds**, during which the connection **drops briefly**. Multi-AZ guarantees "recovers quickly on its own," not "never disconnects" — your app still needs **retry/reconnect logic** to ride through it smoothly.
+- **Hard-coding an IP in the app instead of using the endpoint**: after a failover the primary is a different machine with a different IP, so a hard-coded IP stops connecting. **Always connect to the endpoint** and let RDS point it at the current primary.
+- **Finishing without deleting the RDS, so it keeps billing you**: RDS **bills you as long as the instance exists**, and Multi-AZ is **double**, and "stopping" barely saves anything. This is the biggest difference from the EC2 + S3 lab — be sure to follow the cleanup steps below to **delete the instance (and skip the final snapshot)**.
+:::
 
 ## The most important step: clean up so you don't get billed
 

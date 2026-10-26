@@ -45,6 +45,54 @@ For this kind of "**predictable, long-running**" workload, you only need to comm
 
 </Analogy>
 
+## The five pricing models: why they exist, why you would pick them, when not to
+
+Below, each model is broken into the same four boxes — **why it exists (what it solves) / why you pick it (pros) / cons / when to avoid it** — so you do not just "know it exists" but "know which situation it is for". The core tradeoff is one sentence: **how much flexibility are you willing to trade for a discount.**
+
+### On-Demand: no commitment, just run it
+
+- **Why it exists**: you are just starting, traffic is still uncertain, and you do not want a yearly contract from day one. It lets you "turn on and use, turn off and stop, zero commitment".
+- **Why you pick it**: **the most flexible** — start and stop at will, no future usage pledged; it is the "list-price baseline" for every other model.
+- **Cons**: **the priciest per unit**. Running a steady, long-running workload on it means paying full price every day, wasting tens of percent.
+- **When to avoid it**: once the load is "steady, predictable, running long-term", switch to RI or Savings Plans to save; forcing it onto On-Demand is the most common form of waste.
+
+### Reserved Instances (RI): sure you will use a type long-term, get the deepest discount
+
+- **Why it exists**: many workloads genuinely "run all year with a type that rarely changes". Given that, committing to buy them up front earns a steep discount.
+- **Why you pick it**: for steady load, the **deepest discount** (up to about 70%), and a Standard RI can also provide a **capacity reservation** when EC2 capacity is tight (when a Zonal RI is tied to an Availability Zone).
+- **Cons**: **low flexibility** — a Standard RI is locked to an instance family and region, and across the 1 or 3 year term you pay the commitment even if the machine is off.
+- **When to avoid it**: the type may change later (use **Convertible RI** or **Savings Plans**); you want one discount across EC2, Fargate, and Lambda (use **Compute Savings Plans**); you will not actually fill the usage (do not over-commit).
+
+### Savings Plans: saves just as much, but not locked to a type
+
+- **Why it exists**: RI locking to a type is too rigid; many teams switch types, switch regions, even move from EC2 to Fargate or Lambda. Savings Plans changes the commitment from "a type" to "**how much you spend per hour**", greatly increasing flexibility.
+- **Why you pick it**: the discount is on par with RI (up to about 70%), but **Compute Savings Plans** auto-applies across instance families, regions, and EC2, Fargate, Lambda — the first choice for "steady but will be adjusted later" loads.
+- **Cons**: it is still committed spend, paid even when unused; it **does not provide a capacity reservation** (for reserved capacity you need separate On-Demand Capacity Reservations or a Zonal RI).
+- **When to avoid it**: short-term, temporary, uncertain loads (use On-Demand); when you need guaranteed "a machine will be available" capacity (Savings Plans cannot do this).
+
+### Spot: grab spare capacity, saves the most but gets reclaimed
+
+- **Why it exists**: AWS has lots of "spare capacity not yet sold"; rather than leave it idle, it rents it dirt cheap to people who "do not mind being interrupted" — a win-win.
+- **Why you pick it**: **up to about 90% off**, the cheapest of all models. For rerunnable, stateless, horizontally scalable work, it is like buying compute for a tenth of the price.
+- **Cons**: **can be reclaimed at any time** (only about a 2-minute interruption notice); capacity is not guaranteed, and the type you want is occasionally unavailable.
+- **When to avoid it**: stateful, non-interruptible, critical work that breaks the moment it is cut off (such as a single database host, or unsaved real-time transactions) — these must use On-Demand or RI.
+
+### Dedicated Hosts: born for compliance and bring-your-own-license
+
+- **Why it exists**: some regulations require that "the hardware is used by you alone", and some software licenses (Windows, Oracle) are priced "per physical core or socket" and only count when you occupy a whole physical machine.
+- **Why you pick it**: you can see and control the **physical server sockets and cores**, satisfying BYOL licensing and compliance audits, and the same physical machine can be dedicated to you long-term.
+- **Cons**: **the priciest**, and management is complex (you manage physical host capacity).
+- **When to avoid it**: with no compliance or BYOL need there is no reason to use it — general compute is cheaper and simpler on On-Demand, RI, or SP.
+
+:::info[🔑 The most commonly confused difference: RI vs Savings Plans]
+Both have **nearly the same discount, both are 1 or 3 year commitments, and both are paid even when unused**. The difference is only "**what the commitment is tied to**":
+
+- **RI is tied to a "type"**: you commit to instances of a specific family in a specific region (Standard is locked, Convertible can switch). Low flexibility, but a Standard RI can pair with a **capacity reservation**.
+- **Savings Plans is tied to "hourly spend"**: as long as you hit the committed amount per hour, it discounts no matter which type or region you switch to, even Fargate or Lambda. High flexibility, but **no capacity reservation**.
+
+One-line memory aid: **want flexibility and cross-service discounts, choose Compute Savings Plans; want a capacity reservation, or the EC2 type is certain not to change, choose RI (or EC2 Instance Savings Plans for the compromise of the deepest discount with slightly more flexibility than RI).**
+:::
+
 ## The four mainstream pricing models: core differences at a glance
 
 | Compared item | On-Demand | Reserved (RI) | Savings Plans | Spot |
@@ -127,6 +175,16 @@ $ aws ec2 describe-spot-price-history \
     --max-items 5
 ```
 
+**Expected result**: it returns a list of JSON entries, each with a `SpotPrice` (for example `0.0372`), an `AvailabilityZone`, and a `Timestamp`. Compare that `SpotPrice` with the On-Demand list price for the same type (m5.large is about `0.096` per hour) and it is usually only 30 to 40 percent of list — an instant feel for how much Spot actually saves.
+
+```bash
+# Check which active Savings Plans commitments this account still has
+$ aws savingsplans describe-savings-plans \
+    --states active
+```
+
+**Expected result**: it lists each Savings Plan's `commitment` (the hourly committed amount), `savingsPlanType` (`Compute` or `EC2Instance`), and `start` / `end` (the commitment period). An empty array means this account has bought no commitment at all and is paying full On-Demand list price everywhere — exactly the signal that there is money to save.
+
 <Cost>
 
 **Savings order** (same machine): **Spot (up to about -90%) more than Savings Plans / RI (about -72%) more than On-Demand (list price) more than Dedicated Hosts (priciest)**.
@@ -145,6 +203,8 @@ Key reminders:
 - **Over-committing with RI or Savings Plans**: a 3-year commitment on usage you will not actually fill means paying for idle machines, ending up pricier; start with 1 year and a smaller commitment.
 - **Forgetting to handle the Spot 2-minute notice**: being shut down without listening for the interruption notice loses all progress; pair it with checkpoints or hand the work to another machine.
 - **Confusing RI with Savings Plans**: RI locks to an instance type, Savings Plans locks to a spend amount; for maximum flexibility (across EC2, Fargate, Lambda) choose **Compute Savings Plans**.
+- **Putting stateful or critical work on Spot**: a reclaimed Spot instance just shuts down with only about 2 minutes notice. A database, session state, or unsaved real-time transactions placed there lose all data when reclaimed. Keep stateful work on On-Demand or RI; give Spot only stateless, rerunnable work where "rerun if cut off" is fine.
+- **Assuming a Savings Plan guarantees a machine will be available**: the commitment gives you a **discount**, not reserved capacity. To guarantee a specific type at peak, use **On-Demand Capacity Reservations** or a **Zonal RI** separately.
 :::
 
 <Refs title="📚 Official docs & further reading">

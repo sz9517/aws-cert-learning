@@ -36,6 +36,21 @@ title: 雲端技術與服務（Cloud Technology & Services）
 一句話記：**Region ＞ 可用區（AZ）＞ 邊緣節點**，三者由大到小、由遠到近。
 :::
 
+:::note[🤔 為什麼要分這麼多層？]
+分層不是為了複雜，而是**一次解決兩件常互相矛盾的事**：既要「夠近夠快」又要「死不了」。
+- **只有一個機房**：那台一斷電，整個服務就掛了——所以要把 AZ 拆成數個獨立機房（分散風險）。
+- **全擠在同一個國家**：住對岸的使用者連線就慢——所以 Region 要散在全球（就近服務）。
+- **連 Region 都還不夠近**：靜態內容（圖片、影片）用數量更多的邊緣節點再貼近一步（就近快取）。
+:::
+
+:::tip[🧭 怎麼選 Region？四個常考判斷點]
+同一個服務可以開在不同 Region，選哪個不是隨便，主要看四件事：
+- **延遲（離使用者近不近）**：使用者在台灣就別把主機開在美國，越近連線越快。
+- **法規／資料落地**：有些法律要求「資料不能離開某國境」，就得選該國的 Region。
+- **價格**：同一服務在不同 Region 收費不同，成本敏感時可比價。
+- **服務可用性**：新服務不是每個 Region 一開始都有；要用的服務得先確認該 Region 支援。
+:::
+
 ## 二、存取 AWS 的方式：主控台、CLI、SDK、IaC
 
 同一件事，AWS 準備了好幾種「入口」，因為**不同情境適合不同人**。
@@ -57,6 +72,15 @@ title: 雲端技術與服務（Cloud Technology & Services）
 **CloudFormation** 是 AWS 原生的 IaC 工具：你寫一份「設計圖」範本（template），它就幫你把整套資源一次建好，之後要重建或刪除也一鍵完成。CLF 只要認得「要可重複部署整套環境 → 用 IaC（CloudFormation）」這個觀念即可。
 :::
 
+:::tip[🧭 一句話選對入口]
+- **只是想看看、臨時查一下 → 主控台**（看得到全貌、不用背指令）。
+- **同一件事要重複做、想寫成腳本 → CLI**。
+- **要在自己的程式裡呼叫 AWS → SDK**。
+- **要一次建好整套環境、而且以後能一鍵重建 → IaC**。
+
+重點：這四種**不是互斥**，常常混用（例如用主控台探索、用 IaC 正式部署）。考試別把它們當成「只能選一個」。
+:::
+
 ## 三、核心服務類別速覽
 
 接下來把最常見的服務依「大類」整理。**現在只要認得「哪個服務做什麼」就夠了**，深入的選型與設定留到實務或進階考試再學。
@@ -70,6 +94,10 @@ title: 雲端技術與服務（Cloud Technology & Services）
 | **<Term en="Elastic Container Service / Elastic Kubernetes Service" desc="AWS 的容器編排服務，EKS 是託管的 Kubernetes。">ECS／EKS</Term>** | 調度一堆「容器」的指揮中心（用 Docker／Kubernetes 部署） |
 | **<Term en="AWS Elastic Beanstalk" desc="把程式碼交給它，自動幫你佈建並管理底層資源的平台服務。">Elastic Beanstalk</Term>** | 把程式碼丟上去，它自動幫你佈建與管理底層環境 |
 
+:::info[🔑 EC2 vs Lambda，何時選哪個？]
+**要完整掌控整台機器、長時間一直跑、要裝特定環境 → EC2**；**只是偶發事件觸發的小任務、不想管伺服器、按用量付費 → Lambda**。簡單說：**穩定長跑選 EC2，零碎事件選 Lambda**。
+:::
+
 ### 💾 儲存（Storage）：檔案「放在哪裡」
 
 | 服務 | 一句用途 |
@@ -81,6 +109,8 @@ title: 雲端技術與服務（Cloud Technology & Services）
 
 :::info[🔑 一個容易混的差異]
 **EBS 一次只黏一台 EC2（像外接硬碟）；EFS 可以多台同時掛載共享（像網路磁碟機）。** S3 則是放整包檔案的物件倉庫，不是掛在機器上的硬碟。
+
+何時選哪個：**單台 EC2 的系統碟／資料庫碟 → EBS**；**多台伺服器要共用同一份檔案 → EFS**；**放圖片、備份、網站靜態檔、整包物件 → S3**。
 :::
 
 ### 🗄️ 資料庫（Database）：有結構的資料放哪、怎麼查
@@ -90,6 +120,10 @@ title: 雲端技術與服務（Cloud Technology & Services）
 | **<Term en="Relational Database Service" desc="代管式關聯式資料庫，如 MySQL、PostgreSQL。">RDS</Term>** | 代管的傳統表格式（關聯式）資料庫，免自己維運 |
 | **<Term en="Amazon Aurora" desc="AWS 自研、相容 MySQL/PostgreSQL 的高效能關聯式資料庫。">Aurora</Term>** | RDS 的加強版，更快、儲存自動長大 |
 | **<Term en="Amazon DynamoDB" desc="無伺服器 NoSQL，個位數毫秒延遲、幾乎無限擴展。">DynamoDB</Term>** | 免管機器的超快 NoSQL 資料庫 |
+
+:::info[🔑 RDS vs DynamoDB，何時選哪個？]
+**資料有固定表格結構、要用 SQL 做複雜查詢與關聯 → RDS（關聯式）**；**要極低延遲、超大流量、彈性欄位又不想管機器 → DynamoDB（NoSQL）**。一句話：**傳統表格查詢選 RDS，巨量高速、無伺服器選 DynamoDB**。
+:::
 
 ### 🌐 網路與傳遞（Networking & Delivery）：流量怎麼進來、怎麼送達
 
@@ -150,6 +184,12 @@ title: 雲端技術與服務（Cloud Technology & Services）
 | **AWS 文件（Documentation）** | 官方說明書：每個服務的設定、範例與最佳實務都在這裡 |
 | **知識中心（Knowledge Center）** | 常見問題的官方解答集，照著步驟就能解掉多數疑難 |
 | **<Term en="AWS Trusted Advisor" desc="自動檢查帳號並在成本、安全、效能等面向提出最佳化建議的顧問。">Trusted Advisor</Term>** | 幫你自動健檢帳號，給省錢、安全、效能等建議 |
+
+:::warning[🚑 常踩雷/常見誤解]
+- **Region 隨便選**：選錯會吃延遲（使用者在亞洲、主機開美國，連線就慢），嚴重時還**觸法**（有資料落地法規的國家，資料不能跑到別國）。選 Region 要看延遲、法規、價格、服務可用性。
+- **以為 CLI 是唯一／最專業的方式**：主控台、CLI、SDK、IaC 各有適用情境、常混用，不是「只能選一個」或「誰比較高級」。
+- **混淆常考服務對**：EC2（整台機器）≠ Lambda（事件觸發）；EBS（單台掛載）≠ EFS（多台共用）≠ S3（物件倉庫）；RDS（關聯式 SQL）≠ DynamoDB（NoSQL）；CloudWatch（看表現）≠ CloudTrail（看誰做了什麼）；SQS（佇列、一對一）≠ SNS（廣播、一對多）。
+:::
 
 :::tip[💡 CLF 常考點]
 這個領域考的是「認得」而非「精通」，把握以下幾個重點：

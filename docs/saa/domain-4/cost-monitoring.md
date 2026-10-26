@@ -46,6 +46,22 @@ title: 成本監控與治理：看得到花費，才控得住帳單
 
 </Analogy>
 
+## 為什麼用它、何時用哪個：五個工具的取捨一次看懂
+
+這幾個工具名字很像、功能又有點重疊，考試最愛考「**這個情境該選哪一個**」。重點不是「它能做什麼」，而是「**為什麼是它、不是旁邊那個**」。下面逐一講白話，每個都給「為什麼選它 / 優點 / 缺點 / 何時別用」。
+
+| 工具 | 為什麼選它（解決什麼） | 優點 | 缺點 / 限制 | 何時反而別用它 |
+| --- | --- | --- | --- | --- |
+| **Cost Explorer** | 要「用眼睛快速看出錢花去哪、趨勢怎麼走」。這是**人看圖做判斷**的工具。 | 不用設定、開箱即用；可拖拉按維度拆解；內建未來花費**預測**。 | 資料是**彙總**的，看不到逐筆；歷史資料有延遲（約 24 小時）；深度自訂分析做不到。 | 要**逐行帳單明細**、或要用程式／SQL 大量跑分析時 → 該用 CUR。 |
+| **AWS Budgets** | 要「**別讓帳單默默爆掉**」——先設門檻，超過或快超過自動告警，是**主動防守**。 | 可對成本／用量／RI·SP 使用率分別設預算；支援**預測型**提前示警；能發 SNS 做自動化。 | 它只**通知**不會自動幫你省或關資源；每帳號只有 2 個免費預算，多了要錢。 | 只是想**事後分析**趨勢（那是 Cost Explorer）、或要自動偵測未知異常（那是 Anomaly Detection）時。 |
+| **Cost and Usage Report（CUR）** | 要「**最細、逐行、每資源每小時**」的原始帳單，拿去自己深度分析。 | 顆粒度最細、欄位最全；輸出到 S3 可用 Athena／QuickSight／Redshift 任意分析；適合做自訂報表與回饋計費（chargeback）。 | **沒有現成圖表**，要自己接工具查；資料量大、S3 會產生儲存費；上手門檻高。 | 只想「快速看一眼趨勢」時用它太重 → 那是 Cost Explorer 的活。 |
+| **Cost Anomaly Detection** | 要「**不用人盯，花費一異常暴增就自動通知**」——用機器學習抓你平常看不出的突發。 | 免費；自動學習花費樣態；能按服務／帳號／標籤分別設監控器；抓的是**你沒預期到**的暴增。 | 要**累積一段歷史**才學得準；偵測到是「通知」，不會自動止血；對全新、沒歷史的服務較不靈。 | 你**已經知道**上限、只要「超過 X 元就叫我」時 → 那更單純，用 Budgets 就好。 |
+| **Organizations 合併帳單** | 要「**多帳號集中管理又更省**」——把整間公司帳號湊在一起付、一起拿折扣。 | 一張總帳單好對帳；用量**加總**更容易達量折扣門檻；RI／SP 可跨帳號**共享**不浪費。 | 需要先把帳號納入 Organizations（治理成本）；省的是「折扣加總」，不是幫你少用資源。 | 只有單一帳號、或各部門堅持獨立計費不共享折扣時，合併的意義就不大。 |
+
+:::info[🔑 一句話記住怎麼選]
+**看趨勢用 Cost Explorer、守預算用 Budgets、挖明細用 CUR、抓異常用 Anomaly Detection、多帳號省錢用 Organizations。** 關鍵分辨：Budgets 是「我**已知**的門檻」，Anomaly Detection 是「抓我**未知**的暴增」；Cost Explorer 是「**人看圖**」，CUR 是「**程式挖原始資料**」。
+:::
+
 ## 看得到：Cost Explorer 與 CUR
 
 <Term en="AWS Cost Explorer" desc="視覺化分析 AWS 花費與用量趨勢的工具，可依服務、帳號、標籤等維度拆解，並能預測未來花費。">Cost Explorer</Term> 是你最常打開的那張圖。它把過去的花費畫成趨勢圖，可以按**服務、帳號、區域、標籤**等維度拆解，馬上看出「哪個服務最貴、哪天開始漲」，還能依歷史趨勢**預測**未來幾個月的花費。它適合「快速分析、找出大戶」，但資料是**彙總過**的，不是逐筆明細。
@@ -141,13 +157,49 @@ $ aws budgets describe-budgets \
     --account-id 你的12位數帳號ID
 ```
 
+**用 CLI 一次把「預算 + 80% 告警寄信」建起來**：主控台點一點很直覺，但面試／實務常要可重複執行的腳本。下面用 `create-budget` 建一個「每月 1000 美元」的成本預算，並同時掛一個「實際花費達 80% 就寄 Email」的告警（AWS CLI 收兩個 JSON：`--budget` 定義預算本體、`--notifications-with-subscribers` 定義告警＋收件人）。
+
+```bash
+# 建立「每月 1000 美元」成本預算，並設定達 80% 寄信告警
+$ aws budgets create-budget \
+    --account-id 你的12位數帳號ID \
+    --budget '{
+      "BudgetName": "monthly-1000usd",
+      "BudgetType": "COST",
+      "TimeUnit": "MONTHLY",
+      "BudgetLimit": { "Amount": "1000", "Unit": "USD" }
+    }' \
+    --notifications-with-subscribers '[
+      {
+        "Notification": {
+          "NotificationType": "ACTUAL",
+          "ComparisonOperator": "GREATER_THAN",
+          "Threshold": 80,
+          "ThresholdType": "PERCENTAGE"
+        },
+        "Subscribers": [
+          { "SubscriptionType": "EMAIL", "Address": "you@example.com" }
+        ]
+      }
+    ]'
+```
+
+**預期結果**：指令**沒有輸出任何錯誤、直接回到提示字元**就代表建立成功（`create-budget` 成功時不回傳內容）。接著再跑一次上面的 `describe-budgets`，就會在清單裡看到 `"BudgetName": "monthly-1000usd"`，`BudgetLimit` 是 1000 USD。之後當這個月實際花費超過 800 美元（1000 的 80%），你填的那個 Email 就會收到 AWS Budgets 寄來的告警信。把 `NotificationType` 改成 `FORECASTED` 就變成「**預測**本月將超過」的提前示警。
+
+:::note[🔑 ACTUAL vs FORECASTED]
+`NotificationType` 兩種值的差別常考：**`ACTUAL`** 是「已經實際花到門檻」才告警（亡羊補牢）；**`FORECASTED`** 是 Budgets 依趨勢**預測**本週期將超過就提前通知（還來得及止血）。實務上**兩個都設**：低門檻的 FORECASTED 提早警示、100% 的 ACTUAL 做最後防線。
+:::
+
 <Cost>
 
 **好消息：這些監控工具本身大多很便宜或免費。** Cost Explorer 的主控台介面免費（呼叫它的 API 才按次計費）；每個帳號有**兩個免費的成本/用量預算**，超過才按每日計費；Cost Anomaly Detection **免費**；Trusted Advisor 的成本檢查**免費**基本項目（完整檢查需 Business 以上支援方案）；Compute Optimizer **免費**。真正會花錢的是 **CUR 輸出到 S3** 的那個 S3 儲存費。練習完記得把測試用的預算與 CUR 的 S3 物件清一清。
 
 </Cost>
 
-:::warning[🚑 實務常見錯誤]
+:::warning[🚑 常踩雷]
+- **從沒設 Budgets 告警，帳單爆了才發現**：這是最痛也最常見的雷。沒有任何門檻通知，你只能等**月底帳單**才知道中招，中間可能已經多燒好幾天。**上雲第一件事就是先設一個 Budgets 告警**（哪怕只是個粗略金額），把「被動收帳單」變成「主動被通知」。
+- **沒打成本分攤標籤，事後無法歸屬**：標籤只對「**啟用之後**產生的用量」生效，**不會回溯**。等老闆問「行銷部門花了多少」你才想到要標，過去幾個月的帳就**永遠拆不出來**了。資源一建立就該養成貼 `CostCenter` / `Project` 標籤的習慣。
+- **以為 Cost Explorer 能看逐筆，其實要用 CUR**：Cost Explorer 的資料是**彙總**過的，你在上面永遠看不到「某台 EC2 在某小時花了多少」這種逐行明細。需要逐筆／每資源每小時／要用 SQL 跑的分析，一律是 **CUR 輸出到 S3 + Athena**，別在 Cost Explorer 上硬鑽。
 - **貼了標籤卻忘了啟用**：Cost Allocation Tags 要在帳單設定裡「啟用」才會出現在成本報表，光貼標籤不會自動拆帳。
 - **只設 100% 才告警**：等真的超支才通知已經來不及，記得一併設 **預測型** 與較低門檻（如 80%）提前示警。
 - **以為合併帳單會自動省**：量折扣與 RI/SP 共享是把多帳號用量「加總」才划算，前提是真的有把帳號都納入 Organizations。

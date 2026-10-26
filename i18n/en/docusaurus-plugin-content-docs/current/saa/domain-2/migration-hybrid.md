@@ -43,6 +43,20 @@ When the data is **TB to PB scale** and **bandwidth is limited or the network tr
 The keywords for Snow are "**offline physical device + large data volume + limited bandwidth**". Whenever a question pairs "**PB-scale data**" with "**limited network bandwidth / upload would take weeks or months**", the answer is almost always **Snowball (Edge)**.
 :::
 
+#### Why pick it? Pros/cons? When not to use it?
+
+- **Why it's the one**: when "data volume ÷ available bandwidth" works out to weeks or even months of transfer, rather than clogging your link and dragging down normal business traffic, you load the data into a physical device and let **logistics** replace **the network**. In essence, you trade a truck's cargo capacity for the bandwidth you lack.
+- **Pros**: doesn't consume your internet bandwidth; the more data, the more cost-effective; devices have built-in **hardware encryption (AES-256)**; Snowball Edge can even **run compute / Lambda on the device** (great for factories, ships, or disconnected edge sites that process data before shipping it back).
+- **Cons**: there's a **physical wait** (order, receive, load, ship back, AWS-side upload — usually measured in **days to weeks**); someone has to be **on-site to plug in and move** the device; not suitable for "I need the data in the cloud right now".
+- **When not to use it**: when **bandwidth is actually sufficient** (do the math — a few hours to a day or two over the network) don't use Snow; that's DataSync's job. Also avoid it when you need **ongoing, long-term** sync (Snow is a one-time move, not a standing pipeline).
+
+:::warning[🚑 Common pitfall: estimate "how long" before deciding offline vs online]
+Many people see "lots of data" and reflexively pick Snow, but **whether you have the bandwidth** is the real deciding factor. Rough formula: **time (hours) ≈ data (GB) × 8 ÷ available bandwidth (Mbps) ÷ 3600**.
+- Example: **50 TB** (≈ 51200 GB) over a **1 Gbps (1000 Mbps)** link → about **114 hours ≈ 5 days** (ideal; real life is longer) → this is actually fine for **DataSync**; no need to wait for a physical device.
+- Example: **500 TB** over an ordinary **100 Mbps** commercial link → about **11000 hours ≈ 460 days** → now THIS is Snowball's job.
+On the exam, don't just look at "is it big" — be able to quickly weigh "data volume vs bandwidth vs acceptable time" in your head.
+:::
+
 ## Storage Gateway: let on-prem apps "use cloud storage seamlessly"
 
 <Term en="Storage Gateway" desc="An on-prem gateway that lets on-prem apps use familiar interfaces (file, block, tape) to access AWS cloud storage.">Storage Gateway</Term> is the poster child for **hybrid storage**: install a gateway on-prem, on-prem apps keep using the familiar interfaces (file, block, tape), and the data actually lands in AWS cloud storage. It comes in three types:
@@ -57,6 +71,13 @@ The keywords for Snow are "**offline physical device + large data volume + limit
 See "on-prem **existing backup software / wants to replace physical tapes**, back up to the cloud" → **Tape Gateway**; see on-prem needing **NFS / SMB file** access to S3 → **File Gateway**; see a need for **iSCSI block** devices → **Volume Gateway**.
 :::
 
+#### Why pick it? Pros/cons? When not to use it?
+
+- **Why it's the one**: the on-prem data center **isn't going away**, but you'd like to "tap into that nearly unlimited, cheap cloud storage too". Storage Gateway's value is that **on-prem apps don't change a single line of code** — they keep using the **familiar old interfaces** (NFS / SMB / iSCSI / tape) while the gateway quietly moves the data to S3 / Glacier behind the scenes. It's the bridge for "**cloud storage without changing existing systems**".
+- **Pros**: **low-latency on-prem access** to hot data (via local cache); seamlessly gains the cloud's durability and unlimited capacity; tape workflows can be replaced with cloud **as-is**; natural off-site backup.
+- **Cons**: you have to **deploy and operate a gateway** on-prem (a VM or physical appliance); performance depends on your **on-prem network and cache size**; it's a **long-term coexistence channel**, not something you tear down after one move.
+- **When not to use it**: if you just want to **move files up once** (and on-prem won't need them afterward) → that's **DataSync**, don't stand up a Storage Gateway; if you're fully **cloud-native with no on-prem** to connect → just use S3 / EFS directly, no gateway needed.
+
 ## DataSync: the "bulk-file express" that's online and automated
 
 <Term en="DataSync" desc="AWS's online data-transfer service that moves large numbers of files to S3 / EFS / FSx automatically, incrementally, and on a schedule.">DataSync</Term> takes the **online (over the network)** route and specializes in **automated bulk file transfer**:
@@ -70,6 +91,36 @@ See "on-prem **existing backup software / wants to replace physical tapes**, bac
 Both move large amounts of data; the difference is **offline vs online**: enough bandwidth, can go over the network → **DataSync**; limited bandwidth, data so big a network transfer would take forever → **Snow (ship a drive offline)**.
 :::
 
+#### Why pick it? Pros/cons? When not to use it?
+
+- **Why it's the one**: you have a big pile of on-prem files to move to S3 / EFS / FSx, **bandwidth is sufficient to go over the network**, but you don't want to hand-roll `rsync` / scripts, deal with reconnect retries, incremental diffs, and integrity checks yourself. DataSync **handles all of that**, and with an accelerated protocol it's often several times faster than hand-written scripts.
+- **Pros**: **incremental sync** (only moves what changed); automatic retries and **in-transit integrity verification**; can be **scheduled** to run periodically; a single agent can reach roughly **10 Gbps** throughput; simple pay-per-data-moved pricing.
+- **Cons**: **consumes internet bandwidth** (a big transfer can affect normal traffic — you can set a bandwidth throttle); you run a **DataSync agent** (VM) on-prem; ultimately limited by how much bandwidth you have.
+- **When not to use it**: if bandwidth simply isn't enough and the data is so big a network transfer would take months → use **Snow**; if on-prem needs to **keep using it long-term as cloud storage** (rather than finishing a one-time move) → that's **Storage Gateway**.
+
+<Scenario title="Hands-on scenario: use DataSync to sync an on-prem NAS to S3 on a schedule">
+
+Goal: every night, sync the **changed** files on an on-prem NAS (NFS) to S3 without hurting daytime bandwidth. Rough flow and **expected results**:
+
+1. Deploy a **DataSync agent** on-prem (VMware / Hyper-V / or EC2) → once started, the agent produces an **activation key**.
+2. Use that key to **activate the agent** in the console → status showing **ONLINE** means DataSync can now drive the on-prem side.
+3. Create two **locations**: the source (on-prem NFS — the agent plus the NFS path) and the destination (an S3 bucket).
+4. Create a **task** with options: enable "transfer only data that has changed", enable "verify", and set a bandwidth limit (e.g. relaxed at night, throttled during the day).
+5. Use an **EventBridge schedule** to trigger the task daily at 02:00.
+
+```bash
+# Manually start one transfer via CLI (to validate the setup)
+aws datasync start-task-execution --task-arn arn:aws:datasync:ap-northeast-1:111122223333:task/task-0abc123
+
+# Check this execution status (you will see LAUNCHING -> PREPARING -> TRANSFERRING -> VERIFYING -> SUCCESS)
+aws datasync describe-task-execution \
+  --task-execution-arn arn:aws:datasync:ap-northeast-1:111122223333:task/task-0abc123/execution/exec-0def456
+```
+
+**Expected result**: the first run moves **everything** and takes the longest; after that each run moves only **new / modified** files, and the execution summary shows numbers like `FilesTransferred` and `BytesTransferred`, ending at **SUCCESS**. In the S3 bucket you will see a directory structure matching the NAS.
+
+</Scenario>
+
 ## DMS: database migration with near-zero downtime
 
 <Term en="Database Migration Service" desc="AWS's database migration service; supports homogeneous and heterogeneous migrations, with continuous replication for near-zero downtime.">DMS (Database Migration Service)</Term> specializes in moving **databases**, and its hallmark is **near-zero downtime**:
@@ -81,6 +132,41 @@ Both move large amounts of data; the difference is **offline vs online**: enough
 :::tip[💡 Exam key point]
 When a question mentions "**changing the database engine**" (e.g. Oracle / SQL Server moving to Aurora / PostgreSQL) → the answer is **DMS + SCT**; same-engine move that must "**not interrupt service during migration**" → **DMS (continuous replication)**.
 :::
+
+#### Why pick it? Pros/cons? When not to use it?
+
+- **Why it's the one**: a database isn't something you can just "copy the files over" — it's constantly being written to, so a plain export/import would **miss the changes made during migration**, or force a long downtime. DMS uses **CDC (change data capture)** to chase changes while it migrates, achieving **near-zero downtime**; paired with **SCT** it can also convert the schema across engines. It's the standard answer for "**move a database to the cloud / change engines**".
+- **Pros**: **near-zero downtime** (CDC keeps syncing until the moment of cutover); supports both **homogeneous and heterogeneous** migrations; the source can be on-prem or another cloud's database; the source **keeps serving** during migration.
+- **Cons**: a **heterogeneous** migration requires **converting the schema with SCT first**, and complex objects like stored procedures, triggers, and custom functions **often need manual rewrites** (SCT produces an assessment report flagging what it can't auto-convert); DMS moves the **data**, not all the logic objects for you.
+- **When not to use it**: **same engine, same version** and you can tolerate brief downtime → that engine's **native backup/restore or snapshot** may be simpler; plain files rather than a database → that's DataSync / Storage Gateway, not DMS.
+
+:::warning[🚑 Common pitfall: a heterogeneous migration with "DMS only, no SCT" gets stuck]
+The exam's favorite trap: for a **Oracle → Aurora PostgreSQL** (engine-change) question, picking "migrate with DMS" alone is **incomplete** — different engines have **incompatible table schemas, data types, and stored-procedure syntax**, so you must **convert the schema with SCT first** (and handle the items SCT's report flags as non-auto-convertible), then let DMS load the data. Memory aid: **same engine needs only DMS; changing engines needs DMS + SCT**.
+:::
+
+<Scenario title="Hands-on scenario: near-zero-downtime migration of Oracle to Aurora PostgreSQL">
+
+Goal: move an on-prem Oracle order database to Aurora PostgreSQL **without interrupting service before cutover**. Rough flow and **expected results**:
+
+1. Use **SCT** to connect to the source Oracle and generate a **migration assessment report** → expect to see "X% auto-convertible, Y items need manual handling"; rewrite the stored procedures that can't be auto-converted accordingly.
+2. SCT applies the converted **schema** to the target Aurora PostgreSQL.
+3. Create a DMS **replication instance** (the worker that moves data), plus source and target **endpoints**, and **test the connection** for each → expect **successful**.
+4. Create a **migration task** of type "**migrate existing data and replicate ongoing changes (full load + CDC)**".
+
+```bash
+# Start the migration task (full load + continuous replication)
+aws dms start-replication-task \
+  --replication-task-arn arn:aws:dms:ap-northeast-1:111122223333:task:ABCD1234 \
+  --start-replication-task-type start-replication
+
+# Watch task status and progress (check FullLoadProgressPercent and CDC latency)
+aws dms describe-replication-tasks \
+  --filters Name=replication-task-arn,Values=arn:aws:dms:ap-northeast-1:111122223333:task:ABCD1234
+```
+
+**Expected result**: the task first runs the **full load** (`FullLoadProgressPercent` climbs from 0 to 100), then enters **CDC** to keep syncing new orders to Aurora, with `CDCLatencySource/Target` staying very low (seconds). When traffic is low and latency is near 0, switch the application connection string to Aurora, stop the task, and the near-zero-downtime cutover is done.
+
+</Scenario>
 
 ## Worth a mention: AWS Transfer Family
 
@@ -95,6 +181,21 @@ If on-prem teams or partners are used to transferring files over **SFTP / FTPS /
 | **Online** move / periodic sync of bulk files (NAS ↔ S3/EFS/FSx) | **DataSync** | Incremental, scheduled, automated, fast |
 | Moving a **database** (especially **changing engines**) | **DMS (+ SCT)** | Handles homogeneous and heterogeneous; near-zero downtime |
 | Keep an existing **SFTP / FTPS** workflow to S3 | **Transfer Family** | Managed file-transfer endpoint |
+
+### One table: what each of the four solves, and when to use which
+
+Line up all four and grill them with the same set of questions — it's the easiest way to remember the trade-offs:
+
+| | **Snow family** | **Storage Gateway** | **DataSync** | **DMS** |
+| --- | --- | --- | --- | --- |
+| **Solves what** | Offline move of **bulk** data | On-prem **keeps using** cloud storage | Online **bulk sync** of files | **Database** migration (incl. heterogeneous) |
+| **Offline / online** | Offline (ship a device) | Online (long-term channel) | Online (over the network) | Online (over the network) |
+| **One-time / long-term** | One-time move | **Long-term coexistence** | One-time or periodic sync | One-time migration (tear down after cutover) |
+| **What it moves** | Any files / objects | Files / block / tape | Files (NAS → S3/EFS/FSx) | Databases (tables, rows) |
+| **Key phrase to spot** | "limited bandwidth + PB-scale" | "on-prem still needs it" / "replace tapes" | "periodic sync" / "online move of NAS" | "change engines" / "near-zero downtime" |
+| **Common pairing** | Built-in encryption, edge compute | S3 / Glacier | EventBridge schedule | **SCT** (required when heterogeneous) |
+
+**One-sentence selection mantra**: first ask "am I moving **files** or a **database**" — a database always points to **DMS** first; if it's files, ask "will on-prem **stop needing them after the move** or **keep using them long-term**" — long-term use is **Storage Gateway**, finish-and-done then ask "**is bandwidth enough**" — enough is **DataSync**, not enough is **Snow**.
 
 ## Real-world application: it's not just for the exam
 
@@ -116,10 +217,11 @@ Matching against the decision table: for (1), large data plus limited bandwidth 
 | **Oracle to Aurora** (engine change, minimal downtime) | **DMS + SCT** |
 | On-prem needs **NFS / SMB** access to S3 | **File Gateway** |
 
-:::warning[🚑 Easy points of confusion]
-- **Snow vs DataSync**: the difference is **offline vs online** (whether you have enough bandwidth).
-- **DataSync vs Storage Gateway**: DataSync is about "**moving the files over**" (migration / sync); Storage Gateway is about "**on-prem keeps using** cloud storage long-term" (hybrid coexistence).
-- **When does DMS need SCT**: only for **heterogeneous (engine change)** migrations; same-engine migrations don't need it.
+:::warning[🚑 Common pitfalls]
+- **Enough bandwidth? Don't reflexively pick Snow**: seeing "lots of data" shouldn't trigger an automatic Snow pick — **first estimate the transfer time with "data ÷ bandwidth"**; if the network can finish in a few days, choose **DataSync**, because Snow still needs the physical device to ship back and forth and may actually be slower. The offline-vs-online dividing line is **bandwidth**, not the absolute data size.
+- **DataSync vs Storage Gateway is the easiest mix-up**: both involve "on-prem files + S3", but the purpose differs — DataSync is about "**moving the files over**" (a one-time migration or periodic sync; once done, that job is over); Storage Gateway is about "**on-prem staying attached and continuously using the cloud as storage**" (hybrid coexistence that's never torn down). A prompt about "**migration / sync**" → DataSync; about "**on-prem still needs to keep using it / replace tapes**" → Storage Gateway.
+- **A heterogeneous DMS migration always needs SCT**: for an **engine change** (like Oracle → Aurora), picking "migrate with DMS" alone is **wrong / incomplete** — the schema and syntax are incompatible, so **convert the schema with SCT first**, then let DMS move the data; only **same-engine** migrations skip SCT.
+- **Know how to estimate migration time**: don't just say "a long time" by feel. Mentally run **time (hours) ≈ data (GB) × 8 ÷ bandwidth (Mbps) ÷ 3600**; this step is often the deciding factor for "DataSync or Snow", and when a question gives you numbers, it wants you to do the math.
 :::
 
 <Refs title="📚 Official docs & further reading">

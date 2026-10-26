@@ -107,6 +107,13 @@ Goal: use that template to launch a group of "at least 2 machines, spread across
 6. Leave everything else at defaults → **Create Auto Scaling group**.
 7. Once created, go to the **Instances** list and confirm: the ASG has automatically launched **2 machines**, and they land in **two different AZs**.
 
+:::tip[💡 Why set minimum to 2 and pick two AZs?]
+**Why pick two different AZs**: an AZ is a physically separate data center. Cram all your machines into one AZ and a single power outage there takes everything down. Pick two AZs and the ASG spreads machines **evenly** across both, so if one AZ fails the other keeps serving — that's the foundation of high availability.
+**Why minimum 2, maximum 4**: a minimum of `2` guarantees "at least one machine in each of 2 AZs at all times", so even if one dies another is still carrying traffic; a maximum of `4` leaves room to **grow machines automatically** during a traffic spike. Set the minimum to `1` and the moment it dies you briefly go dark; set the maximum to `1` too and no new machine can ever be launched no matter how high traffic climbs — which defeats the point of this lab.
+
+**Expected result**: the Instances list shows exactly 2 `running` machines, and the **Availability Zone column shows two different AZs** (for example `ap-northeast-1a` and `ap-northeast-1c`). If both land in the same AZ, go back and check whether Step 3 only selected one subnet.
+:::
+
 ```bash
 # Confirm how many the ASG launched and which AZ each is in (use your group name)
 aws autoscaling describe-auto-scaling-groups \
@@ -120,12 +127,22 @@ Goal: put an ALB in front of the machines as the front desk, and wire the ASG up
 
 1. In the EC2 left menu click **Target Groups** → **Create target group**.
 2. Choose target type **Instances**; set **protocol/port** to `HTTP:80`; pick your **VPC**; set the **health check path** to `/` → Create. **Don't add machines manually here** — the ASG will register them automatically in a moment.
+
+:::tip[💡 Why set the health check path to `/`, and why switch the ASG to ELB-type health checks?]
+**Why path `/`**: the ALB periodically sends an HTTP request to this path and only counts a machine as healthy if it gets back `200`. The boot script in Step 1 puts the homepage `index.html` at `/`, so hitting `/` always returns `200`. Point it at a path that does not exist (say `/health` that you never created) and it keeps returning `404`, so the ALB marks **both machines unhealthy** and pulls them off the list — and all you see when you connect is a `503`. This is the classic "the machines are fine but I cannot connect" trap.
+**Why switch the ASG health check to ELB-type later**: by default the ASG only looks at the **EC2 level** (is the power and system status still there). It cannot tell that "httpd crashed but the machine is still powered on" — an application-level failure. Switch the ASG health check type to **ELB** and the ASG starts using "the ALB health check result for `/`" as its signal, so the ASG only replaces a machine when the web page genuinely stops answering. That is how self-healing reaches the layer users actually care about.
+:::
 3. Back in the left menu go to **Load Balancers** → **Create Application Load Balancer**.
 4. **Scheme**: choose **Internet-facing**.
 5. **Network mapping**: pick the same VPC and **select the same two AZs/subnets as the ASG** (the two sides must line up).
 6. **Security group**: choose one that **allows HTTP (port 80) inbound from the internet**.
 7. **Listener**: `HTTP:80` → forward to the target group you created in step 3 → **Create load balancer**.
 8. Finally, attach the ASG: go to **Auto Scaling Groups › `ha-web-asg` › Edit**, in the **Load balancing** section choose **attach to an existing target group**, pick the target group you just made, and save. From now on, every machine the ASG launches will **automatically register** with this target group.
+9. While you are still on the Edit page, change the **Health checks** type from the default **EC2** to **ELB** and save (reason in the tip above).
+
+:::info[What you should see]
+Once attached, go to **Target Groups › Targets** and you'll see the ASG's **2 machines appear in the list automatically**, starting in the `initial` state and turning **healthy** after a minute or two once the health check passes. You never manually added a single one — that's the ASG's automatic registration at work.
+:::
 
 ### Step 4: Connect via the ALB's DNS name and see load balancing in action
 
@@ -139,6 +156,35 @@ Goal: put an ALB in front of the machines as the front desk, and wire the ASG up
 aws elbv2 describe-target-health \
     --target-group-arn <your-target-group-ARN>
 ```
+
+:::tip[💡 Why must the ALB's AZs line up with the ASG's?]
+The ALB only sends traffic into the AZs it has **selected itself**. If the ASG's machines are in `1a`/`1c` but the ALB only selected `1a`, the machine in `1c` **never receives any traffic** — you're paying for an idle instance. That's why Step 3 stresses "select the same two AZs as the ASG": line both sides up and traffic actually reaches every machine.
+:::
+
+### Advanced (optional): generate load and watch the ASG grow machines
+
+Goal: watch "traffic rises → ASG adds machines" happen with your own eyes, not just "a dead one gets replaced".
+
+1. Go to **Auto Scaling Groups › `ha-web-asg` › Automatic scaling** → **Create dynamic scaling policy**.
+2. Policy type: **Target tracking scaling**; metric: **Average CPU utilization**; **target value**: `50`.
+3. Save. Then connect to a machine (or use a load-testing tool) and keep sending HTTP requests to drive CPU up.
+
+```bash
+# Hammer the ALB from another machine or your laptop to push backend CPU up (Ctrl+C to stop)
+# Replace the URL with your ALB DNS name
+while true; do curl -s http://ha-web-alb-xxxx.ap-northeast-1.elb.amazonaws.com/ > /dev/null; done
+```
+
+:::tip[💡 Why choose "target tracking" over the other scaling policies?]
+The ASG has three kinds of scaling policy; the difference is how much you have to babysit them:
+- **Target tracking**: you state a single target (e.g. "keep average CPU at 50%") and AWS works out how many to add or remove, like a thermostat. **The least effort, the most common, and the one AWS recommends by default** — so this lab uses it.
+- **Step scaling**: you define tiers yourself ("over 60% add 1, over 80% add 3") — more flexible, but you tune a lot of numbers by hand.
+- **Simple scaling**: the most basic — one action at a time with a cooldown wait; rarely used today outside special cases.
+
+The exam usually maps "automatically keep some utilization under load" to **target tracking**; remember the phrase "give it a target, it chases it".
+
+**Expected result**: about 2–3 minutes after you start generating load (CloudWatch metrics lag, so be patient), the ASG's **Activity** tab shows a "Launching a new EC2 instance" entry and the desired capacity is bumped up automatically (up to the `4` you set). **Stop the load**, wait a few more minutes, CPU drops, and the ASG automatically **scales back in**, converging the count back toward desired — that's elasticity: grow under load, shrink when idle, with no babysitting.
+:::
 
 ---
 
@@ -154,6 +200,15 @@ This is the most satisfying step of the whole lab — we kill a machine by hand 
 1. **The ALB automatically avoided the broken target** — users felt nothing, service never stopped.
 2. **The ASG automatically restored the count to desired** — this is **self-healing**.
 3. The whole time **you didn't lift a finger to launch a machine** — that's the power of elasticity and high availability.
+:::
+
+:::warning[🚑 Common traps]
+The four places most likely to leave you stuck or quietly burning money in this lab:
+
+- **Only using a single AZ**: the subnets (or the ALB's AZs) only had one selected, so the whole group is crammed into one data center. One outage there and everything goes down — the high availability you built is worthless. **Iron rule: both the ASG and the ALB must span at least 2 AZs, and the AZs on both sides must line up.**
+- **Misconfigured health check**: the health check path points at a page that does not exist (returns `404`), or the port/protocol is wrong — so every target is marked `unhealthy` and all you get from the ALB is a `503`. If the machines look fine but you cannot connect, nine times out of ten it's here. Check the **target group** status first — is it `healthy`?
+- **Wrong min/max**: set the minimum to `1` and losing one machine briefly takes the site down, so you never see "never goes down"; set the maximum to `1` and no new machine can launch no matter how high traffic climbs, so the advanced auto-scaling step can never trigger. Confirm it's **min 2 / desired 2 / max 4**.
+- **Finishing the lab without deleting the ALB/ASG — ongoing charges**: this is the trap most likely to land you a bill. The **ALB has no free tier**; as long as it exists it charges by the hour plus LCU, even with nobody connecting. The EC2 instances under the ASG also eat into your free-tier hours. When you're done, **delete everything in the order in the next section**, and above all don't miss the ALB.
 :::
 
 ---

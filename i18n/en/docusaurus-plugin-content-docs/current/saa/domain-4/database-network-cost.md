@@ -44,6 +44,31 @@ The single biggest database saving comes down to one sentence: **use "commit for
 - **On-Demand mode**: for traffic that is **unpredictable and may suddenly spike** — no capacity guessing, AWS handles it. Choose it for brand-new launches, unknown traffic, or peaks that are very hard to predict.
 - **Provisioned capacity + Auto Scaling**: cheaper when traffic is **relatively stable and predictable** — you preset read/write capacity units and let Auto Scaling fine-tune within a range, at a unit price far below on-demand.
 
+### Going deeper: the three database pricing models — why pick each, pros/cons, and when not to
+
+You have probably heard all these terms. The hard part is "**why pick this one and not the one next to it**". Here is each model laid out plainly.
+
+**RDS / Aurora Reserved Instance — commit for a discount**
+
+- **Why it exists**: a production primary database is almost always a stable load that "starts once and never stops all year". Since you will keep using it anyway, there is no reason to pay the "most flexible, most expensive" on-demand rate. A reservation is simply "you promise 1 or 3 years, AWS gives you up to 60 to 70 percent off".
+- **Pros**: the lowest unit price and the deepest discount; for a database already running on-demand, buying one drops the bill immediately with no architecture change.
+- **Cons**: it is a **commitment** — you pay for the whole term even if you shut the database down or traffic collapses. Pick the wrong (oversized) instance class and you cannot return it.
+- **When not to use it**: loads that swing wildly, or an environment that **may be shut down in six months** (short-term projects, temporary environments). A 1-year commitment used for 3 months wastes far more in monthly fees than the discount saves.
+- **Payment options**: All Upfront gives the deepest discount, Partial Upfront is in between, No Upfront is the shallowest but easiest on cash flow — if cash allows, All Upfront saves the most.
+
+**Aurora Serverless v2 — scale automatically with usage**
+
+- **Why it exists**: some loads are "very busy when busy, almost nobody when idle" (dev/test, internal back-office, seasonal peaks). Fix a big-enough instance and it burns money idling; fix a small one and it buckles at the peak. Serverless v2 lets AWS scale smoothly up and down in **ACU (Aurora Capacity Units)** by actual usage, so you pay only for what you use.
+- **Pros**: very low idle cost (can shrink to 0.5 ACU), automatic headroom at peaks, and zero capacity guessing or manual tuning.
+- **Cons**: the **per-unit price is higher than a fixed instance** — if the load is actually near-full all the time, Serverless ends up noticeably pricier than a reservation.
+- **When not to use it**: a stable load that stays close to full (that belongs on reserved/provisioned). Putting an "always busy" production primary on Serverless means paying the expensive unit price for steady volume, spending more.
+
+**DynamoDB: On-Demand vs Provisioned — one table, two ways to charge**
+
+- **Why On-Demand exists**: when traffic is **completely unpredictable** (a brand-new product, a marketing spike), you simply cannot estimate how much capacity to provision. On-Demand lets AWS absorb any peak, you pay per actual read/write, and you are **never throttled for under-provisioning**. The trade-off is a higher per-request unit price.
+- **Why Provisioned + Auto Scaling is cheaper**: when traffic is **relatively stable and estimable**, you pre-buy read/write capacity units (RCU/WCU) at a unit price as low as roughly 1/7 of on-demand, then let Auto Scaling fine-tune within your min/max to both save money and avoid throttling.
+- **A simple decision rule**: cannot estimate, worried about peaks → launch on On-Demand and observe; once you have seen the traffic pattern and can estimate → switch to Provisioned to save. You can **switch modes once per day**, so the common play is "start On-Demand, move to Provisioned once stable".
+
 <Analogy title="🍜 Analogy: database billing is like a restaurant booth vs à la carte vs an auto-sizing table">
 
 - **Reserved Instance = a year-round booth**: you tell the restaurant "I will come every week all year" and get a rock-bottom price. The catch: you must actually keep coming; no-shows still pay, which is waste.
@@ -91,6 +116,22 @@ To connect your on-premises data center to AWS, there are two paths:
 ### Do not ignore cross-AZ / cross-Region traffic fees
 
 Traffic between **Availability Zones (AZ)** within one Region, and **cross-Region** data replication, both incur transfer fees. Placing components that talk to each other frequently in the same AZ, or making good use of private intra-Region traffic, saves a cost that is usually invisible.
+
+### Going deeper: where network fees actually come from, and how to plug them
+
+Many people assume "all data in and out costs money", but the charging direction is actually quite regular — grasp the pattern and you know exactly where to save:
+
+- **Inbound is almost free**: data flowing into AWS from outside mostly carries no transfer fee. So "uploads" are usually not the bill's pain point.
+- **Internet egress is the priciest**: data sent out of AWS to users, to another cloud, or to your data center is the biggest line item. **Put <Term en="Amazon CloudFront" desc="The AWS content delivery network (CDN) that caches content at global edge locations to answer users nearby and lower origin egress fees.">CloudFront</Term> (a CDN) in front**, caching content at edge locations to answer users nearby — it is both faster and cheaper per GB than sending straight from the origin.
+- **Cross-AZ**: traffic between two AZs in the same Region is **charged once in each direction**. Database primary/standby, or an app tier hitting a database in another AZ, piles up on every request.
+- **Cross-Region**: replicating to another Region (DR, global multi-Region deployment) costs even more per GB. Not that you cannot do it, but know "this is money paid for availability", and do not accidentally route traffic to another Region.
+- **Within the same AZ, over private IP**: usually free or very low. So gathering frequently chatting components in the same AZ over a private path is the most direct saving.
+
+**The three main moves to cut network fees**: (1) user-facing egress → put CloudFront in front; (2) accessing S3/DynamoDB from within a VPC → open a Gateway Endpoint to bypass NAT; (3) architecturally, keep frequently interacting components in the same Region and AZ, over private IP.
+
+:::info[🔑 The direction people miscalculate most]
+**The NAT Gateway "processing fee" and the "data transfer fee" are two separate charges that stack.** Traffic through NAT is first charged a "per-GB processing fee", and if it also exits to the internet it is charged a "egress transfer fee" on top. So the same packet can get bitten twice — which is exactly why "use a Gateway Endpoint instead of detouring through NAT whenever you can" saves so noticeably.
+:::
 
 ## Database and network cost decision diagram
 
@@ -147,7 +188,21 @@ $ aws ec2 create-vpc-endpoint \
 - **Adding read replicas carelessly**: forcing a read replica onto a write-heavy database adds a fee without speeding up queries.
 - **Detouring through NAT to reach S3/DynamoDB**: forgetting the Gateway Endpoint means paying NAT processing and transfer fees for nothing (and the endpoint is free).
 - **Ignoring cross-AZ / cross-Region traffic fees**: splitting frequently chatting components across different AZs or Regions quietly piles up transfer fees you cannot trace.
+- **Forgetting the NAT "processing fee" and "egress transfer fee" stack**: people think the undeletable part is just the fixed hourly charge, but at high volume the "per-GB processing fee" is the big one, and internet egress adds another transfer layer on top. Routing everything that can go through a Gateway Endpoint is the real saving.
+- **Mis-estimating DynamoDB provisioned capacity**: estimate too low → hit a peak and get **throttled**, with users seeing `ProvisionedThroughputExceededException` and failed requests; estimate too high → capacity sits idle and you pay for nothing. When unsure, run On-Demand for a week or two to learn the traffic pattern, then switch to Provisioned with Auto Scaling min/max set.
+- **Aurora Serverless cold-start and cost blind spots**: v2 can shrink small (0.5 ACU), but the **minimum is not zero**, so leaving it up for long stretches still carries a floor cost; waking it up from near-idle to scale also has a brief scale-up delay. The bigger trap is "using Serverless while the load is actually near-full all the time" — the higher unit price makes the monthly total exceed a reservation. Do not equate "saving money" with "mindlessly using Serverless".
+- **Treating cross-Region replication as free insurance**: DR, Global Tables, and cross-Region snapshot copies all keep generating cross-Region transfer fees. Fine to do, but be clear this is a bill paid for availability — do not leave it running unconsciously.
 :::
+
+<Scenario title="Real scenario: the DynamoDB bill spikes, traced to 'over-estimated provisioned capacity'">
+
+Your shopping cart runs on DynamoDB. Early on it used On-Demand mode and everything was fine. At some point, "to be safe", you switched to Provisioned capacity, set RCU/WCU very high in case the peak was not enough, and did not enable Auto Scaling.
+
+**Expected result (what you see when it goes wrong)**: mid-month the bill is noticeably higher than last month, but CloudWatch `ConsumedReadCapacityUnits` / `ConsumedWriteCapacityUnits` are far below what you provisioned — meaning you **bought a big chunk of capacity you barely used**, and the gap is all waste.
+
+**Fix and expected result (after fixing)**: go back to On-Demand for two weeks and note the real read/write average and peak; then switch back to Provisioned, set the baseline slightly above the average, and enable **Auto Scaling** (target utilization around 70 percent) so it scales up at peaks and down off-peak. After the change you should see: the bill falls back, the `Consumed` curve hugs the `Provisioned` curve (no more large idle gap), and no `ProvisionedThroughputExceededException` throttling errors at peak.
+
+</Scenario>
 
 <Refs title="📚 Official docs & further reading">
 

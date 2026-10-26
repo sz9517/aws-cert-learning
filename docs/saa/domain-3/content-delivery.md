@@ -67,6 +67,46 @@ title: 內容傳遞與全球加速：CloudFront 與 Global Accelerator
 - **自動容錯移轉**：某個區域的端點出問題，流量會自動導向健康的區域。
 - **不快取**：每個請求都真的送到後端，靠的是「路徑更短更穩」而非「就近拿快取」。
 
+## 退一步想：為什麼要用 CDN？「就近送達」到底值多少
+
+把內容放到邊緣節點，省下的不是一點點。延遲的本體是**物理距離**：封包以接近光速在光纖裡跑，東京到巴西來回就是硬生生的兩三百毫秒，這跟你伺服器多強完全無關。而一個網頁通常不是一次請求就載完——它要先抓 HTML、再抓 CSS、JavaScript、一堆圖片，彼此還有先後相依。**每一次來回都吃一份延遲**，距離遠時這些延遲會疊起來，使用者就感覺「整頁慢吞吞」。
+
+CDN 的意義就是把這段來回距離**從「跨半個地球」縮成「到你家巷口」**：
+
+- **延遲大降**：靜態資源命中邊緣快取時，回應來自最近的節點，省掉回源的長途來回。
+- **來源更穩更省**：大量重複請求被邊緣擋下，來源（S3／ALB）負載與對外流量費一起降。
+- **尖峰扛得住**：突然爆量（如活動、上新片）由遍布全球的邊緣節點分攤，不會把單一來源打垮。
+- **安全往外推**：TLS 與 WAF 在邊緣就處理掉，惡意流量根本碰不到來源。
+
+一句話：**CDN 不是「讓伺服器變快」，而是「讓使用者不用大老遠來找伺服器」**。這也是為什麼它對「全球都有使用者、內容又可重複使用（可快取）」的網站幾乎是標配。
+
+## 為什麼是兩件事？CloudFront 與 Global Accelerator 根本在解不同的問題
+
+很多人第一次看會覺得「兩個都是 AWS 全球加速，不是差不多嗎？」——**其實解的是完全不同的問題**，混用會踩大雷。
+
+### 為什麼是 CloudFront（而不是 Global Accelerator）？
+
+- **它解的問題**：同一份內容被全球很多人重複要（圖片、影片、網頁、可快取的 API）。CloudFront 把內容**複製一份放到邊緣**，第二個人以後就不用回源了。
+- **相對 Global Accelerator 好在哪**：GA 只是路徑變快，**每個請求還是真的送到後端**；CloudFront 命中快取時**根本不回源**，延遲更低、來源負載更輕、對外流量費更省。
+- **優點**：可快取、省流量費、邊緣 HTTPS＋WAF、免費額度、支援動態內容。
+- **缺點／限制**：只處理 **HTTP(S)**；內容會被快取，所以**更新內容要處理失效（invalidation）或版本化檔名**，否則使用者拿到舊版；對「每次都要打到後端、不能快取」的即時連線幫不上忙。
+- **什麼時候反而別用它**：你的流量是 **TCP/UDP 的非 HTTP 即時連線**（遊戲、VoIP、IoT）、或需要**固定不變的 IP** 做白名單——這時該換 Global Accelerator。
+
+### 為什麼是 Global Accelerator（而不是 CloudFront）？
+
+- **它解的問題**：連線路徑本身太慢太不穩（走壅塞的公開網際網路），而且內容**不能快取**（每個封包都要送到後端）。GA 給你固定 anycast IP，讓流量一上路就走 **AWS 專網**。
+- **相對 CloudFront 好在哪**：支援 **TCP/UDP**（CloudFront 不行）、給你**2 個固定 anycast IP**（CloudFront 給的是會變的 DNS 名稱）、跨區自動容錯移轉。
+- **優點**：非 HTTP 也行、固定 IP 方便白名單、路徑更短更穩、秒級區域容錯。
+- **缺點／限制**：**不快取**（無法降低來源負載或省流量費）、有**固定每小時費用**且無免費額度、對「可快取的網站內容」並不是最省的解。
+- **什麼時候反而別用它**：你的內容其實**可以快取**（網站、影片、靜態資源）——那用 CloudFront 又快又省，GA 反而多花錢又沒快取好處。
+
+:::info[🔑 一句話記法：快取 vs 固定 IP]
+糾結選哪個時，問自己兩個問題就好：
+1. **內容能快取嗎？**（同一份東西很多人重複要）→ 能 → **CloudFront**。
+2. **是非 HTTP（TCP/UDP）或需要固定 IP 嗎？**→ 是 → **Global Accelerator**。
+兩個都想要也可以**疊著用**：前面 CloudFront 快取 HTTP 內容，後端用 GA 加速非 HTTP 的連線。
+:::
+
 ## CloudFront vs Global Accelerator 怎麼選（最重要的一張表）
 
 | 比較項目 | CloudFront | Global Accelerator |
@@ -120,7 +160,31 @@ title: 內容傳遞與全球加速：CloudFront 與 Global Accelerator
 # 查看某個 CloudFront 發佈的設定與狀態
 $ aws cloudfront get-distribution \
     --id <你的發佈ID>
+# 預期結果：回傳一包 JSON，Distribution.Status 一開始是 "InProgress"，
+# 全球部署完成後變成 "Deployed"；DomainName 就是 xxxx.cloudfront.net。
 ```
+
+**怎麼確認真的命中快取了？** 用瀏覽器開發者工具（F12）看回應標頭 `X-Cache`：
+
+- 第一次載入（或剛改完內容）通常是 `Miss from cloudfront`——代表這次回源抓了。
+- 同一資源再載一次，應該變成 `Hit from cloudfront`——代表直接從邊緣回，**沒再打擾 S3**。這就是省流量費的證據。
+
+### 🛠️ 綁自訂網域與 HTTPS 憑證（最容易卡住的一步）
+
+想讓網站用 `www.example.com` 而不是 `xxxx.cloudfront.net`，要在 CloudFront 掛一張 <Term en="AWS Certificate Manager" desc="AWS 的憑證服務，可免費簽發與自動續期 TLS/SSL 憑證。">ACM</Term> 憑證。**關鍵鐵則：給 CloudFront 用的 ACM 憑證一定要簽在 `us-east-1`（維吉尼亞北部）這個區域**，不管你的 S3／ALB 在哪個區域都一樣。
+
+```bash
+# ⚠️ 一定要指定 --region us-east-1，否則 CloudFront 的下拉選單裡「看不到」這張憑證
+$ aws acm request-certificate \
+    --domain-name www.example.com \
+    --validation-method DNS \
+    --region us-east-1
+# 預期結果：回傳 CertificateArn（arn 裡會看到 us-east-1）。
+# 之後在 CloudFront 發佈的「Alternate domain name (CNAME)」填 www.example.com，
+# 「Custom SSL certificate」才選得到這張簽在 us-east-1 的憑證。
+```
+
+> 為什麼是 us-east-1？因為 CloudFront 是全球邊緣服務，它統一只讀 us-east-1 的 ACM。這題在考試和實作都超常坑人——憑證簽錯區域，CloudFront 的下拉選單就是空的，很多人卡在這裡找不到原因。
 
 <Cost>
 
@@ -128,11 +192,14 @@ CloudFront 有**免費額度**（每月一定量的傳出資料與請求），�
 
 </Cost>
 
-:::warning[🚑 實務常見錯誤]
-- **把 CloudFront 當成「加速 TCP/UDP 遊戲」用**：CloudFront 是給 HTTP(S) 內容快取的；非 HTTP 的即時流量要用 Global Accelerator。
-- **以為 Global Accelerator 會快取**：它只加速路徑、不存內容，想降低來源負載請用 CloudFront。
+:::warning[🚑 常踩雷]
+- **把 Global Accelerator 當 CDN 用**：GA **不快取**，想降低來源負載、省流量費、加速網頁靜態資源，那是 CloudFront 的工作。把 GA 當 CDN 只會多花固定費用又拿不到快取好處。
+- **把 CloudFront 當「遊戲加速」用**：CloudFront 只吃 HTTP(S)、而且會快取；線上遊戲／VoIP／IoT 這種 **TCP/UDP 即時連線**要用 Global Accelerator 的固定 anycast IP ＋ 專網路徑。方向搞反，服務根本接不起來。
+- **CloudFront 的 ACM 憑證沒簽在 us-east-1**：給 CloudFront 用的自訂網域憑證**一定要在 `us-east-1` 簽發**，否則 CloudFront 下拉選單裡**找不到**這張憑證。不管你的來源在哪個區域都一樣，這是全球服務的硬性規定。
+- **狂用快取失效（Invalidation）當更新手段**：Invalidation **每月只有前 1,000 個路徑免費，超過要收費**，而且全球生效要時間。正確做法是**檔名版本化**（如 `app.v2.js`、`style.abc123.css`），改了就換檔名，讓 CDN 自然抓新檔，把 invalidation 留給少數緊急情況。
+- **沒設 TTL／快取策略（Cache Policy）就上線**：沒好好設 TTL 或快取鍵，可能**該快取的沒快取**（命中率低、一直回源、延遲與帳單都高），或**不該快取的被快取**（每個人看到別人的個人化頁面）。靜態資源給長 TTL，動態／個人化內容用正確的快取鍵或乾脆不快取。
+- **快取未更新內容還在舊版**：改了檔案卻忘了失效或版本化檔名，使用者會一直拿到邊緣的舊快取。
 - **S3 直接對公開開放**：應改用 CloudFront + OAC，S3 不直接對外，更安全也更省流量費。
-- **快取未更新內容還在舊版**：改了檔案卻忘了**失效（Invalidation）**或設版本化檔名，使用者會一直拿到邊緣的舊快取。
 :::
 
 <Refs>
@@ -141,6 +208,9 @@ CloudFront 有**免費額度**（每月一定量的傳出資料與請求），�
 - [AWS Global Accelerator 開發人員指南](https://docs.aws.amazon.com/global-accelerator/latest/dg/what-is-global-accelerator.html)
 - [用 CloudFront 提供 S3 內容（限制存取 OAC）](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html)
 - [CloudFront 與 AWS WAF 整合](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-aws-waf.html)
+- [為 CloudFront 綁自訂網域與 SSL 憑證（憑證須在 us-east-1）](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cnames-and-https-requirements.html)
+- [管理 CloudFront 快取：TTL 與快取策略](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-the-cache-key.html)
+- [CloudFront 失效（Invalidation）與計費](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Invalidation.html)
 - [CloudFront 與 Global Accelerator 的差異（AWS FAQ）](https://aws.amazon.com/global-accelerator/faqs/)
 
 </Refs>

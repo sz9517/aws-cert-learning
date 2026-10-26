@@ -63,6 +63,56 @@ DynamoDB spreads data across partitions by the hash of the <Term en="Partition K
 - **Multipart Upload (<Term en="Multipart Upload" desc="Splitting a big file into parts uploaded in parallel; a failure only re-sends that part.">Multipart Upload</Term>)**: split a big file into parts uploaded **in parallel** — faster, and a failure only re-sends that one part. AWS recommends using it **for anything over 100 MB**.
 - **Transfer Acceleration (<Term en="S3 Transfer Acceleration" desc="Speeds up long-distance cross-border uploads via CloudFront edge locations.">S3 Transfer Acceleration</Term>)**: for cross-border, long-distance uploads, data first goes to the nearest CloudFront edge location, then rides the AWS backbone back to the bucket — a clear speed-up.
 
+## Going deeper: why split it this way? The trade-offs
+
+Above covered "how"; this section adds the **"why"** — what bottleneck each move solves, when to use it, and what it costs. Exams love "why pick this over that", and in real work you make these trade-offs every day.
+
+### Vertical vs horizontal scaling: get this big-picture split first
+
+When something "isn't powerful enough" there are usually two reflexes — be clear which road you're on:
+
+| Direction | How | Pros | Cons / limits |
+| --- | --- | --- | --- |
+| **Scale Up (vertical)** | Swap the single machine for a bigger one (more CPU/memory) | Simplest, almost no code change | **A hard physical ceiling** (the biggest instance is only so big), swaps often need downtime, single point of failure, cost grows non-linearly as it gets bigger |
+| **Scale Out (horizontal)** | Add more machines, spread the load across copies | Virtually no ceiling, add while running, one dies and others survive | Must handle the complexity of "how to split data, keep it synced, query across pieces" |
+
+:::info[🔑 The trade-off in one line]
+**Scaling up is "make one person stronger"; scaling out is "hire more people".** Making one person stronger always hits a limit, and if that person is off everything stops; hiring more has almost no ceiling and is more resilient — the cost is you must learn "division of labor and coordination". This page's read/write split, sharding, and S3 multiple prefixes are all concrete moves of **horizontal scaling** — which is exactly why the cloud can sustain massive traffic.
+:::
+
+### Why read/write split? It solves "reads crushing the database"
+
+- **Why this**: most apps have far more reads than writes. When read requests pile up until the DB's CPU/connections blow up, rather than endlessly swapping the primary for a bigger box (scale up — a ceiling, and expensive), you **add replicas dedicated to reads** and let the primary handle only writes. It's the most intuitive move for "solve a read bottleneck with horizontal scaling".
+- **Pros**: read throughput scales almost linearly with the number of replicas; replicas can sit across AZs/regions too, improving availability and DR along the way.
+- **Cons / cost**: replicas are **asynchronous** with replication lag (usually ms to seconds); and it **does nothing for a write bottleneck** — writes still all funnel to the single primary. Each replica is another instance to pay for.
+- **When NOT to use**: if the bottleneck is actually **writes** (lots of INSERT/UPDATE), a read/write split won't help — consider sharding, or a database with higher write throughput (like DynamoDB). Also, for strong-consistency "read-your-own-write immediately" cases, don't read the replica.
+
+### Why shard/partition? It solves "data or requests all piling in one spot"
+
+- **Why this**: when a single database/single partition can't even handle the **writes** or the **total data volume**, a read/write split can't save you (replicas still absorb every write). Now you **cut the data itself** apart, spreading it across partitions/machines so each piece carries only a portion — and writes plus capacity scale horizontally with it.
+- **Pros**: write throughput and total capacity both grow with the number of shards; hot spots get spread out instead of jamming one point.
+- **Cons / cost**: **cross-shard queries and transactions get hard** (data isn't in one place, so JOINs/aggregations must be stitched in the app layer or scan every shard); **pick the partition key wrong and you must re-shard**, which means a painful data move; operational complexity clearly rises.
+- **When NOT to use**: while data and write volume are still comfortably within one machine, don't shard early "in case it grows someday" — you pay the complexity up front and the benefit hasn't arrived. Lean on a read/write split or cache first; shard only when you truly hit the single-machine ceiling.
+
+:::info[🔑 Read/write split vs sharding — which first?]
+**Bottleneck in reads → read/write split first (+ cache)**; **bottleneck in writes or total volume → only then shard.** They stack: shard to spread writes, then hang read replicas off each shard for reads. The usual order is "cache → read/write split → finally shard", because each later step is more complex and harder to undo.
+:::
+
+### S3 performance best practices: when to use each of the three
+
+| Move | Solves what | When to use | Expected effect |
+| --- | --- | --- | --- |
+| **Multiple prefixes in parallel** | A single prefix hits its request-rate cap (3,500 writes / 5,500 reads per second) | High-request-rate reads/writes (lots of small files, logs) | Each extra prefix adds another budget; throughput scales almost linearly |
+| **Multipart Upload** | Big-file uploads are slow and prone to mid-way failure | Files **>100 MB** (>5 GB forces it) | Parts upload in parallel — faster; a failure re-sends only the broken part |
+| **Transfer Acceleration** | Cross-border/long-distance uploads have high latency, slow speed | Users far from the bucket, and files big enough to be worth it | Rides CloudFront edges + the AWS backbone — a clear long-distance speed-up |
+
+:::warning[🚑 Common pitfalls]
+- **Stale reads after a read/write split**: replicas are async with lag. "User just changed a setting, next page reads the replica" may well return the **old value**. For read-after-write, read the primary (or use Aurora's tooling to guarantee reading your own write).
+- **Cross-shard queries get hard**: once split, "list the latest 100 orders site-wide" is no longer one SQL — you either scan every shard and merge, or build a separate aggregate table / search index. **Decide what you query most before choosing the partition key**, or you'll shard and then find your main query needs every shard.
+- **Thinking "add machines = faster"**: adding replicas when **writes** are the bottleneck, or when the app still connects only to the primary, adds nothing. First measure whether the bottleneck is reads or writes, CPU or I/O, then decide what to add — not "slow, so add machines".
+- **S3 hot prefix**: dumping a flood of objects under one prefix (everything in `uploads/`) hits the single-prefix cap even though S3 is powerful, yielding 503 `SlowDown`. **Spread objects across multiple prefixes** (folders by date or user ID) so requests fan out.
+:::
+
 :::tip[💡 Exam key point]
 Match the keyword straight to the bottleneck and tool — nearly free points:
 - Question mentions **read traffic surging, heavy database read pressure** → **Read Replica** (even better paired with ElastiCache caching)

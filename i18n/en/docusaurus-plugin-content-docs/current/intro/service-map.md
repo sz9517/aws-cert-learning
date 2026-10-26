@@ -21,6 +21,16 @@ AWS is the same. Its services fall into a handful of major categories (compute, 
 Each category below comes with one table, with the columns "**Service ｜ In one sentence ｜ Typical use**". For now, just getting a rough impression is enough — don't force yourself to memorize the details. Every service here has its own in-depth page elsewhere on this site. When you hit an unfamiliar abbreviation, you can always look it up in the [Glossary & Services](../glossary.md).
 :::
 
+:::tip[💡 How to use this map]
+This page is an **index, not a memorization list**. Don't try to learn it all at once — treat it like a bookshelf: when you hit a problem, first ask "which section does this belong to?", then flip to that section and find the lead actor. The things beginners trip over most are a few look-alike services, so here's a one-liner each on "when to use which":
+
+- **EC2 vs Lambda**: needs to stay on with full control of the whole machine → EC2; only runs briefly on an event and you'd rather not manage machines → Lambda.
+- **S3 vs EBS**: storing "whole files" (images, backups, website assets) → S3; need a "hard drive" for a specific EC2 to read and write → EBS.
+- **RDS vs DynamoDB**: relational, transactional, SQL-based tabular data → RDS; blazing-fast, easy-to-scale NoSQL with a simple shape → DynamoDB.
+
+It is fine not to remember it — come back and look it up when you need to, and it will sink in with use.
+:::
+
 ## 🖥️ Compute: where your code "runs"
 
 Your website, app, and backend code all need something to execute them — that's the problem the compute category solves. From "renting a whole computer" to "not even managing machines", you have different options.

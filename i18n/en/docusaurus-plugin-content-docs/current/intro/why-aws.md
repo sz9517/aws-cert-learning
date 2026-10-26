@@ -41,10 +41,28 @@ You are in Taiwan, but you have customers in the US and Japan. AWS has **data ce
 AWS turns "**the hassle of running an entire IT data center**" into "**using it like electricity and water: it's just there, and you pay the bill by usage**". You just focus on your business or product; broken hardware or a data-center fire is AWS's problem.
 :::
 
+## Compared to the alternatives, where does AWS win, and what are the tradeoffs?
+
+"Going to the cloud" is not just AWS — there is Azure, Google Cloud, and even "just buy your own machines and self-host". A quick comparison:
+
+- **Versus self-hosting**: no huge upfront spend on hardware, no data center, no ops staff to feed — **just turn it on and pay for what you use**. But for very large, steady, predictable workloads, the **unit cost** of self-hosting can actually come out lower. That is the tradeoff.
+- **Versus Azure / Google Cloud**: the core concepts are much the same across all three (compute, storage, networking, scalability). AWS's edge is **the widest range of services, the biggest market share and community, and the easiest-to-find tutorials and examples**; the downside is **so many options that beginners get lost**.
+- **The shared tradeoff**: the cloud saves you the hardware and ops headaches, but in return **you have to read the bill and control costs**. Pick the wrong service or forget to turn something off, and the bill will startle you.
+
+For getting certified, starting with AWS is the most practical move: the concepts (elasticity, availability, cost optimization) are really shared across providers, so moving to another one later is not hard.
+
 ## What does this have to do with the exam?
 
 SAA tests you as a **Solutions Architect**. The job of this role is to help a company decide **how to cleverly combine these AWS services** to be stable, fast, and cost-effective.
 
 Once you understand "why use it", every service that follows will make sense as a solution to a problem — instead of rote memorization.
+
+:::warning[🚑 Common misconceptions]
+These are the three myths newcomers most often hold. Clear them up before going further:
+
+- **"The cloud is always cheapest"**: the cloud saves you the big upfront spend and the ops staff — it does **not** guarantee the lowest total bill. Pick the wrong service, forget to shut something down, or force a high-elasticity plan onto steady traffic, and it gets more expensive. Cheap only holds when **you control costs**.
+- **"Learning AWS locks you into one vendor"**: the core concepts (scalability, high availability, cost optimization) are shared across providers, so moving to Azure or Google Cloud later is a low bar. What locks you in is usually not the concepts but **over-relying on a few proprietary services without any abstraction** — that is an architecture choice, not a fault of learning AWS.
+- **"A certificate means you can build it"**: a certificate proves you **understand the concepts and can choose the right service**, but real skill still comes from **building it yourself and hitting the pitfalls**. That is why every article here comes with hands-on steps; the certificate is the map, doing it is the actual walk.
+:::
 
 👉 Next: [What exactly is the cloud?](./what-is-cloud.md)

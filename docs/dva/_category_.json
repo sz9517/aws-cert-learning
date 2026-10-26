@@ -1,0 +1,13 @@
+{
+  "label": "DVA · 開發人員",
+  "position": 5,
+  "className": "sidebar-primary",
+  "collapsible": true,
+  "collapsed": false,
+  "link": {
+    "type": "generated-index",
+    "slug": "/dva",
+    "title": "DVA｜Developer – Associate（DVA-C03）",
+    "description": "AWS Certified Developer – Associate（DVA-C03）的完整中文學習筆記、實務與練習題。偏重用 AWS 服務開發、部署、除錯雲端應用，與 SAA 大量重疊（IAM、Lambda、S3、DynamoDB、API Gateway），很適合考完 SAA 後接著拿。"
+  }
+}

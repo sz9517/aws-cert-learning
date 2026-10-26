@@ -53,6 +53,22 @@ You'll notice: a truly good architecture has a good answer to **all six** of the
 The six pillars often **pull against each other**: making something more reliable (adding standby servers) usually makes it cost more. SAA questions love testing this trade-off — if a question stresses "**lowest cost**", lean toward cost; if it stresses "**zero downtime**", lean toward reliability. Spotting which pillar the question cares about is the key to answering correctly.
 :::
 
+### Trade-offs between pillars, spelled out
+
+The most common beginner misconception is thinking a "good architecture" means **maxing out all six pillars at once**. In reality **no architecture can score top marks on all six**, because they compete for the same resources:
+
+- **Cost vs Reliability**: to avoid downtime you add standby servers and deploy across multiple regions — reliability goes up, but so does the bill.
+- **Cost vs Performance**: to go faster you upgrade to pricier instances and add more caching — performance goes up, but so does cost.
+- **Performance vs Security**: encrypting and strictly checking every single request is safer, but it also adds a little processing time.
+
+So a "good architecture" isn't about turning everything up to the max — it's about **deciding which pillar takes priority based on this system's goals**. A small internal tool can sacrifice a bit of reliability to save money; a bank's core system would rather spend more than ever go down. **When answering, first ask yourself: which single pillar does this scenario care about most?** That judgment is exactly what the official exam keeps training.
+
+:::warning[🚑 Common pitfalls & misconceptions]
+- **Thinking you must max out all six pillars**: as above, the pillars trade off against each other — chasing top marks on all six is both impossible and usually a waste of money. A good architecture prioritizes by goal, not "everything at maximum".
+- **Treating Well-Architected as a "tool/service"**: at its core it's a **thinking framework**, not a cloud service you turn on that generates a bill. The thing actually called a "tool" is the Well-Architected **Tool** below (the free health-check tool in the console) — do not confuse the two.
+- **Ignoring the Cost or Sustainability pillars**: many people only worry about "will it break, is it fast, is it secure" and forget cost (a blown-up bill is still a bad architecture) and sustainability (hitting the goal with less compute). These are full pillars too, and both the exam and real-world practice look at them.
+:::
+
 ## Key mapping: the six pillars ↔ the four SAA exam domains
 
 This part is hugely important for beginners — it lets you understand the entire SAA exam outline at a glance:

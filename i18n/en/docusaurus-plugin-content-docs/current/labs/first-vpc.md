@@ -58,6 +58,15 @@ The difference between a **public subnet and a private subnet** comes down to on
 
 Goal: build a VPC containing **one public subnet** and **one private subnet**, and let the public subnet reach the internet.
 
+:::info[🧭 Think it through first: why this design]
+So every step has a "why" behind it, here's the plan in plain terms:
+
+- **Why one public and one private subnet?** It's the minimal "layering" demo: **put outward-facing things in public, lock things that shouldn't face the internet in private**. In real architectures the web server sits in public and the database in private, so breaking into the web server still can't reach the database.
+- **Why `/16` for the VPC and `/24` for subnets?** `/16` gives you 65,536 internal IPs (a big plot of land), plenty to carve many subnets out of later; each `/24` subnet has roughly 250 usable IPs, more than enough for a single purpose. **Plan big, then slice small** so you don't run out of room and have to redo it.
+- **Why span two different AZs?** If a single AZ's data center goes down, everything in it goes with it; **spanning AZs is what makes high availability possible**, and it's the prerequisite for every multi-AZ architecture later.
+- **Why does public need an IGW and a route table pointing at it?** The IGW is the VPC's one door to the outside; **having the door isn't enough — you also have to "draw a road" in the route table pointing to it** so traffic knows to leave through that door. Without that route, even a subnet with public IPs can't get out.
+:::
+
 The AWS console has a handy wizard called **VPC and more** that **builds the VPC, subnets, route tables, and IGW all at once and wires them together**. We'll use the wizard to build it quickly first (and explain what it did for you), then show what each step is if you do it by hand.
 
 ### Option A: let the "VPC and more" wizard do it all (recommended for beginners)
@@ -80,11 +89,25 @@ When the wizard finishes, it has actually built all of this for you at once: **1
 If you want to truly grasp what the wizard did behind the scenes, building it by hand in this order makes it click:
 
 1. **Create the VPC**: VPC service → left menu **Your VPCs** → **Create VPC** → choose "VPC only" → name `my-first-vpc`, IPv4 CIDR `10.0.0.0/16` → Create.
+   - **Why build this first?** The VPC is the "outer frame" — subnets, route tables, and the IGW all have to hang off some VPC, so it must come first.
+   - **What you should see**: a new `my-first-vpc` entry in the VPC list with state `Available`, and AWS has already created a "main route table" for it automatically — that default table only has the rule for internal VPC traffic, with **no** route to the outside.
 2. **Create the public subnet**: left menu **Subnets** → **Create subnet** → select your VPC → name `public-1a`, pick an AZ (e.g. `ap-northeast-1a`), CIDR `10.0.1.0/24`.
+   - **Why CIDR `10.0.1.0/24`?** It must fall "inside" the VPC's `10.0.0.0/16` range and **must not overlap** any other subnet; we reserve the `.1.` block for public, and the private one will use `.2.` next — easy to tell apart at a glance.
+   - **What you should see**: a new `public-1a` entry in the subnet list in the AZ you picked. It is **not truly "public" yet** — that only happens once you wire up the route in steps 5 and 6.
 3. **Create the private subnet**: same flow, name `private-1c`, pick a **different AZ** (e.g. `ap-northeast-1c` — spanning AZs is for high availability), CIDR `10.0.2.0/24`.
+   - **Why deliberately a different AZ?** Spreading public and private across different data centers is the cheapest high availability you can get; in a real architecture you'd put a public+private pair in each AZ.
+   - **Why is it automatically private without "doing" any routing?** Because private just means "the route table has no path to the IGW" — we **wire up nothing**, so it's closed to the outside by default.
+   - **What you should see**: another entry `private-1c` in the subnet list, in a different AZ from `public-1a`.
 4. **Create and attach the IGW**: left menu **Internet Gateways** → **Create internet gateway** → name and create → select it → **Actions › Attach to VPC** → choose your VPC.
+   - **Why "attach" it to the VPC after creating it?** A freshly created IGW is an orphan not connected to any VPC, with state `Detached`; **only after attaching does it actually become that VPC's door to the outside**. Skip this and a route table pointing at it does nothing.
+   - **What you should see**: the IGW's state flips from `Detached` to `Attached`, showing the VPC ID it is attached to.
 5. **Create a public route table and add a route**: left menu **Route Tables** → **Create route table** → select your VPC, name it `public-rt` → open it → **Routes › Edit routes › Add route** → Destination `0.0.0.0/0`, Target = your **IGW** → Save.
+   - **Why set the route this way?** `0.0.0.0/0` is the notation for "all destinations (i.e. the entire internet)"; in plain terms this rule says "**send any outbound traffic through the IGW door**." This is the one and only difference between a public and a private subnet.
+   - **Why create a separate table instead of editing the default main route table?** Editing the main route table would make **every subnet that isn't explicitly assigned elsewhere become public**, which easily opens a door for ones that should stay private; keeping **one table just for public and leaving private on the default** stays clean and hard to get wrong.
+   - **What you should see**: `public-rt`'s route list has two entries — the internal `10.0.0.0/16 → local` (there by default, can't be removed) plus the `0.0.0.0/0 → igw-xxxx` you just added.
 6. **Associate the public subnet with the public route table**: in `public-rt`, under **Subnet associations** → **Edit subnet associations** → check `public-1a` → Save. (Don't associate the private subnet with this table, so it stays private.)
+   - **Why is this "associate" step needed too?** A route table doesn't apply to any subnet automatically; **you have to explicitly associate it so the table with the outbound route actually takes effect on `public-1a`**, which is what finally makes it public.
+   - **What you should see**: `public-rt`'s subnet associations list `public-1a`; meanwhile `private-1c` is still associated with the **main route table** (no outbound route), so it stays private.
 
 The result of Option B is identical at its core to what the wizard builds — the only difference is the wizard clicks every button for you at once.
 
@@ -103,10 +126,17 @@ Want to see with your own eyes that the public subnet really works? Launch a tin
 ```bash
 # If it prints your public IP, the machine really can reach the internet
 $ curl -s https://checkip.amazonaws.com
+# What you should see: a public IP, e.g.
+# 54.xxx.xxx.xxx
 
 # Or simply ping an external site (Ctrl+C to stop)
 $ ping -c 3 aws.amazon.com
+# What you should see: three "64 bytes from ..." lines with a latency (time=xx ms), ending in 0% packet loss
 ```
+
+:::note[👀 Why "Auto-assign public IP = Enable" is the critical bit]
+Step 3 above must set **Auto-assign public IP** to **Enable**. Why? Because "the public subnet has a route to the IGW" only means "the door is open"; **the machine itself still needs a public IP to actually walk out that door**. Missing either one and it can't reach out — this is one of the most common things beginners get stuck on.
+:::
 
 ---
 
@@ -120,6 +150,13 @@ $ ping -c 3 aws.amazon.com
 🎉 Congrats — you've built a cloud network with your own hands, complete with public and private layers!
 
 ---
+
+:::warning[🚑 Common traps: nearly every beginner hits these four]
+- **You forget to delete the NAT gateway and the bill keeps climbing.** A NAT gateway **is billed per hour just for existing** (even with zero traffic), which can run to $20-30 a month. We deliberately chose "None" this time; if you created one by accident, **be sure** to delete it under VPC → NAT gateways — and **also release the Elastic IP it used**, since an Elastic IP not attached to a running resource is billed too.
+- **The route table is misconfigured and nothing can get out.** Two most common causes: one, you **forgot to add the `0.0.0.0/0 → IGW` route** to the public route table; two, you **forgot to "associate" the public subnet with that table** (step 6), so the subnet is still on the main route table with no outbound route. When you can't get out, check these two first.
+- **Poor CIDR planning you can't easily fix later.** A subnet CIDR **must fall inside the VPC range and not overlap** other subnets; a VPC's CIDR **cannot be shrunk or freely changed** once created. Do not slice the VPC too small up front (e.g. a `/24`), or you will run out of IPs when adding subnets later. Prefer a large range like `/16`.
+- **A security group or NACL locks you out of your own instance.** Even with routing all correct, **if a Security Group or Network ACL (NACL) blocks the traffic, you still cannot connect**. When you cannot reach the EC2, confirm the security group's **Inbound rules** allow the connection you want (EC2 Instance Connect needs an inbound rule for the right source); a NACL is a firewall at the subnet level, open by default, but if you have edited it, remember it **must allow both directions separately** (unlike a security group, it does not automatically remember the return trip).
+:::
 
 :::warning[🧹 Always clean up! Skipping this keeps charging you for NAT/EIP and similar resources]
 A VPC itself is free, but this lab can involve **some billable resources** (e.g. a NAT gateway if you created one by mistake, or an EC2 you forget to shut down). Remove everything in order:

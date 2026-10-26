@@ -51,6 +51,31 @@ Data high availability has two completely different goals, which the exam loves 
 - File storage: **<Term en="Elastic File System" desc="AWS-managed shared file system that multiple EC2 instances can mount at once, across AZs.">EFS</Term> spans multiple AZs natively and can be mounted by many instances at once**; **<Term en="Elastic Block Store" desc="A block disk attached to a single EC2, bound to one AZ.">EBS</Term> is bound to a single AZ** and cannot be mounted across AZs. For cross-AZ shared files, choose EFS.
 :::
 
+## Deep dive: why are Multi-AZ and Read Replica "two different things"?
+
+The exam loves to mix them up because both are "replicas sitting on another machine" — they look alike. But they **solve completely different problems**, like a "spare tire" versus "adding another traffic lane": one keeps you moving **when something breaks**, the other makes you run **smoother in normal times**.
+
+### What problem does each one solve
+
+- **Multi-AZ solves "afraid of going down"**: your database is a single point for the whole system. If its data center loses power, the hardware fails, or AWS performs low-level maintenance, the whole site falls over. Multi-AZ keeps a **synchronous** standby in **another AZ** — it quietly keeps up with every write but serves no traffic; the instant the primary fails, RDS promotes the standby. The goal is one word: **survive** (high availability).
+- **Read Replica solves "reads too slow"**: when queries crush the database (reports, search, lots of users reading at once), what you need is not a standby but **more machines dedicated to reading**. Read Replicas are **asynchronous** copies; the app routes the "read-only" traffic to them, and the primary breathes easier. The goal here is also one phrase: **spread the load** (read scaling).
+
+### The key differences at a glance
+
+- **Synchronous vs asynchronous**: Multi-AZ is **synchronous** — a write isn't done until the standby has it too, so the standby is **always identical to the primary** and promotion loses no data. A Read Replica is **asynchronous** — the primary returns success first and the replica catches up later, so a replica may serve data that is **a few seconds stale** (this is "replication lag").
+- **Serves traffic vs pure standby**: a Read Replica **works all the time** (serving reads); a Multi-AZ standby **serves no traffic at all** — you cannot connect to it, it just sits on standby. That's exactly why "use Multi-AZ to offload reads" is wrong — it isn't open for you to read.
+- **Automatic takeover vs no automatic takeover**: when the primary dies, the Multi-AZ standby **automatically** becomes the primary within minutes; a Read Replica **does not** take over automatically — you must **manually** promote it into a standalone primary, after which it leaves the original replication relationship and becomes a brand-new database.
+
+### When to use which? Can you use both?
+
+- **Only afraid of going down, no read pressure** → just enable **Multi-AZ**.
+- **No HA need, purely slow reads** (e.g. running reports in a dev/test environment) → just add a **Read Replica**.
+- **Production that must both stay up AND is dragged down by reads** → **use both together!** This is the most common correct answer: Multi-AZ handles HA (a synchronous standby waiting in another AZ) while 1–N Read Replicas offload queries. They each do their own job and don't conflict. When a question stresses both "high availability" **and** "read performance", the answer is **both together** — don't pick just one.
+
+:::info[🔑 One line to remember the difference]
+**Multi-AZ is "insurance" (synchronous, no reads, automatic failover); a Read Replica is "extra hands" (asynchronous, reads only, no automatic takeover).** "No downtime" → Multi-AZ; "reads too slow" → Read Replica; both asked → use both.
+:::
+
 ## How it works (diagram)
 
 <div className="flow">
@@ -67,7 +92,11 @@ Data high availability has two completely different goals, which the exam loves 
 
 ## Other HA designs you should know
 
-- **Aurora**: AWS's own MySQL/PostgreSQL-compatible database. Data is automatically stored as **2 copies in each of 3 AZs (6 copies total) within a single Region**, making it highly durable and available. When a question stresses "the most highly available relational database", it often points here.
+- **Aurora**: AWS's own MySQL/PostgreSQL-compatible database. Data is automatically stored as **2 copies in each of 3 AZs (6 copies total) within a single Region**, making it highly durable and available. When a question stresses "the most highly available relational database", it often points here. Its HA benefits go beyond traditional RDS Multi-AZ:
+  - **Self-healing on failure**: as long as a majority of the 6 copies can still be read/written, the cluster keeps running, and Aurora repairs a damaged copy in the background — you do nothing.
+  - **Faster failover**: traditional RDS Multi-AZ failover usually takes 1–2 minutes; because Aurora's storage layer is shared, it typically promotes a read replica to primary in **under 30 seconds**.
+  - **Serves reads and HA at once**: an Aurora read replica **doubles as the HA standby** — it serves reads normally (read scaling) and can be automatically promoted when the primary fails (high availability). It effectively merges "Multi-AZ standby" and "Read Replica" into one, the biggest difference from traditional RDS.
+  - **Unified endpoints**: writes go to the **Cluster Endpoint** (always points at the current primary) and reads go to the **Reader Endpoint** (automatically spreads traffic across the read replicas); endpoints stay the same after failover, so the app notices nothing.
 - **DynamoDB**: fully managed NoSQL; data spans multiple AZs by default. When you need **cross-Region** availability and low latency near users, use **<Term en="Global Tables" desc="DynamoDB setting that automatically replicates bi-directionally across multiple Regions for low-latency reads/writes everywhere.">Global Tables</Term>**.
 - **S3**: durability of **99.999999999% (11 nines)**, with data stored across AZs automatically; to keep a copy in another Region (compliance or off-site DR) use **<Term en="Cross-Region Replication" desc="S3 automatically copies objects to a bucket in another Region.">Cross-Region Replication (CRR)</Term>**.
 - **EFS vs EBS**: multiple EC2 instances need to share the same files across AZs → **EFS**; a single machine's system/data disk → **EBS** (remember it's bound to one AZ).
@@ -88,6 +117,7 @@ During a big midnight sale, the data center (AZ) hosting your database suddenly 
 4. Pick instance size `db.t3.micro` (Free Tier eligible), set credentials → **Create database**
 5. Once created, open the DB details to see **Multi-AZ: Yes** and a fixed **Endpoint** — the app always connects to this endpoint and doesn't change after failover.
 6. Want to test it? In the console choose **Actions › Reboot** on the DB, tick **Reboot with failover**, and watch it switch to the other AZ automatically.
+   - **Expected result**: the DB status briefly shows "Rebooting", the console's "Availability Zone" field **changes from the original AZ** (e.g. `ap-northeast-1a`) **to another AZ** (e.g. `ap-northeast-1c`), while the **Endpoint string stays exactly the same**. The interruption is usually **60–120 seconds**, and `CloudWatch` logs a failover event. This is exactly how you see for yourself that "failover is automatic, but there is a brief interruption".
 
 <Cost>
 
@@ -95,8 +125,11 @@ Because Multi-AZ keeps an extra standby running, it costs about **twice a single
 
 </Cost>
 
-:::warning[🚑 Common real-world mistakes]
-- **Treating a Read Replica as high availability**: it's asynchronous and won't fail over automatically; if the primary dies it won't take over. For HA, use Multi-AZ — don't confuse the two.
+:::warning[🚑 Common traps]
+- **Treating a Read Replica as a standby / fault tolerance**: it's asynchronous and won't fail over automatically; if the primary dies it **won't take over**. Its job is to "offload reads", not to "replace the primary". For HA and automatic failover, use Multi-AZ — don't confuse the two.
+- **Assuming Multi-AZ can share read load**: a Multi-AZ standby **serves no traffic at all** in normal times — you can't connect to it or read from it; it just sits there synchronously standing by. To offload read traffic, add a **Read Replica**, not point your connection at the Multi-AZ standby (which you can't reach anyway).
+- **Assuming failover is "zero downtime"**: failover is indeed **automatic**, but not instant or seamless — the DNS endpoint has to re-point to the new primary, typically a **60–120 second brief interruption** (Aurora is faster, within about 30 seconds). Your application must be able to **reconnect/retry automatically**; don't assume enabling Multi-AZ means not a single second of interruption.
+- **Ignoring cross-Region Read Replica lag**: because a cross-Region replica must replicate across geographic distance, its **replication lag is noticeably larger than same-Region** (possibly seconds or more). Using it to read data that "must be the latest" (e.g. stock right after an order) will return stale values. Cross-Region replicas suit "reads closer to users, disaster recovery", not real-time queries with strict consistency needs.
 - **Assuming EBS can be mounted across AZs**: EBS is locked to the AZ where it was created; an EC2 in another AZ simply can't attach it. For cross-AZ sharing, use EFS.
 - **Thinking Multi-AZ alone is bulletproof**: Multi-AZ guards against "data-center-level" failure; it does not replace **backups** (which guard against accidental deletion and logical errors). Use both.
 :::

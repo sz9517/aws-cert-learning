@@ -122,5 +122,29 @@
   "sidebar.tutorialSidebar.category.CLF · 雲端從業者.link.generated-index.description": {
     "message": "AWS Certified Cloud Practitioner (CLF-C02) is the entry-level foundational certification — broad and concept-focused, with no complex architecture — a great first cert for complete beginners or non-engineering roles such as PMs, sales, and managers. This section distills the four domains into a few pages plus original practice questions.",
     "description": "The generated-index page description for category 'CLF · 雲端從業者' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.DVA · 開發人員": {
+    "message": "DVA · Developer",
+    "description": "The label for category 'DVA · 開發人員' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.DVA · 開發人員.link.generated-index.title": {
+    "message": "DVA | Developer – Associate (DVA-C03)",
+    "description": "The generated-index page title for category 'DVA · 開發人員' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.DVA · 開發人員.link.generated-index.description": {
+    "message": "Complete English study notes, hands-on practice, and questions for AWS Certified Developer – Associate (DVA-C03). Focused on developing, deploying, and debugging cloud apps with AWS services; it overlaps heavily with SAA (IAM, Lambda, S3, DynamoDB, API Gateway), making it a great next cert after SAA.",
+    "description": "The generated-index page description for category 'DVA · 開發人員' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Domain 1 · 用 AWS 服務開發 (30%)": {
+    "message": "Domain 1 · Develop with AWS Services (30%)",
+    "description": "The label for category 'Domain 1 · 用 AWS 服務開發 (30%)' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Domain 1 · 用 AWS 服務開發 (30%).link.generated-index.title": {
+    "message": "Domain 1: Develop with AWS Services",
+    "description": "The generated-index page title for category 'Domain 1 · 用 AWS 服務開發 (30%)' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Domain 1 · 用 AWS 服務開發 (30%).link.generated-index.description": {
+    "message": "Weighted 30% — the largest domain in DVA. Covers Lambda, API Gateway, DynamoDB, S3/SDK, and event-driven decoupling from a developer's perspective, plus the AI-assisted development added in C03.",
+    "description": "The generated-index page description for category 'Domain 1 · 用 AWS 服務開發 (30%)' in sidebar 'tutorialSidebar'"
   }
 }

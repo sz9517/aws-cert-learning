@@ -63,6 +63,81 @@ Route 53's power is that "a single domain name can have multiple records, and di
 - **Alias vs CNAME**: to point at an AWS resource (ELB, CloudFront, S3 static site) use an **Alias record** — it's **free**, and the **zone apex (root domain, e.g. `example.com`) can only use an Alias**; a CNAME cannot be used at the root domain.
 :::
 
+## Why use Route 53 (and not just any DNS)?
+
+A plain DNS service does one thing: translate a name into an IP. Route 53 adds **"steer traffic to the right place based on conditions"**, and it's deeply integrated with the rest of AWS:
+
+- **Built-in health checks**: Route 53 periodically knocks on endpoints to confirm they're alive, and stops sending traffic to the ones that are down — the foundation of automatic failover, which plain DNS can't do.
+- **Free Alias records to AWS resources**: pointing at an ELB, CloudFront, or S3 static site costs no query fees, and the record **follows the resource's IP automatically** when it changes (detailed below).
+- **Multiple routing policies**: a single domain name can return different answers based on "lowest latency, user's country, weight ratio, health status" — offloading part of your traffic-control logic to the DNS layer.
+- **A highly available service itself**: Route 53 is one of the few AWS services carrying a **100% availability SLA**.
+
+:::info[🔑 Clearing up a common misconception in one line]
+Route 53 decides **which server to send a user to**, not **how the connection itself is handled**. It acts during the "look up the name" phase, before the user has connected; what actually accepts the connection, does connection-level load balancing, and blocks traffic is **ELB / WAF / Shield**, not Route 53. This boundary matters both on the exam and in practice (more in "Common pitfalls" below).
+:::
+
+## How do you choose a routing policy? When to use which (pros/cons + health checks)
+
+The table above tells you "what each policy does"; this section adds "**why pick it, when not to, and whether to pair it with a health check**" — which is exactly what scenario questions test.
+
+<Analogy title="☎️ First, remember the seven transfer styles with the switchboard analogy">
+
+- **Simple**: one set of extensions; hands out one from the list at random.
+- **Weighted**: send 90% to the old agents, 10% to the new ones, to test the waters.
+- **Latency**: transfer to the branch that "connects fastest".
+- **Failover**: if the main extension doesn't answer, auto-transfer to the backup extension.
+- **Geolocation**: look at **which country you're calling from** and transfer to a different branch (regulation / localization).
+- **Geoproximity**: look at **how far away you actually are**, and use a bias to manually "enlarge or shrink" a region's service area.
+- **Multivalue answer**: hand you several healthy extension numbers at once; you pick one to dial yourself.
+
+</Analogy>
+
+| Policy | Why choose it | Cons / limits | Pair with a health check? |
+| --- | --- | --- | --- |
+| **Simple** | Least setup; enough for a single-endpoint site | **Does not support health checks**; returns the IP even if it's down | Cannot (this is its biggest limit) |
+| **Weighted** | Gradually ramp by ratio; first choice for blue/green, canary, A/B testing | You maintain the weights; not a real load balancer | Recommended (a failed endpoint's weight is treated as 0, so no traffic goes to it) |
+| **Latency** | In multi-region deployments, connect each user to the region that is **fastest for them** | Compares "network latency", not "geographic distance" — the two don't always match | Recommended (so a down region can be excluded) |
+| **Failover** | The standard answer for Active-Passive HA | Only primary/secondary roles; no multi-endpoint splitting | **Required** (without a health check it has no idea when to switch) |
+| **Geolocation** | Serve different content by the user's **country/continent**; regulatory blocking, localized language versions | Based on "where the user is", so it **doesn't guarantee fastest**; set a `Default` record to catch unmapped regions | Recommended |
+| **Geoproximity** | When you need **fine control over "how large an area each region serves"**, using a bias to grow/shrink a region's reach | More complex setup, requires **Traffic Flow**; harder to grasp than latency routing | Recommended |
+| **Multivalue answer** | Want "simple distribution + only healthy IPs returned" — adds health filtering over Simple | **Not a load balancer**: just returns several records at random and the client picks; no connection-level distribution | Recommended (automatically filters out unhealthy IPs) |
+
+:::tip[💡 Exam key point: keyword → policy map]
+- "Global users should connect to the **fastest** region" → **Latency** (keyword: speed / latency).
+- "Serve different content by the user's **country** / block a specific country" → **Geolocation** (keyword: country / region / regulation). ← Most confused with latency: one compares speed, the other location.
+- "**Automatically** switch to the backup when the main site goes down" → **Failover + health checks** (neither works without the other).
+- "Gradually **ramp up** a new version and be able to roll back" → **Weighted**.
+- "**Fine-tune a region's service area** (bias)" → **Geoproximity**.
+- "Return **multiple healthy IPs** for the client to pick, without standing up an ELB" → **Multivalue answer**.
+- If you see an option pairing **Simple with a health check**, eliminate it — Simple **does not support** health checks.
+:::
+
+## Alias vs CNAME: why prefer Alias
+
+This one shows up on almost every exam, and trips people up in practice too. Both "point one name at another target", but the differences are crucial:
+
+| Comparison | **Alias (Route 53-specific record)** | **CNAME (standard DNS record)** |
+| --- | --- | --- |
+| **Usable at the root domain (zone apex, e.g. `example.com`)?** | Yes | **No** (not allowed by DNS rules — the most common sticking point) |
+| **Query cost when pointing at AWS resources** | **Free** | Billed as normal queries |
+| **Target IP changes** | Route 53 **follows automatically** (e.g. if an ELB's IP changes, you do nothing) | Points at a **name**; the IP behind that name is managed by the other side |
+| **What it can point at** | AWS resources (ELB, CloudFront, S3 static site, API Gateway, another Route 53 record in the same zone...) | Any domain name (including non-AWS external domains) |
+| **Response type** | Returns an **A/AAAA** (IP) directly on query | Returns a **CNAME** (name); the client must look up again |
+
+**So why prefer Alias?**
+
+1. **The root domain can only use Alias** — to make `example.com` (not `www.example.com`) point straight at an ELB/CloudFront, **only Alias can do it**; a CNAME at the zone apex is invalid.
+2. **It's free** — Alias queries to AWS resources are not charged; CNAME queries are.
+3. **One less hop, one less thing to maintain** — Alias returns the IP directly (one fewer DNS round trip), and it follows the target resource's IP automatically, so you never hand-edit the record.
+
+**So when do you still need a CNAME?** When you must point at a **non-AWS external domain name** (e.g. a third-party SaaS gives you `xxx.vendor.com`), Alias can't reach it, so you use a CNAME — but remember it can **only be used on a subdomain** (like `www`, `app`), never the root domain.
+
+<Scenario title="Real scenario: the boss wants example.com (not www) to open my site directly">
+
+You put the site behind CloudFront and want users typing `example.com` to land right on it. Your first instinct is to add a CNAME pointing at the CloudFront domain — but Route 53 simply won't let you store a CNAME at the root domain. The fix: on the root domain `example.com`, create an **Alias record (type A) pointing at that CloudFront distribution**; while you're at it, add an Alias or CNAME for `www` pointing to the same place.
+
+</Scenario>
+
 ## How failover works (diagram)
 
 <div className="flow">
@@ -97,10 +172,18 @@ Your boss says: "This site is the company's face. If the primary data center has
 ```bash
 # Query the IP a domain currently resolves to, to verify the switch
 $ dig +short www.example.com
+# Expected: while the primary is healthy, you get the primary IP (e.g. 52.1.2.3);
+# make the primary health check fail, wait past the TTL, query again, and it
+# should switch to the backup IP (e.g. 54.9.8.7).
 
 # nslookup works too (common on Windows)
 $ nslookup www.example.com
+# Expected: a Name / Address pair; the Address is the IP Route 53 is returning right now.
 ```
+
+:::tip[💡 How to confirm failover actually kicked in]
+Don't just read "Unhealthy" in the console. What to actually do: turn the primary health check red → **wait longer than the TTL you set** → run `dig`/`nslookup` above and check whether the returned IP has changed to the backup site. Query before the TTL expires and you'll likely get a cached old IP and wrongly conclude it didn't switch.
+:::
 
 <Cost>
 
@@ -108,11 +191,12 @@ Route 53's cost is small but not zero: each **hosted zone** is about **$0.50/mon
 
 </Cost>
 
-:::warning[🚑 Common real-world mistakes]
-- **Changed a record but it didn't take effect immediately?** DNS has a **TTL (cache time)**; old results are cached until they expire. Before a planned switch, lower the TTL first (e.g. 60 seconds).
-- **Want a CNAME on the root domain `example.com`?** You can't! The zone apex can only use an **Alias**. This is the most common sticking point.
-- **Set up failover but created no health check?** Then Route 53 has no idea the primary is down and won't switch. The two must go together.
-- **Treating Route 53 as a load balancer?** Multivalue answer just "returns several IPs at random" — it has no connection-level health or distribution. For real load balancing, use ELB.
+:::warning[🚑 Common pitfalls]
+- **TTL set too long, so switching is slow?** DNS results are **cached by every layer (the user's computer, their ISP) until the TTL expires**. If your primary/backup records have a TTL of 3600 seconds, after a failover it can take up to an hour for old users to see the new IP. **Lower the TTL first (e.g. 60 seconds) before switching**, then raise it back once stable. This is the number-one reason for "I set up failover but switching feels super slow".
+- **Want a CNAME on the root domain `example.com`?** You can't! The zone apex can only use an **Alias**; a CNAME can only be used on a subdomain (like `www`). This is the most common sticking point — memorize it for a free point.
+- **Set up failover but created no health check?** Then Route 53 has no idea the primary is down and **will never switch** — the setup is pointless. Failover **must** be tied to a health check, and confirm the path it monitors (e.g. `/health`) really returns a non-2xx/3xx on failure.
+- **Think Route 53 can "block traffic"?** Route 53 only **returns an IP**; once the user has the IP they **connect directly to your server**, so traffic never passes through Route 53. It therefore **cannot stop a DDoS or enforce WAF rules** — that is the job of **Shield / WAF / ELB**. Do not treat Route 53 as a firewall or load balancer.
+- **Treating multivalue answer as a load balancer?** Multivalue just "returns several healthy IPs at random for the client to pick" — it has no connection-level health detection or distribution. For real load balancing, use **ELB**.
 :::
 
 <Refs title="📚 Official docs & further reading">

@@ -58,6 +58,15 @@ Goal: spin up a Linux server and successfully connect to see its prompt.
 9. On the right, confirm "Number of instances = 1" and click **Launch instance**.
 10. Back in the instance list, wait for the **instance state** to change from `Pending` to **`Running`**, and for the **status checks** to pass.
 
+:::note[🤔 Why pick each option this way? (beginner plain-talk)]
+- **Why Amazon Linux?** It's AWS's own, cheapest, most compatible Linux, and it even comes with the AWS CLI pre-installed — the least likely to trip up a beginner.
+- **Why must it be `t2.micro` / `t3.micro`?** Only these "Free tier eligible" small types stay **free** within the Free Tier. Pick anything else and billing starts — the number-one reason beginners blow up their bill.
+- **Why is "Proceed without a key pair" okay?** Because we connect from the browser instead (next section), so there's no `.pem` key file to safeguard — one less thing to lose or leak.
+- **Why the default VPC / subnet?** The default network already sets up the basic "can reach the internet, you can connect in" rules for you. As a beginner, don't touch networking yet — just focus on the feel of launching a machine.
+
+**What you should see**: a new row `my-first-server` appears in the list, state first an orange `Pending`, then after a minute or two a green **`Running`**, with "status checks" showing `2/2 checks passed`. That screen means the machine really is up.
+:::
+
 ### Connect to it (no SSH keys to manage)
 
 Don't want to deal with SSH key files? AWS offers two "connect right from the browser, more secure" options — pick either one:
@@ -81,7 +90,16 @@ $ hostname
 $ cat /etc/os-release
 ```
 
+**What you should see**: `hostname` prints a name like `ip-172-31-xx-xx`; `cat /etc/os-release` prints several lines of system info containing `Amazon Linux`. Getting output back means you really are inside that machine running commands.
+
 🎉 Congrats — you just launched a server in the cloud with your own hands!
+
+:::warning[🚑 Common traps & misconceptions (EC2 part)]
+- **Forgetting to pick a Free-tier type**: the default sometimes jumps to another type. Always **confirm the "Free tier eligible" label** before launching, or billing starts in the first minute.
+- **Opening the security group (firewall) too wide**: if you switch to classic SSH and see a "Source" field, **do not enter `0.0.0.0/0` (that opens the door to the whole world)**. Connecting from the browser in this guide is exactly how you dodge this trap — follow along and you never touch the security group.
+- **"Stop" instead of "Terminate"**: during cleanup later, choose **Terminate**, not Stop. Stop only powers it off; some resources may keep billing (see the cleanup section at the end).
+- **Launch and forget**: the most expensive trap. An EC2 you launched but forgot about keeps **billing 24/7 in the background**, and you often only notice days later on the bill. Always come back and clean up.
+:::
 
 ---
 
@@ -95,6 +113,14 @@ Goal: build your own cloud warehouse, upload a file, and pull it back down.
 4. **Block Public Access**: **keep "Block all public access" checked — be sure to leave it ON!** This is S3's single most important safety switch. Don't open your warehouse to the whole world for the sake of "convenience".
 5. Leave the other settings at their defaults → click **Create bucket**.
 
+:::note[🤔 Why pick each option this way? (beginner plain-talk)]
+- **Why must the bucket name be "globally unique" with a date added?** S3 names share **one global namespace across the whole world**, so nice names like `test` or `mydata` were taken long ago. Adding your identifier and a date is the fastest way to land a name nobody has used.
+- **Why keep "Block all public access" ON?** It's S3's master safety switch. Turning it off is like letting anyone on the internet see your files. The most common real-world data leaks come from someone turning this off for convenience and forgetting to turn it back on.
+- **Why build a private bucket first instead of learning "serve a public web page"?** As a beginner you want to build the instinct that "private and secure is the default". Once the concept is solid, you can learn when you'd deliberately make something public (with extra permissions set on purpose).
+
+**What you should see**: after it's created, back in the bucket list you'll see your new name's row with the "Access" column showing **`Bucket and objects not public`** — seeing "not public" is correct.
+:::
+
 <Analogy title="🔒 Why not make the bucket public?">
 
 Making a bucket public is like **tearing off your warehouse door and hanging the key on the frame** — anyone walking by can wander in. The most common real-world cloud breaches almost always come down to someone setting an S3 bucket public for convenience and forgetting to close it. This also echoes AWS's **Shared Responsibility Model**: **AWS secures the cloud itself, and you secure the data in the cloud** — locking down your bucket is your job.
@@ -107,7 +133,15 @@ Making a bucket public is like **tearing off your warehouse door and hanging the
 7. When the upload finishes, you'll see this **object (the file you uploaded)** inside the bucket.
 8. Click into the object → hit **Download** and confirm you can pull the file back to your computer.
 
+**What you should see**: after the upload, a new row with your filename appears in the bucket (that's an **object**); after you download, the browser saves the same file back to your computer, and it opens with the same contents — meaning the whole "upload → store → retrieve" path works.
+
 Done! You now own a private, secure cloud warehouse.
+
+:::warning[🚑 Common traps & misconceptions (S3 part)]
+- **Making the bucket public**: turning off "Block public access" just to "see the file faster" is the most dangerous beginner move. At this stage you **don't need** public access at all — keep it private.
+- **Putting important data in a place you're about to delete**: this bucket is **for practice and will be deleted shortly**. Never store the only copy of something important (photos, reports) here and then wipe it. Use any throwaway small file for practice.
+- **Thinking an "empty-looking" bucket is clean**: a bucket with any object still in it **cannot be deleted** and still occupies (a tiny bit of) storage. During cleanup you must **empty the objects first, then delete the bucket** (see the cleanup section at the end).
+:::
 
 ---
 
@@ -125,6 +159,8 @@ $ aws s3 ls
 $ aws s3 ls s3://my-first-bucket-wang-20261022
 ```
 
+**What you should see**: `aws s3 ls` lists the buckets in your account (including the one you just created); if the bucket has a file, the second command lists that object's timestamp and name. **You typed no keys at all** — the credentials come automatically from the role.
+
 Being able to list the buckets means you've wired "compute (EC2)" and "storage (S3)" together securely — exactly the classic combo the SAA exam loves to test.
 
 :::tip[💡 Why a role instead of hard-coded keys?]
@@ -141,15 +177,20 @@ The Free Tier has **usage limits and time windows**, and resources you forget to
 **1. Terminate the EC2 instance you just launched**
 - Go to `EC2` → instance list → select `my-first-server` → **Instance state › Terminate instance** → confirm.
 - Note it's **Terminate**, not just **Stop**. "Stop" only powers it off — related resources may still bill. **"Terminate" is what actually deletes the whole machine.**
-- When the state turns `Terminated`, you're good.
+- **Why delete it as soon as you're done?** The Free Tier is a "fixed number of hours per month". Leaving it running easily goes over the limit, or keeps billing once the allowance expires. Once you've finished practicing, this machine is useless — keeping it only risks charges with no upside, so deleting it is the safest move.
+- **What you should see**: the state first turns `Shutting-down`, then after a minute or two becomes **`Terminated`**, and a while later the row disappears from the list on its own. Seeing `Terminated` means the machine is really deleted and no longer billing.
 
 **2. Delete the S3 bucket (empty the objects inside first)**
 - Go to `S3` → open your bucket → select all the objects inside → **Delete**, and type the confirmation text as prompted.
 - Once the objects are gone, back in the bucket list → select the bucket → **Delete** → type the bucket name to confirm.
 - (An S3 bucket **must be empty before it can be deleted** — this is the normal flow.)
+- **What you should see**: after emptying, the object list goes empty; after deleting the bucket, back in the list that bucket name **is gone**, which means it's fully deleted.
 
 **3. Check the Billing page to confirm nothing keeps charging**
 - Top-right account menu → **Billing and Cost Management** → review **Free Tier** usage and your current bill, confirming there are no unexpected items.
+- **What you should see**: the current amount due is near `$0.00`, Free Tier usage is all within limits, and no service you don't recognize is billing.
+
+**What happens if you forget to clean up?** A left-on EC2 can quietly eat several to a dozen-plus dollars a month; a pile of undeleted objects keeps occupying storage. They won't pop up to remind you — they just show up on the end-of-month bill. That's why "clean up as soon as you're done, and set up a Billing Alarm in advance" is the habit a beginner should build first.
 :::
 
 :::note

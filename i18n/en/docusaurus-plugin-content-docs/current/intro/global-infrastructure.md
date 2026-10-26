@@ -32,6 +32,15 @@ Global infrastructure solves exactly these two pain points:
 
 </Scenario>
 
+### In one sentence: why so many layers?
+
+At its core, these three layers solve two things at once — **"close and fast"** and **"never goes down"**:
+
+- **Close and fast**: put things near wherever your users are. There are many **Regions** worldwide, so you run your servers in the one closest to your customers; **Edge Locations** are even more numerous and even closer, parking frequently viewed content (images, videos) right around the user's corner. Shorter distance, faster connection.
+- **Never goes down**: within a single Region, there are multiple independent **AZs (data centers)**, each with its own power, cooling, and networking. So even if a whole data center dies, your service keeps running in another AZ.
+
+In other words: **more layers isn't about complexity — it's about being "fast and un-crashable"**. Just remember "one layer handles speed, one handles staying up" and the whole map clicks.
+
 :::note[💬 Reading tip]
 Whenever you see a term with a <Term desc="Like this! Hover over any dotted term (tap on mobile) for a plain-language explanation.">dotted underline</Term>, hover over it for a plain-language explanation.
 
@@ -52,6 +61,8 @@ A <Term en="Region" desc="A geographic block of AWS infrastructure somewhere in 
 | **Compliance / data residency** | Some laws require data to stay within specific borders | EU data is often required to live in a European Region |
 | **Price** | The same service can cost differently per Region | Some Regions have lower unit prices |
 | **Service availability** | New services don't launch in every Region at once | Want a new feature? Check whether that Region has it |
+
+A plain-language mnemonic: **latency** governs "how fast", **compliance** governs "am I allowed to put it here", **price** governs "how expensive", and **service availability** governs "does this Region even have the service I need". Most beginners pick a Region based on latency alone — but what actually trips you up is usually **compliance (data can't leave the country)** and **service availability (the new service you want isn't live in that Region yet)**. So give all four a quick check.
 
 :::tip[💡 Practical advice for beginners]
 When you're just practicing, stick to **one Region close to you** (e.g. Tokyo `ap-northeast-1` or Singapore `ap-southeast-1`). The most common beginner billing surprise is **creating resources in Region A, then looking for them in Region B**, assuming it failed — only to get billed in both.
@@ -119,6 +130,14 @@ $ aws ec2 describe-availability-zones --region ap-northeast-1 \
 ```
 
 See that? Tokyo alone has several AZs for you to deploy "across data centers".
+
+:::warning[🚑 Common pitfalls & misconceptions]
+- **Wrong Region, can't find your resources**: you launch an instance in Tokyo, then switch the console to Singapore to look for it — of course it's "not there". Regions are independent, so always check which Region is selected in the top-right. Worse, if you accidentally create things in both, **you get billed in both**.
+- **Wrong Region, slow connections**: your customers are in Taiwan but you launched servers in a US Region, so every connection circles the globe — **it's not your code that's slow, it's the Region being too far away**. Moving resources to a nearby Region (Tokyo/Singapore) usually fixes it instantly.
+- **Wrong Region, possible compliance breach**: some data (e.g. EU personal data) is legally required to stay within specific borders. Carelessly picking a Region on another continent can **violate data-residency rules**. When personal data or compliance is involved, check the Region first.
+- **Assuming every service is in every Region**: new services and features often **launch in just a few Regions first**. If you follow a tutorial and can't find a service, it's probably not your mistake — **your Region just doesn't have it yet**. Switch Regions or check the official service-by-Region table.
+- **Treating an AZ as a Region**: `ap-northeast-1` is a Region; `ap-northeast-1a` is one AZ inside it. "Across AZs" means spreading across different data centers **within the same Region** (for high availability); "across Regions" means spanning **another geographic block** (for disaster recovery or proximity). They are not the same thing — don't mix them up.
+:::
 
 ## How this relates to the SAA exam
 

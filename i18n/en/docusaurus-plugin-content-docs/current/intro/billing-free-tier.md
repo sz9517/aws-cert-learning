@@ -35,6 +35,8 @@ Understand the rules first, set up your alarms first, and you can "eat" with con
 
 AWS is **pay-as-you-go**, which saves money, but it also means **nobody will stop you automatically** — unless you set up alerts yourself. So before you touch any service, spending ten minutes to set up the two safety nets in this page is the best investment you can make.
 
+**Why set a billing alert *first*, instead of dealing with it when something goes wrong?** Because AWS bills in arrears — everything you do in the cloud is tallied up and **invoiced to you once, at the end of the month**. Without an alert, you have no idea you're bleeding money the entire month; by the time the bill arrives, the money is **already spent and unrecoverable**. That's exactly the point of a billing alert: it turns "find out at month-end" into "find out the moment spend appears," giving you a chance to stop resources and stop the bleeding while it's still small money. For a beginner, that's **ten minutes of setup** buying **a whole month of peace of mind** — a bargain any way you count it.
+
 ## The Free Tier comes in three types — don't mix them up
 
 Lots of beginners assume "Free Tier" means "free forever," then get charged the moment it expires without realizing. In reality AWS's Free Tier splits into **three types**, and knowing the difference keeps you out of trouble:
@@ -53,6 +55,13 @@ Lots of beginners assume "Free Tier" means "free forever," then get charged the 
 
 :::warning[⚠️ Allowance numbers change — always confirm with official sources]
 The hours, GB, and request counts above are the common allowances at the time of writing; AWS can adjust them at any time. **Before you use anything, always rely on the latest figures published on the [AWS Free Tier official page](https://aws.amazon.com/free/)** — don't treat the numbers here as a guarantee. Also note that EC2's 750 hours/month assumes **one** machine running all month; run two at once and you'll burn through the allowance **twice as fast**.
+:::
+
+:::warning[🚑 Common traps & misconceptions: the three Free Tier myths]
+- **Myth 1: the Free Tier is "free forever."** Wrong. Only the "Always Free" category has no time limit; the one you'll use most, the **12-month free** tier, is a **welcome gift** — the moment it expires, **charges resume**, and AWS **won't phone you to remind you**.
+- **Myth 2: inside the Free Tier you can "use anything for free."** Wrong. Even within the Free Tier, every item has a **cap** (e.g. EC2 750 hours/month, S3 5 GB). **Anything over the cap is billed**, and it's usually something you didn't notice had already run out.
+- **Myth 3: when the term ends it will "stop things for me automatically."** Wrong. After the 12 months, **resources don't shut down and services don't stop on their own** — they just **quietly switch from free to paid**. That machine you left running won't vanish; it simply starts running the meter.
+- **The deadliest wrap-up trap: forget to stop a resource, get charged at month-end.** You finish practicing, close the browser, and walk away — but the machine keeps running in the cloud 24 hours a day. Because billing is settled at month-end, you **won't notice for the whole month**, and by the time the bill arrives the money is spent. This is the single best reason **why you set a billing alert first** — so the system wakes you up while it's still small money.
 :::
 
 ## The most common "surprise bill" causes for beginners

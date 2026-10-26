@@ -43,6 +43,10 @@ Picture your website as a **central warehouse** (S3) holding the original goods.
 
 Goal: prepare the "home" for your content.
 
+:::info[🤔 Why do it this way: why not just turn on S3 static website hosting?]
+S3 has a built-in "static website hosting" feature that gives you a public URL directly. So why does this lab deliberately **not** use it and instead stack a CloudFront layer in front? Because the S3 static-website endpoint has three dealbreakers: it is **HTTP only, no HTTPS** (no padlock in the address bar), it has **no global caching** (overseas users round-trip back to your origin Region every time, so it's slow), and to be visible at all it requires **making the bucket public** (planting a leak risk). So this lab uses "**keep the bucket private + put CloudFront in front**," solving encryption, acceleration, and security all at once. This is also the officially recommended approach.
+:::
+
 1. Log in to the AWS console → confirm the **Region** (top-right) → search `S3` → **Create bucket**.
 2. **Bucket name**: must be **globally unique**, e.g. `my-static-site-wang-20261022` (lowercase letters, numbers, and hyphens only).
 3. **Block Public Access**: **keep "Block all public access" checked — leave it ON!** The whole point of this lab is "the bucket is never public; only CloudFront may read it."
@@ -65,9 +69,17 @@ HTML
 
 6. Back in the bucket → **Upload** → **Add files** → pick the `index.html` you just made → **Upload**. Confirm the object appears in the bucket.
 
+:::note[👀 What you'll see at this step]
+After the bucket is created, the **"Block all public access" column shows "On"** — that's correct, don't turn it off. Once the upload finishes, `index.html` appears in the bucket's object list. At this point you **can't** open it in a browser yet (clicking the object's URL directly gives Access Denied), because the bucket is still private and we haven't wired up CloudFront yet — this is exactly the expected behavior, don't panic.
+:::
+
 ### Step 2: create a CloudFront distribution with S3 as the origin and OAC
 
 Goal: put a global CDN in front of S3, secured with OAC.
+
+:::info[🤔 Why do it this way: why keep the bucket private with OAC?]
+The soul of this step is **OAC (Origin Access Control)**. The laziest approach is "make the bucket public so anyone can read it" — but that's exactly the headline in every cloud-leak story: an engineer makes it public for convenience, forgets to turn it off, and the whole dataset ends up exposed on the internet. OAC does the opposite: the bucket **keeps Block Public Access on**, and the bucket policy only grants access to "this one specific CloudFront distribution." It's like the bucket opening a single controlled door only for CloudFront, while everyone else (including anyone who guesses the S3 URL) gets Access Denied. You get both security and convenience — and this is the exam's favorite correct answer.
+:::
 
 7. Search `CloudFront` in the console → **Create distribution**.
 8. **Origin domain**: pick the S3 bucket you just created from the list.
@@ -77,6 +89,14 @@ Goal: put a global CDN in front of S3, secured with OAC.
 12. **Default root object**: enter `index.html`, so opening the domain's root path automatically serves the home page.
 13. Leave the rest at defaults → **Create distribution**. Wait for its status to go from deploying to deployed (usually a few minutes).
 
+:::note[👀 What you'll see at this step]
+Right after creation, the distribution's **"Last modified" shows "Deploying"**, meaning the config is syncing out to edge locations worldwide. Refresh after a few minutes and it changes to a timestamp (meaning deployment is done and it's ready). **If you open the page while it's still deploying, you may well see a 403 or a stale state — that's normal. Wait for it to finish, then test.**
+:::
+
+:::info[🤔 Why do it this way: if you later use your own domain and certificate, why must the certificate be in us-east-1?]
+This lab uses CloudFront's built-in `*.cloudfront.net` certificate, so you **don't** need to request your own certificate yet. But the moment you want to switch to your own domain (e.g. `www.mysite.com`), you must request a certificate in **ACM (AWS Certificate Manager)** and attach it to CloudFront — and that certificate **must be requested in the `us-east-1` (N. Virginia) Region**. A certificate requested in any other Region simply won't be selectable in CloudFront. The reason: CloudFront is a **global service**, and it reads its certificates centrally from `us-east-1` (its "headquarters") before pushing them out to edge locations worldwide. This is an extremely common snag: people request a certificate in Tokyo, then go back to CloudFront's dropdown and can't find it anywhere — because they hit exactly this trap.
+:::
+
 ### Step 3: open the site via the CloudFront domain and confirm HTTPS
 
 Goal: verify the result — the page loads, and it's over HTTPS.
@@ -85,6 +105,19 @@ Goal: verify the result — the page loads, and it's over HTTPS.
 15. Paste that domain into your browser; you should see your `Hello, CloudFront!` page.
 16. Check the address bar — it starts with `https://` with a padlock icon, proving it's **HTTPS by default**.
 17. **The key check**: try opening the S3 object's URL directly (e.g. `https://your-bucket.s3.amazonaws.com/index.html`). You'll get **Access Denied**. This proves it: **the bucket keeps Block Public Access on, and only CloudFront can read it.**
+18. **See the cache kick in (the most satisfying step)**: open your browser's developer tools (F12) → **Network** tab → refresh the page → click the `index.html` request → look at the **Response Headers**. Find the `X-Cache` header:
+
+```bash
+# You can also check from the command line; hit it twice and watch X-Cache change
+curl -I https://your-distribution-domain.cloudfront.net/
+```
+
+:::note[👀 What you'll see at this step: first a Miss, then a Hit]
+- **The first time** you open it (or the first time after changing content): `X-Cache` reads **`Miss from cloudfront`** — meaning this edge location didn't have it cached yet, so it just fetched a copy from the S3 origin.
+- **Refresh and look again**: `X-Cache` becomes **`Hit from cloudfront`** — meaning this time it was served straight from the edge cache, with **no trip back to the origin**. This is the exact moment "global acceleration" and "cheaper data transfer" actually happen: a cache hit is both fast and free of your S3 outbound-transfer charges.
+
+Seeing the `Miss` → `Hit` transition means CloudFront's cache is genuinely working.
+:::
 
 :::tip[💡 This step echoes the Shared Responsibility Model]
 You didn't make the bucket public — you used OAC to make CloudFront the only way in. **AWS secures the cloud itself; you secure what's in the cloud.** Locking the bucket and exposing only one controlled door is exactly your half of the deal. Don't make the bucket public for "convenience."
@@ -94,6 +127,15 @@ You didn't make the bucket public — you used OAC to make CloudFront the only w
 # (Optional) Inspect this distribution's config and status via the CLI
 aws cloudfront get-distribution --id <your-distribution-id>
 ```
+
+:::warning[🚑 Common pitfalls]
+The four spots most likely to trip you up in this lab — avoid them by following along:
+
+- **Making the bucket "public" instead of using OAC**: making the bucket public for speed does let the page show, but you've planted a leak time-bomb — and the exam will mark you wrong. The correct answer is always **bucket keeps Block Public Access on + OAC**, letting only CloudFront read. When you're done, go back and confirm the bucket's "Block all public access" is still On.
+- **The ACM certificate not requested in `us-east-1`**: when you later attach your own domain, a certificate requested in Tokyo or any other Region simply **won't appear** in CloudFront's dropdown. Always request the certificate in `us-east-1` (N. Virginia) — remember CloudFront is a global service and reads certificates only from that Region.
+- **Changed the file but still seeing the old version (cache not invalidated)**: you re-uploaded `index.html`, but the page still shows the old content — because the edge location's cached copy is still within its TTL. To see the new version right away, create an invalidation for `/*` under the distribution's **Invalidations** tab to clear the cache; or use a query string (e.g. `?v=2`) to bypass the cache while testing.
+- **Assuming a change takes effect worldwide instantly**: whether you change distribution settings or create an invalidation, CloudFront needs **a few minutes to push the change out to edge locations worldwide**. When you see the status "Deploying," just wait — don't keep retrying or assume it's broken; it's simply still deploying.
+:::
 
 ---
 

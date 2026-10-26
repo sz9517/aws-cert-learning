@@ -1,0 +1,12 @@
+{
+  "label": "Domain 1 · 用 AWS 服務開發 (30%)",
+  "position": 2,
+  "collapsible": true,
+  "collapsed": false,
+  "link": {
+    "type": "generated-index",
+    "slug": "/dva/domain-1",
+    "title": "Domain 1：用 AWS 服務開發",
+    "description": "權重 30%，是 DVA 占比最高的領域。從開發者視角掌握 Lambda、API Gateway、DynamoDB、S3/SDK、事件驅動解耦，以及 C03 新增的 AI 輔助開發。"
+  }
+}

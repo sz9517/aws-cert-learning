@@ -25,6 +25,14 @@ Operating AWS is the same: the **Console** is like pressing the buttons by hand,
 
 AWS provides all three entry points because **different situations suit different tools**: as a beginner, clicking with a mouse feels safest; for things you repeat daily, typing one line beats twenty clicks; to spin up hundreds of servers at once, you need code to generate them automatically.
 
+:::tip[💡 When to use which, in one line]
+- **Console**: when you want to "see clearly, click around while learning, and explore what services exist" — intuitive, shows the big picture, no commands to memorize.
+- **CloudShell**: when you want to "type commands but not install anything on your own computer, and skip key setup" — no install, identity already loaded, the safest place for beginners to practice.
+- **CLI (local)**: only when you need to "write scripts and integrate with the development workflow or automation on your own computer" — it combines well with code and schedules, but you install and configure the credentials yourself.
+
+As a beginner, getting fluent with the first two is plenty; install the CLI only once you actually need it.
+:::
+
 ## 1. AWS Management Console (the Console)
 
 The **AWS Management Console** is the **web-based graphical interface** you see after logging in through your browser. Every service can be operated with a mouse, and it's where most people first meet AWS.
@@ -107,6 +115,12 @@ The four prompts are:
 - **Your Access Key is literally your key.** If leaked, others can spend money and delete data on your account. **Never** paste it into code, screenshots, chat messages, or a public GitHub repo.
 - **Prefer Roles or temporary credentials** over long-term keys. This is exactly why CloudShell is recommended for beginners — it uses temporary credentials automatically, so you never manage keys by hand.
 - If you must use a key, remember to **disable or delete it** in IAM when you're done.
+:::
+
+:::warning[🚑 Common pitfalls & misconceptions]
+- **Don't treat "using the CLI" as the only professional way.** None of the three entry points is above the others — it's only about which fits the situation. A beginner clicking around in the Console is using AWS correctly, not falling short. Picking the right tool is more professional than forcing yourself to type commands.
+- **A freshly installed local CLI most often gets stuck on credential setup.** A just-installed CLI is a blank slate; if you haven't run `aws configure` to set your keys and region, commands report something like "Unable to locate credentials". That's not broken — you simply haven't told it who you are or which region to operate in. To skip this step entirely, use CloudShell, which loads your identity automatically with no setup.
+- **Don't assume files in CloudShell are stored permanently.** CloudShell's home directory (`$HOME`, about 1 GB) does persist, but it's only temporary personal space; **if the environment sits idle long enough it gets reclaimed**, so don't treat it as real storage or a backup. Keep important files in a proper storage service such as **S3**.
 :::
 
 ## When to use which?

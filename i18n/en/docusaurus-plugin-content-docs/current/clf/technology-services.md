@@ -36,6 +36,21 @@ Every AWS service runs on physical data centers, and how those data centers are 
 One line to remember: **Region > Availability Zone (AZ) > Edge Location**—largest to smallest, farthest to nearest.
 :::
 
+:::note[🤔 Why so many layers?]
+The layering isn't about complexity—it **solves two often-conflicting goals at once**: be "close and fast" yet also "hard to take down."
+- **A single data center:** one power outage and the whole service is gone—so each Region is split into several independent data centers (AZs) to spread the risk.
+- **Everything in one country:** users on the other side of the world connect slowly—so Regions are spread worldwide (serve users nearby).
+- **Even a Region isn't close enough:** static content (images, video) gets one step closer via the far more numerous edge locations (cache nearby).
+:::
+
+:::tip[🧭 How to choose a Region? Four common decision points]
+The same service can run in different Regions, and which one you pick isn't arbitrary—mainly consider four things:
+- **Latency (how close to users):** if your users are in Taiwan, don't host in the US—closer means faster connections.
+- **Regulations / data residency:** some laws require "data must not leave the country," so you must pick that country's Region.
+- **Price:** the same service costs different amounts in different Regions; compare when cost-sensitive.
+- **Service availability:** new services aren't in every Region from day one; confirm the Region supports the service you need.
+:::
+
 ## 2. Ways to Access AWS: Console, CLI, SDK, IaC
 
 For the same task, AWS offers several "entry points," because **different situations suit different people**.
@@ -57,6 +72,15 @@ To switch the TV to channel 5, you could **walk over and press the TV's buttons*
 **CloudFormation** is AWS's native IaC tool: you write a "blueprint" template, and it builds the whole set of resources at once—rebuilding or tearing it all down is also one command. At the CLF level, just recognize the idea "want to repeatably deploy a whole environment → use IaC (CloudFormation)."
 :::
 
+:::tip[🧭 Pick the right entry point in one line]
+- **Just want to look around or do a quick lookup → Console** (see the whole picture, no commands to memorize).
+- **Doing the same thing repeatedly, want to script it → CLI**.
+- **Calling AWS from inside your own program → SDK**.
+- **Build a whole environment at once and be able to rebuild it later → IaC**.
+
+Key point: these four are **not mutually exclusive**—they're often mixed (e.g., explore in the Console, deploy for real with IaC). On the exam, don't treat them as "pick only one."
+:::
+
 ## 3. Core Service Categories at a Glance
 
 Now let's organize the most common services by "category." **For now, just recognizing "which service does what" is enough**—leave the deeper selection and configuration for hands-on work or advanced exams.
@@ -70,6 +94,10 @@ Now let's organize the most common services by "category." **For now, just recog
 | **<Term en="Elastic Container Service / Elastic Kubernetes Service" desc="AWS container orchestration services; EKS is managed Kubernetes.">ECS/EKS</Term>** | The control center that orchestrates a bunch of "containers" (deploy with Docker/Kubernetes) |
 | **<Term en="AWS Elastic Beanstalk" desc="A platform service that takes your code and automatically provisions and manages the underlying resources.">Elastic Beanstalk</Term>** | Hand it your code; it provisions and manages the underlying environment for you |
 
+:::info[🔑 EC2 vs Lambda—when to pick which?]
+**Need full control over a whole machine, long-running, with a specific environment installed → EC2**; **just small tasks triggered by occasional events, don't want to manage servers, pay per usage → Lambda**. In short: **steady long-running → EC2, bursty events → Lambda**.
+:::
+
 ### 💾 Storage: where your files "live"
 
 | Service | One-line purpose |
@@ -81,6 +109,8 @@ Now let's organize the most common services by "category." **For now, just recog
 
 :::info[🔑 An easy-to-confuse difference]
 **EBS attaches to just one EC2 instance at a time (like an external drive); EFS can be mounted and shared by many instances at once (like a network drive).** S3, by contrast, is an object warehouse for whole files—not a disk attached to a machine.
+
+When to pick which: **a single EC2's system/database disk → EBS**; **many servers that must share the same files → EFS**; **images, backups, website static files, whole objects → S3**.
 :::
 
 ### 🗄️ Database: where structured data lives and how you query it
@@ -90,6 +120,10 @@ Now let's organize the most common services by "category." **For now, just recog
 | **<Term en="Relational Database Service" desc="A managed relational database, such as MySQL or PostgreSQL.">RDS</Term>** | A managed traditional (relational) table-based database—no self-maintenance |
 | **<Term en="Amazon Aurora" desc="AWS-built, MySQL/PostgreSQL-compatible high-performance relational database.">Aurora</Term>** | A supercharged RDS—faster, with storage that grows automatically |
 | **<Term en="Amazon DynamoDB" desc="Serverless NoSQL with single-digit-millisecond latency and near-unlimited scaling.">DynamoDB</Term>** | A blazing-fast NoSQL database with no machines to manage |
+
+:::info[🔑 RDS vs DynamoDB—when to pick which?]
+**Data has a fixed table structure and you need SQL for complex queries and relationships → RDS (relational)**; **you need ultra-low latency, huge traffic, flexible fields, and no machines to manage → DynamoDB (NoSQL)**. In one line: **traditional table queries → RDS, massive high-speed serverless → DynamoDB**.
+:::
 
 ### 🌐 Networking & Delivery: how traffic comes in and gets delivered
 
@@ -150,6 +184,12 @@ When you hit a problem, AWS offers several channels to find answers and health-c
 | **AWS Documentation** | The official manual: setup, examples, and best practices for every service |
 | **Knowledge Center** | An official FAQ collection—follow the steps to solve most common issues |
 | **<Term en="AWS Trusted Advisor" desc="An advisor that automatically inspects your account and offers optimization recommendations on cost, security, performance, and more.">Trusted Advisor</Term>** | Automatically health-checks your account with cost, security, and performance advice |
+
+:::warning[🚑 Common pitfalls & misconceptions]
+- **Picking a Region carelessly:** the wrong choice adds latency (users in Asia, host in the US → slow connections) and can even **break the law** (in countries with data-residency rules, data cannot leave the country). Choose a Region based on latency, regulations, price, and service availability.
+- **Thinking the CLI is the only / most "professional" way:** Console, CLI, SDK, and IaC each fit different situations and are often mixed—it's not "pick only one" or "one is higher-class."
+- **Mixing up commonly tested service pairs:** EC2 (a whole machine) ≠ Lambda (event-triggered); EBS (single-instance attach) ≠ EFS (shared by many) ≠ S3 (object warehouse); RDS (relational SQL) ≠ DynamoDB (NoSQL); CloudWatch (how it's performing) ≠ CloudTrail (who did what); SQS (queue, one-to-one) ≠ SNS (broadcast, one-to-many).
+:::
 
 :::tip[💡 Common CLF exam points]
 This domain tests "recognition," not "mastery." Focus on these:

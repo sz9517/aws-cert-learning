@@ -22,6 +22,15 @@ The cloud works exactly the same way: **AWS builds the building to be sturdy and
 
 Once you understand this line, you know which side to check when something goes wrong, and where to spend your effort day to day. This is exactly what AWS's official docs open with — the **<Term en="Shared Responsibility Model" desc="The framework splitting security duties between AWS and the customer: AWS handles the underlying cloud, the customer handles what they put into it.">Shared Responsibility Model</Term>**.
 
+:::info[🤔 Why create a whole "division of duties" model at all?]
+Because the scariest failure mode in security is **both sides assuming the other will handle it — so nobody does.** The whole point of this model is to **hand each task to "whichever side is best placed to own it":**
+
+- Things like **data-center security, hardware replacement, and the virtualization layer** need global scale, round-the-clock teams, and huge investment. Letting AWS do them is far sturdier and cheaper than building your own data center — you can't touch them, and you shouldn't have to worry about them.
+- Things like **your data, who can access it, and whether to encrypt it** depend on knowledge only you have ("how important is this to me?"). AWS can't make those calls for you — only you can.
+
+Splitting the responsibility **clearly and in writing, up front** keeps the two sides from pointing fingers at each other, and means that when something goes wrong you can tell at a glance which side dropped the ball. It isn't about dodging responsibility — it's about letting "whoever understands and is best equipped" handle each risk.
+:::
+
 ## The core: one sentence to split the two sides
 
 | Who | Responsible for | In plain words |
@@ -80,6 +89,16 @@ The line slides with the service — that's the core judgment SAA wants to test.
 Many people assume that throwing something onto AWS makes it bulletproof. The truth: **the vast majority of cloud data breaches come from misconfiguration on the "customer side,"** not from AWS being breached.
 
 The classic disaster: an **S3 bucket accidentally set to "public,"** exposing an entire set of customer data to the whole world's search results. AWS builds the warehouse to be impenetrable, but if **you leave your own door wide open**, AWS can't save you. This is the best cautionary example of why "security IN the cloud" is **your** responsibility.
+:::
+
+:::warning[🚑 The lines people get wrong most often]
+For beginners the trap isn't "not knowing the model exists" — it's "thinking the line sits somewhere else":
+
+- **"Security in the cloud is entirely AWS's job."** → Wrong. AWS only guarantees the "underlying cloud." **Everything you put in and configure — data, permissions, whether it's public — is your responsibility.** This is the biggest misunderstanding, and the real cause of the vast majority of breaches.
+- **"AWS patches the operating system (OS) on my EC2 instance automatically."** → Wrong. Using EC2 means you rented a **machine**; the OS updates, security patches, and installed software on it are **all on you (the customer)**. AWS only handles the hardware and virtualization layer underneath. This is the exam's favorite trap.
+- **"S3 / RDS / Lambda are fully managed, so I don't have to manage anything."** → Half right, half wrong. Look at the line in two layers: the **underlying layer** (OS, database engine, runtime, patching) is indeed handled by **AWS**; but **the data you put in, access permissions, whether to encrypt, and whether it's left public** are always **your** responsibility. The common disasters (like a public S3 leak) all land on "your half" — not AWS's.
+
+One line to remember: **the more managed the underlying layer, the more AWS handles; but the line around "your data and configuration" stays on your side from start to finish.** (In plain terms: AWS keeps making the house fancier, but what's inside is always yours to look after.)
 :::
 
 ## How this connects to SAA

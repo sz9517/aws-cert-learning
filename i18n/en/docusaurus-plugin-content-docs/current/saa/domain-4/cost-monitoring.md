@@ -46,6 +46,22 @@ The problem is not that you spent too much, but that you **cannot see**. If you 
 
 </Analogy>
 
+## Why use which, and when: the trade-offs across all five tools
+
+These tools have similar names and overlapping features, and the exam loves asking "which one fits this scenario". The point is not "what can it do", but "**why this one and not the one next to it**". Below is a plain-language breakdown, each with "why pick it / pros / cons / when not to use it".
+
+| Tool | Why pick it (what it solves) | Pros | Cons / limits | When not to use it |
+| --- | --- | --- | --- | --- |
+| **Cost Explorer** | You want to "quickly see with your eyes where money went and how the trend moves". This is a **human-reads-the-chart** tool. | No setup, works out of the box; drag-and-break-down by dimension; built-in future-spend **forecast**. | Data is **aggregated**, no line items; history lags (about 24 hours); no deep custom analysis. | When you need **line-item detail** or heavy programmatic/SQL analysis → use CUR instead. |
+| **AWS Budgets** | You want to "**not let the bill silently blow up**" — set a threshold and get auto-alerted when near or over; this is **active defense**. | Separate budgets for cost, usage, and RI/SP utilization; supports **forecast-based** early warning; can push to SNS for automation. | It only **notifies**, it does not save money or stop resources for you; only 2 free budgets per account, more cost money. | When you only want **after-the-fact** trend analysis (that is Cost Explorer) or to auto-detect unknown anomalies (that is Anomaly Detection). |
+| **Cost and Usage Report (CUR)** | You want the "**finest, line-by-line, per-resource-per-hour**" raw bill to analyze deeply yourself. | Finest granularity, fullest columns; output to S3 for any analysis via Athena/QuickSight/Redshift; great for custom reports and chargeback. | **No ready-made charts**, you wire up your own query tool; large data incurs S3 storage cost; steep learning curve. | When you just want a "quick glance at the trend" it is overkill → that is Cost Explorer's job. |
+| **Cost Anomaly Detection** | You want "**no human watching; auto-notify the moment spend spikes abnormally**" — machine learning catches the sudden things you would not spot. | Free; auto-learns spend patterns; monitors per service/account/tag; catches the spikes you **did not expect**. | Needs **some history** to learn well; it detects and "notifies", it does not stop the bleeding; weak on brand-new services with no history. | When you **already know** the ceiling and just want "alert me past X dollars" → simpler, just use Budgets. |
+| **Organizations consolidated billing** | You want "**manage many accounts centrally and save more**" — pool the whole company's accounts to pay and discount together. | One master bill, easy reconciliation; usage **summed** reaches volume-discount tiers faster; RI/SP **shared** across accounts, no waste. | Requires onboarding accounts into Organizations (governance cost); it saves via "pooled discounts", not by using fewer resources. | A single account, or departments that insist on independent billing and will not share discounts — then consolidation adds little. |
+
+:::info[🔑 How to choose, in one line]
+**See trends with Cost Explorer, guard budgets with Budgets, dig into detail with CUR, catch anomalies with Anomaly Detection, save across accounts with Organizations.** Key distinctions: Budgets is "a threshold I **already know**", Anomaly Detection "catches the spike I **do not know** about"; Cost Explorer is "a **human reads the chart**", CUR is "**code mines the raw data**".
+:::
+
 ## Seeing it: Cost Explorer and CUR
 
 <Term en="AWS Cost Explorer" desc="A tool to visualize AWS cost and usage trends, break them down by service, account, tag, and more, and forecast future spend.">Cost Explorer</Term> is the chart you will open most often. It plots past spend as a trend chart, breakable down by **service, account, region, and tag**, so you immediately see "which service is most expensive and which day it started rising", and it can even **forecast** the coming months based on history. It is great for "quick analysis, finding the big spenders", but the data is **aggregated**, not line-by-line detail.
@@ -141,6 +157,39 @@ $ aws budgets describe-budgets \
     --account-id your-12-digit-account-id
 ```
 
+**Create "budget + 80% email alert" in one CLI call**: clicking through the console is intuitive, but interviews and real ops often want a repeatable script. Below, `create-budget` makes a "1000 USD per month" cost budget and attaches an "email me when actual spend hits 80%" alert (the AWS CLI takes two JSON blobs: `--budget` defines the budget itself, `--notifications-with-subscribers` defines the alert plus recipients).
+
+```bash
+# Create a "1000 USD per month" cost budget with an email alert at 80%
+$ aws budgets create-budget \
+    --account-id your-12-digit-account-id \
+    --budget '{
+      "BudgetName": "monthly-1000usd",
+      "BudgetType": "COST",
+      "TimeUnit": "MONTHLY",
+      "BudgetLimit": { "Amount": "1000", "Unit": "USD" }
+    }' \
+    --notifications-with-subscribers '[
+      {
+        "Notification": {
+          "NotificationType": "ACTUAL",
+          "ComparisonOperator": "GREATER_THAN",
+          "Threshold": 80,
+          "ThresholdType": "PERCENTAGE"
+        },
+        "Subscribers": [
+          { "SubscriptionType": "EMAIL", "Address": "you@example.com" }
+        ]
+      }
+    ]'
+```
+
+**Expected result**: the command **prints no error and returns straight to the prompt**, which means success (`create-budget` returns no content on success). Run the `describe-budgets` above again and you will see `"BudgetName": "monthly-1000usd"` in the list, with a `BudgetLimit` of 1000 USD. Later, once this month's actual spend passes 800 USD (80% of 1000), the email you entered receives an alert from AWS Budgets. Change `NotificationType` to `FORECASTED` and it becomes an early warning that the month is **forecast** to exceed.
+
+:::note[🔑 ACTUAL vs FORECASTED]
+The two `NotificationType` values are a common exam distinction: **`ACTUAL`** alerts only once you have **actually** spent up to the threshold (after the fact); **`FORECASTED`** has Budgets **predict** from the trend that the period will exceed and warns you early (still time to act). In practice set **both**: a low-threshold FORECASTED for an early heads-up, and a 100% ACTUAL as the last line of defense.
+:::
+
 <Cost>
 
 **Good news: these monitoring tools are mostly cheap or free themselves.** The Cost Explorer console UI is free (only its API calls bill per request); each account gets **two free cost/usage budgets**, with per-day charges only beyond that; Cost Anomaly Detection is **free**; the Trusted Advisor cost checks have **free** basic items (full checks need a Business-or-higher support plan); Compute Optimizer is **free**. What actually costs money is the **S3 storage for CUR output**. When done practicing, clean up the test budgets and the CUR S3 objects.
@@ -148,6 +197,9 @@ $ aws budgets describe-budgets \
 </Cost>
 
 :::warning[🚑 Common real-world mistakes]
+- **Never set a Budgets alert, found out only when the bill exploded**: the most painful and most common trap. With no threshold notification, you only learn you were hit at the **month-end bill**, after possibly days of extra burn. **The first thing to do on the cloud is set a Budgets alert** (even a rough amount), turning "passively receiving the bill" into "proactively getting notified".
+- **No cost allocation tags, so you cannot attribute after the fact**: tags only apply to usage generated **after activation**, they **do not backfill**. If you only think of tagging when the boss asks "how much did Marketing spend", the past few months' bill can **never** be split out. Build the habit of attaching `CostCenter` / `Project` tags the moment a resource is created.
+- **Assuming Cost Explorer can show line items, when you actually need CUR**: Cost Explorer's data is **aggregated** — you will never see "how much a given EC2 cost in a given hour" there. For line-by-line / per-resource-per-hour / SQL-driven analysis, it is always **CUR output to S3 + Athena**; do not try to force it in Cost Explorer.
 - **Tagging but forgetting to activate**: Cost Allocation Tags must be "activated" in billing settings before they appear in cost reports; tagging alone does not auto-split the bill.
 - **Only alerting at 100%**: by the time you are notified of an actual overrun it is too late; also set a **forecast-based** alert and a lower threshold (such as 80%) for early warning.
 - **Assuming consolidated billing saves automatically**: volume discounts and RI/SP sharing pay off only when multiple accounts' usage is "summed", which requires actually having the accounts in Organizations.

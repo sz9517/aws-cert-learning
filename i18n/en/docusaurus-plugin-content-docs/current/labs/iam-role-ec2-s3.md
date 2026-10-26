@@ -80,6 +80,12 @@ This time we deliberately tighten the permissions: instead of the ready-made `Am
 5. Leave everything else at its **default** → **Create bucket**.
 6. Open the bucket → **Upload** → drop in a small text file (e.g. `hello.txt` with one line of text) → Upload. This is the test object we'll verify we can read shortly.
 
+:::info[🤔 Why do it this way: block public access first, then talk about roles]
+A tempting shortcut is "just make the bucket public, then the EC2 can read it" — **don't**. Public means the whole world can read it, which is a completely different thing from "only my EC2 can read it", and it's the single most common cause of cloud data-leak headlines. What we want is to **authorize by identity (a role)**, not by "open to everyone". Keep it blocked, and in a moment you'll see with your own eyes: the bucket is not public, yet an EC2 with the role attached can still read it.
+
+**What you should see**: after creating the bucket, it appears in the list and the "Access" column shows "Bucket and objects not public"; after the upload finishes, `hello.txt` is listed inside the bucket.
+:::
+
 ### Step 2: Create an IAM role that trusts EC2, with a least-privilege policy
 
 1. Search `IAM` in the console → open IAM → left menu **Roles** → **Create role**.
@@ -110,6 +116,17 @@ This time we deliberately tighten the permissions: instead of the ready-made `Am
 5. Back on the create-role page (you may need to refresh the policy list), select the `read-role-lab-bucket` you just made → Next.
 6. Name the role `ec2-read-one-bucket` → **Create role**.
 
+:::info[🤔 Why do it this way: a role has "two locks", keep them separate]
+An IAM role actually has **two** pieces of configuration, and beginners most often blur them together:
+
+- **Trust policy**: decides **who** may assume this role. Choosing "AWS service → EC2" in Step 2 sets "only the EC2 service may assume it". Pick the wrong service (say, Lambda by mistake) and your EC2 can't assume the role — attaching it gets you no credentials.
+- **Permissions policy**: decides **what you can do** once assumed. That's our read-only-single-bucket JSON above.
+
+**Why write our own policy instead of the ready-made `AmazonS3ReadOnlyAccess`?** Because the ready-made one lets the EC2 read **every** bucket in the account; we only need to read this one, so we grant only this one — that's least privilege, keeping the "blast radius when something goes wrong" as small as possible.
+
+**What you should see**: `ec2-read-one-bucket` appears in the roles list; open it and the "Trust relationships" tab shows `Service` as `ec2.amazonaws.com`; the "Permissions" tab has `read-role-lab-bucket` attached.
+:::
+
 :::tip[💡 Read what this policy does]
 - `s3:ListBucket` is granted on the "bucket itself" (`arn:...:bucket`), so you can **list** the objects inside it.
 - `s3:GetObject` is granted on the "objects in the bucket" (`arn:...:bucket/*`), so you can **download** files.
@@ -124,6 +141,14 @@ This time we deliberately tighten the permissions: instead of the ready-made `Am
 3. Choose the `ec2-read-one-bucket` you just created → **Update IAM role**.
 
 That's it. **You have not — and do not need to — enter any key on this machine.**
+
+:::info[🤔 Why do it this way: the role must be "attached to the instance" to count]
+Until you **attach the role to this EC2 instance**, it does nothing for this machine — it's just an identity sitting in IAM. This step (Modify IAM role) is what actually hands the "profile" to the machine. It's also the single most forgotten step: no matter how nicely the policy is written, forget to attach it and the EC2 is still empty-handed.
+
+Also: a role hands out **temporary credentials**, which the EC2 fetches automatically from the instance metadata service and that rotate on expiry. That's exactly why you don't — and shouldn't — place any key on the machine by hand: with no long-term key to leak, a whole class of risk disappears.
+
+**What you should see**: after updating, the instance detail page's "Security" section shows the **IAM Role** field as `ec2-read-one-bucket` (it was blank before). The change takes effect immediately — no reboot needed.
+:::
 
 ### Step 4: Connect into the EC2 and verify "access with no key configured"
 
@@ -145,6 +170,12 @@ $ cat hello.txt
 
 Seeing the file's contents means success: **you never ran `aws configure`, there are no long-term keys on the machine, yet the EC2 can securely read S3.** That's the magic of roles.
 
+:::note[🔍 What you should see (line by line)]
+- `aws sts get-caller-identity`: the `Arn` will be `...:assumed-role/ec2-read-one-bucket/i-xxxx` — the keyword **assumed-role** means you're now a "temporary identity after assuming the role", not some long-term key.
+- `aws s3 ls s3://your-bucket`: lists `hello.txt` directly, **without ever asking you to configure a key**. If this step throws `Unable to locate credentials`, nine times out of ten the role wasn't attached (go back to Step 3 and check).
+- `aws s3 cp .../hello.txt .` + `cat`: prints the line you just wrote, proving you can really read the object's contents, not just list a filename.
+:::
+
 :::note[Want to see "least privilege" block you in real time?]
 On the same machine, try `aws s3 ls` (with no bucket name — i.e. list **all** buckets) and you'll get **AccessDenied**, because our policy only authorizes that one bucket. Then try `aws s3 cp hello.txt s3://role-lab-wang-20261022/` (an upload) and it'll be blocked too, because we didn't grant `PutObject`. That's the concrete feel of "grant only just enough".
 :::
@@ -159,6 +190,14 @@ Slapping on `AmazonS3ReadOnlyAccess` takes five seconds — so why write our own
 - With our policy: the attacker can read, at most, that **one test bucket** — everything else is AccessDenied.
 
 The way to tighten things is to **work backwards from "which actions and which resources are actually needed"**, listing only the `Action`s and `Resource`s you truly require and nothing else. In practice you may not get it right the first time; the trick is to **start small, and add permissions on demand when you hit AccessDenied** — grow from small to large, rather than starting with `*`.
+
+:::warning[🚑 Common gotchas (almost every beginner has hit these)]
+- **Writing an access key into the EC2 or your code**: running `aws configure` and pasting a key on the machine, or hard-coding the key into your code or environment variables. It works, but it's the most dangerous option — and the exam's favorite wrong answer. **Service accessing service → always use a role, never long-term keys.**
+- **Granting permissions too broadly (using `*`)**: slapping on `AmazonS3ReadOnlyAccess` for convenience, or writing `*` for `Action` and `Resource` in your own policy. If the machine is compromised, the blast radius is the whole account. This lab grants only `ListBucket`/`GetObject` on a single bucket to demonstrate the opposite.
+- **Setting the wrong service in the trust relationship**: picking the wrong "use case" when creating the role (e.g. choosing Lambda for a role meant for EC2) leaves the trust policy pointing at the wrong service, so the EC2 cannot assume the role and gets no credentials even when attached. After creating it, check the "Trust relationships" tab shows `Service` as `ec2.amazonaws.com`.
+- **Forgetting to attach the role to the instance**: the policy and role are both built, but Step 3 "Modify IAM role" got skipped. The result: `aws s3 ls` throws `Unable to locate credentials`, because no role is attached to the machine at all. This is the classic "I did everything but it still doesn't work".
+- **Getting the bucket ARN wrong**: dropping the `/*` on the object line (granting the bucket but not the objects) means `ListBucket` passes but `GetObject` gets AccessDenied; or typing the bucket name wrong / forgetting to replace it with your own in one of the two ARNs.
+:::
 
 ---
 

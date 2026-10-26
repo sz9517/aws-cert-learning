@@ -64,6 +64,34 @@ The chart below shows the trade-off at a glance — the further down you go, the
   RTO/RPO:     hours~days   → tens min~hrs →    minutes    →   near zero
 ```
 
+### Why four strategies instead of just picking one? (the trade-off, plainly)
+
+You might think: "Why not just pick the fastest, sturdiest active/active and be done?" The catch is that **the standby Region keeps costing money in normal times too**. The four strategies are really four notches on one scale — money on one end, downtime-plus-data-loss on the other, and you can only slide toward the middle:
+
+- **Why not everyone picks Multi-Site?** Active/active means **running two full-speed systems**, roughly doubling cost. An internal reporting system being down for 4 hours hurts no one, so paying active/active prices for it burns budget you never use.
+- **Why not everyone picks Backup & Restore?** It is the cheapest, but the price is **rebuilding from scratch after a disaster** (spin up machines, deploy, restore data), with an RTO of hours to days. Payment or order-taking systems — where every minute down costs money — can never rely on it alone.
+- **Pilot Light vs Warm Standby are often confused**: both keep **core data replicating continuously**; the difference is whether the compute layer runs in normal times. Pilot Light keeps compute **switched off on standby** (started only on disaster — cheaper, but takes tens of minutes to bring up); Warm Standby keeps a **scaled-down copy always running** (just scale it up on disaster — pricier, but takes over in minutes). In one line: **it comes down to "does compute burn money on standby or not".**
+
+:::info[🔑 Why is each tier pricier than the one above?]
+Stepping down a tier always means "**making the standby Region do a bit more in normal times**": from "just store backups" → "core database always running" → "a whole scaled-down stack always running" → "both Regions full-speed". The more it does in normal times, the less you have to scramble to build at disaster time (lower RTO/RPO) — but the higher the day-to-day bill. **You are pre-paying to shorten recovery time.**
+:::
+
+### Why must DR be cross-Region? And what is good about "just backups"?
+
+**Why cross-Region is non-negotiable**: Multi-AZ spreads machines across different data centers within the same Region, so it survives "one data center loses power, one machine dies". But if the **entire Region** goes down from a disaster, network event, or large-scale failure, all your AZs are in the same boat. DR's imagined enemy is exactly "the whole Region disappears", so the standby resources **must live in another Region** — otherwise it is pointless.
+
+**The pros and cons of "just copy backups to another Region"**: the cheapest approach replicates snapshots/backups to another Region (Backup & Restore). That does survive a Region-level failure at the lowest cost — **but it only solves "the data still exists", not "how fast can we serve again".** At disaster time all you hold is a pile of backup files; you still have to spin up machines, deploy, and restore on the spot, and service is fully down the whole time. Investing up into Pilot Light and above means "the data is there and the environment is already half-prepared" — you spend money to buy back RTO.
+
+:::note[🧭 When NOT to over-invest in DR]
+DR is not "pricier is better" — it is about **matching business value**. Common over-investment:
+
+- **Internal tools, reports, dev/test environments** forced onto Warm Standby or active/active — these lose almost nothing being down for hours, so Backup & Restore is plenty.
+- **One single top-tier DR for every system** — the right move is to **tier by system**: high-grade for payments/ordering, low-grade for edge features.
+- **Setting RTO/RPO stricter than the business actually needs** — every extra hour shaved off RTO tends to raise cost in jumps, not linearly. First ask the business "how long can we really tolerate, how much can we really lose", then spend.
+
+In one line: **buy the RTO/RPO the business truly needs first, and don't buy more.**
+:::
+
 :::tip[💡 Exam key point: matching the strategy at a glance]
 - "**Lowest cost / limited budget**" and longer recovery is acceptable → **Backup & Restore**.
 - "Core database runs small and always-on in the DR Region, everything else shut off to save money" = the signature description of **Pilot Light**.
@@ -116,6 +144,13 @@ Near-zero RPO means "data essentially can't be lost", which relies on **continuo
 
 :::tip[💡 How to read the question]
 See **RTO** (how long you can be down) → the answer depends on "**how ready the standby architecture is**" (more complete standby, shorter RTO). See **RPO** (how much you can lose) → the answer depends on "**how frequent the replication/backup is**" (more continuous replication, smaller RPO). Map the question's keywords back onto these two axes, step to the matching strategy, and you'll rarely be wrong.
+:::
+
+:::warning[🚑 Common pitfalls]
+- **Backups never tested for restore**: the classic hard lesson. You back up daily, then on disaster day discover the backup is corrupt, nobody knows how to restore it, and nobody ever measured how long a restore takes. **A backup you have never test-restored is as good as no backup.** Periodically run a real "bring the system up from backup" drill, and measure the actual RTO while you are at it.
+- **Mixing up RTO and RPO**: they point opposite ways — **RTO looks forward (how fast to restore service); RPO looks backward (how much data can be lost)**. A question saying "data essentially cannot be lost" is about **RPO** (needs continuous replication, e.g. Aurora Global Database); one saying "must recover within minutes" is about **RTO** (needs a standby ready enough, e.g. Warm Standby). Swap them and you pick the wrong service.
+- **Thinking Multi-AZ alone is DR**: Multi-AZ protects against a single Availability Zone — not a Region-level disaster. **DR resources must sit in another Region**, or when the primary Region dies your standby goes down with it.
+- **Never rehearsing failover**: you assume "Route 53 will just switch, promoting the read replica is enough", then at crunch time find the health checks were misconfigured, promotion is manual, DNS cutover has TTL delay, and the app's connection string was never updated. **Failover must be rehearsed regularly (even schedule a game day)**, verifying every step for real — not left as a diagram.
 :::
 
 <Refs title="📚 Official docs & further reading">

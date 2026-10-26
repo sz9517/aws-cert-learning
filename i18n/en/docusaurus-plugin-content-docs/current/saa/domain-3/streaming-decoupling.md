@@ -41,6 +41,36 @@ The fix: put a **queue or stream** between front and back end as a buffer. The f
 
 </Analogy>
 
+### Why are Kinesis and SQS "two different things", not two flavors of one choice?
+
+Many people on first read assume "both just sit in the middle as a buffer, so pick one" and grab one at random — and that's the most common selection mistake. They're **two fundamentally different data models**:
+
+- **SQS is a "queue": a message is a task, taken and gone.** One message is one to-do item; whoever grabs it first processes it and **deletes** it, and that item is gone forever. The point is "**hand work out, each done once**".
+- **Kinesis is a "stream": data is a record, still there after you read it.** Data flows past like a river; a consumer just advances its "I've read up to record N" pointer, and **the data itself does not vanish because it was read** (it stays within the retention window). The point is "**the same data read repeatedly by many, and re-readable later**".
+
+<Analogy title="🏢 Another analogy: handing out flyers vs a radio station">
+
+- **SQS is like handing flyers to a row of helpers**: you deal out a stack of flyers (tasks), each person takes one and goes, and once handed out that flyer is gone. You want "**get a pile of work done across everyone**".
+- **Kinesis is like a radio station's program**: the same program is heard by countless radios at once, each listening on its own and able to rewind and re-listen (within the retention window). You want "**the same content heard by many at once, and replayable**".
+
+</Analogy>
+
+**So deciding "which to use" is just three questions:**
+
+1. **Does this data need to be read independently by "more than one" group of consumers?** Yes → stream (Kinesis); no, you just hand work out to be done once → queue (SQS).
+2. **Might you need to "re-read / replay" the same batch of data later?** (e.g. re-run with a new algorithm, after-the-fact analysis) Yes → Kinesis; no, done once and over → SQS.
+3. **Do you need strict ordering of "events sharing the same key"?** (e.g. one user's action order) Yes → Kinesis (ordered within a shard) or SQS **FIFO queue**; don't care → SQS standard queue (cheapest and simplest).
+
+#### Pros and cons at a glance (plain version)
+
+| | **SQS (queue)** | **Kinesis Data Streams (stream)** |
+| --- | --- | --- |
+| **Biggest upside** | Fully managed, almost zero ops, very cheap, natural spike absorption, capacity auto-scales | One dataset read by many consumers, replayable, keeps order, handles millions of events per second |
+| **Main downside** | Consume-once, **no replay**, no independent multi-consumer, ordering needs FIFO with extra limits | You must **size/manage shards yourself** (or use on-demand mode), more complex than SQS, shards charge while open |
+| **When NOT to use it** | Need replay, need multiple consumers, need real-time analytics → don't use SQS | Just handing background work out to be done once → don't use Kinesis (overkill, plus shard management) |
+
+> 💡 In one line: **use SQS for "divide work, do it once"; use Kinesis for "one dataset read by many, needs replay, needs order, needs real-time analytics".** These two lines map straight onto exam keywords.
+
 ## How to pick between the three (the most important table)
 
 | Service | Nature | Consumption | Data retention | Best for |
@@ -58,6 +88,30 @@ Kinesis Data Streams' throughput is set by its <Term en="Shard" desc="The smalle
 ### Firehose: don't want to write a consumer? Let it auto-load for you
 
 <Term en="Kinesis Data Firehose" desc="A fully managed streaming load service. It automatically batches and writes stream data near real-time into S3, Redshift, OpenSearch, etc., with no consumer code to write.">Kinesis Data Firehose</Term> solves "**the data arrived, but I can't be bothered to write code to move it into storage**". You just point the stream at Firehose, and it **near real-time** buffers, compresses, and batch-writes into S3, Redshift, or OpenSearch — zero consumer code to maintain. When the ask is "**auto-load stream data into a data lake, no code**", reach for it.
+
+#### Data Streams vs Firehose: both are Kinesis, so what's the difference?
+
+Both carry the name Kinesis, which is exactly why they get confused. The one-liner: **Data Streams is the stream that "lets you process the data yourself"; Firehose is the pipeline that "auto-moves the data to a destination for you".**
+
+| | **Kinesis Data Streams** | **Kinesis Data Firehose** |
+| --- | --- | --- |
+| **What you do** | Write a consumer to read, process, and analyze in real time | Almost no code — just set a source and a destination |
+| **Is data retained?** | **Yes**, 24 hours to 365 days, replayable, multi-consumer | **No**, once batch-delivered to the destination it is not retained (re-read from the destination instead) |
+| **Latency** | Near-instant (milliseconds to seconds, as fast as you read) | **Near real-time**, with a **buffer delay** (delivers once a size or time is reached; default around 60s, tunable 0 to 900s) |
+| **How it scales** | You manage the **shard count** | Fully automatic, **no shard concept**, no capacity planning |
+| **Best for** | Real-time dashboards, anomaly detection, stream compute, needing multiple consumers | Auto-dumping raw stream data into S3 / Redshift / OpenSearch for storage |
+
+**In practice they're often used together**: the same events go into **Data Streams** first (so a real-time dashboard and anomaly detection each read independently), then a **Firehose** consumer **auto-loads the raw events into S3** for later analysis — covering both real-time and long-term storage.
+
+<Scenario title="Scenario and expected result: what picking wrong costs you">
+
+You need to "score each transaction's risk in real time, while also storing the raw transactions in S3 for audit".
+
+- **Firehose only**: data reaches S3, but Firehose has a **buffer delay** (default accumulates around 60s before sending a batch), so "score each one in real time" is impossible — **expected result: risk scores come out nearly a minute late, too late to block a suspicious transaction**.
+- **Data Streams only**: real-time scoring is fine, but you must **write a consumer yourself** to batch-write into S3, plus handle retries and file splitting — **expected result: a pile of extra plumbing code to write and maintain**.
+- **Correct answer (both together)**: Data Streams does the real-time scoring, and a Firehose consumer auto-loads the same raw data into S3 — **expected result: millisecond-level scoring plus zero-ops auto-archiving, best of both**.
+
+</Scenario>
 
 :::tip[💡 Exam key point]
 Match the keyword straight to the answer — nearly free points:
@@ -112,11 +166,15 @@ SQS is **billed per request**, with a large monthly free tier (millions of reque
 
 </Cost>
 
-:::warning[🚑 Common real-world mistakes]
+:::warning[🚑 Common pitfalls]
 - **Using SQS when you need "multi-consumer replay"**: SQS messages are consume-once and deleted after processing — they can't let multiple consumer groups each read independently and rewind to replay the way Kinesis can.
 - **Using Kinesis for a plain task queue**: if it's just one-person-per-ticket background work, SQS is simpler and cheaper; forcing Kinesis means managing shards for nothing.
 - **Too few shards to survive the spike**: writing beyond the shard limit returns `ProvisionedThroughputExceeded` — size shards ahead of a spike or switch to on-demand mode.
 - **SQS consumer forgets to delete the message**: skip `delete-message` after processing and, once the visibility timeout passes, the message reappears and gets processed again.
+- **Assuming SQS can "replay" or "re-read"**: the deadliest misconception. Once anyone `delete-message`s a message in SQS, it is **gone forever** — there is no "rewind". **Expected failure**: later your boss says "re-run last week's events through the analysis", and only then do you discover the data was consumed long ago and cannot be recovered. If you need replay, the data must live in **Kinesis Data Streams** (re-readable from any position within the retention window).
+- **Needing multiple consumers to each read everything, but choosing SQS**: in SQS a message is taken by exactly **one** consumer; adding a second consumer just makes it "grab what's left", not "both read everything". **Expected failure**: a real-time dashboard and an anomaly detector fight over messages and each sees only half the data. For "the same data read in full by many", use **Kinesis** (or put SNS in front of SQS for fan-out, but that is a different setup).
+- **Using Firehose only but expecting "real time"**: Firehose has a **buffer delay** (delivers once a configured size or time is reached, default around 60s). **Expected failure**: you assume data is usable the instant it arrives, but it actually takes nearly a minute to land in S3, so real-time alerting or scoring is far too late. For true real-time processing, read from **Data Streams** yourself; Firehose only does "near-real-time auto-archiving".
+- **Clinging to a fixed shard count and not pre-scaling for a spike**: Kinesis shards do not auto-scale; a sudden surge with no pre-added shards or on-demand mode gets writes blocked by `ProvisionedThroughputExceeded`. **Expected failure**: during the spike, masses of events fail to write and are dropped, and replay later cannot recover data that never got in. Size shards ahead of a spike or switch to **On-demand mode** so it auto-scales.
 :::
 
 <Refs title="📚 Official docs & further reading">

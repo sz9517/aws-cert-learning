@@ -104,6 +104,59 @@ Top to bottom, it works like this: a user's request first hits DNS to find the s
 | **Private subnet egress** | <Term en="NAT Gateway" desc="A managed gateway that lets private-subnet resources reach the internet one way, outbound only.">NAT Gateway</Term> | Lets private-subnet EC2 pull updates and call external APIs; it's **outbound only**, so nothing outside can initiate a connection in |
 | **Network foundation** | <Term en="Virtual Private Cloud" desc="Your own private virtual network inside AWS.">VPC</Term> + public/private subnets | The base for everything; public/private subnets provide the layered isolation that the whole architecture's security rests on |
 
+## Why is it designed this way? (every decision in plain language)
+
+The table above tells you *what* to use; this section tells you **why it has to be this way**. The exam loves testing these "whys", not the service names themselves.
+
+### Why split into three tiers instead of one all-in-one machine?
+
+The most intuitive approach is a single EC2 running the web pages, the application logic, and the database all together. It works, but the problems are serious:
+
+- **One change breaks everything**: tweaking the frontend means a reboot that also drops the database connection. Three responsibilities welded onto one machine can't be upgraded or scaled independently.
+- **You can't scale only the tier that needs it**: during a big sale, it's the **application tier's** compute that strains, while the database is usually fine. All-in-one, you can only size up the whole box, wasting money. Split apart, the app tier can grow to 10 instances while the database stays at 1 primary + 1 standby, each tuned on its own.
+- **Security is wide open**: the database and the public-facing web pages running on the same machine and the same network location is like putting the vault in the lobby. The essence of layering is **"the more sensitive something is, the farther it sits from the internet"**.
+
+:::info[🔑 Key takeaway in one line]
+Layering isn't for looks — it's so **each tier can scale, upgrade, and set its security boundary independently**. A single-machine design can't do any of those three.
+:::
+
+### Why must the ALB + Auto Scaling span multiple AZs?
+
+Think of an <Term en="Availability Zone" desc="Physically isolated data centers within a region, each with independent power and networking.">Availability Zone (AZ)</Term> as "different, physically separated data centers in the same city". Spanning AZs serves two distinct needs:
+
+- **The ALB spans AZs for fault tolerance**: if the ALB and all the EC2 instances sat only in AZ-a, one power loss in that data center and the site vanishes entirely. Configure the ALB to straddle AZ-a / AZ-b and let Auto Scaling place a few EC2 instances in each AZ, and even a full AZ outage just makes the ALB route all traffic to the surviving AZ, with users barely noticing.
+- **Auto Scaling is for elasticity + self-healing**: it does two things — add instances when traffic rises, and replace a dead EC2 automatically. Note that "adding" and "replacing" are two sides of the same coin: the Auto Scaling group always strives to keep "healthy instance count = your target".
+
+:::tip[💡 Why "ALB + ASG" together, not just one of them?]
+**ALB without ASG**: the ALB kicks out dead instances but never *launches* a replacement — over time you run low on healthy ones. **ASG without ALB**: the ASG keeps the instance count up, but nothing distributes traffic evenly and there's no single health-check entry point. You need both for the full loop of "auto-distribute + auto-replace + auto-scale".
+:::
+
+### Why enable Multi-AZ on the database?
+
+Data is the **hardest thing to lose and the hardest thing to rebuild** in the whole system. If an EC2 dies, Auto Scaling just launches another (it's stateless anyway); but if the database dies with no live standby, the whole shop is shut. RDS Multi-AZ keeps a **synchronously replicated** standby in **another AZ**, and the moment the primary fails it **fails over automatically** — nobody has to climb out of bed at 3 a.m. to fix it.
+
+:::warning[🚑 The most common confusion: Multi-AZ is not a Read Replica]
+**Multi-AZ is for high availability**: the standby does **not** serve traffic normally; it just waits and takes over if the primary dies. **A Read Replica is for offloading read traffic**: it is reachable and queryable, but it does **not** automatically become the primary if the primary dies. When the question asks about "database high availability", pick Multi-AZ; only when it asks "reads are too slow, spread them out" do you pick a Read Replica. These two are often planted in the same question to trip you up.
+:::
+
+## Trade-offs and alternatives for each choice (why not X?)
+
+Exams routinely place the "correct answer" next to options that "look fine but aren't right for this question". Knowing **why not X** scores more than memorizing "use Y".
+
+| The choice here | Common alternative | Why this question picks the former, not the latter |
+| --- | --- | --- |
+| **ALB (layer 7)** | <Term en="Network Load Balancer" desc="A layer-4 (TCP/UDP) load balancer with very high throughput and ultra-low latency, but it does not inspect HTTP content.">NLB</Term> (layer 4) | A normal website routes by HTTP path/hostname and terminates HTTPS, so pick **ALB**. Pick NLB only for "extreme throughput, ultra-low latency, static IPs, or non-HTTP protocols (gaming, IoT)". |
+| **EC2 + Auto Scaling** | A fixed number of EC2 instances | A fixed count is either too small at peak or wasteful off-peak, and dead instances are not replaced. Unless traffic is "perfectly predictable and constant", always use an **ASG**. |
+| **EC2 + ASG (this page)** | <Term en="AWS Lambda" desc="Serverless compute that runs only on events, bills by usage, scales automatically, and needs no server management.">Lambda</Term> / Fargate (serverless) | For a "traditional, long-running web app that needs to stay resident", EC2 fits well. If the work decomposes into "event-driven, short tasks", serverless is less hassle (see the next architecture). This page deliberately uses EC2 to walk you through the most classic VPC layering. |
+| **RDS (relational)** | <Term en="DynamoDB" desc="AWS's fully managed NoSQL database: millisecond latency, near-limitless scale, but not relational.">DynamoDB</Term> (NoSQL) | A shopping site has **relations and transactions** across orders, members, and products, so pick **RDS**. Consider DynamoDB only when data is "key-value, massive volume, needing extreme horizontal scale". |
+| **RDS Multi-AZ (high availability)** | RDS Read Replica | If the goal is "the primary dies and a standby takes over", use **Multi-AZ**. If the goal is "offload reads", use a Read Replica. You can use **both** at once, but they solve different problems. |
+| **NAT Gateway (private-subnet egress)** | Put EC2 in a public subnet with a public IP | A public IP is "throwing the front door wide open just so it can go out" — the attack surface explodes. The right answer is to **stay in the private subnet and go out one-way through NAT**: outbound works, inbound is blocked. |
+| **CloudFront + S3 (static assets)** | Send every request to EC2 | Having EC2 serve images/CSS is slow, costly, and piles on load. Hand static assets to a **CDN + S3** and let EC2 handle only the genuinely dynamic logic. |
+
+:::info[🧭 A general method for trade-off questions]
+When you see "which option is most suitable", ask yourself three things first: **(1) Is the need high availability, elasticity, or cost? (2) Is this stateful or stateless? (3) Is the traffic predictable?** Map the question's keywords onto those three axes, eliminate the options that "solve the wrong problem", and usually only one answer remains.
+:::
+
 ## How three Well-Architected pillars show up
 
 AWS's [Well-Architected Framework](https://aws.amazon.com/architecture/well-architected/) has several pillars; this one architecture demonstrates the three most commonly tested at once.
@@ -144,6 +197,15 @@ The SAA loves scenario questions built on this classic architecture. Spot "which
 
 :::info[🧭 A trick for reading these]
 See "tolerate a single data-center failure" or "highly available" → think **multi-AZ**; see "overwhelmed by a spike" or "save off-peak cost" → think **Auto Scaling**; see "must not be exposed to the public internet" → think **private subnets + security groups**. Mapping keywords to tiers is the shortcut to scoring on scenario questions.
+:::
+
+:::warning[🚑 Common pitfalls]
+Drawing this diagram correctly is easy; what actually loses points are the details that **look highly available but leave one fatal gap**:
+
+- **Living in a single AZ (single point of failure)**: if the ALB, EC2, or RDS sits in only one AZ, your "high availability" is already broken. The classic mistake is "the ALB spans AZs, but the Auto Scaling group is configured for AZ-a only" — the moment that AZ dies, there's not a single healthy instance behind the ALB. **All three tiers must span at least two AZs**, no exceptions.
+- **Security groups that "allow through each layer" turn into "open at every layer"**: the point of layered security is "each layer trusts only the one above it". A common pitfall is cutting corners by opening the EC2 and RDS security groups to `0.0.0.0/0` (any source), or opening RDS to the whole VPC. The right way is to have the security groups **reference each other**: EC2 accepts only "source = the ALB's security group", and RDS accepts only "source = the EC2 security group". Specify the security group ID, not an IP range.
+- **Putting the database in a public subnet**: this is the most serious pitfall. Once RDS sits in a public subnet with public access enabled, the vault is out on the street and the whole world can try to connect and brute-force it. **Always keep the database in a private subnet with public access disabled**, reachable only by the app tier's security group.
+- **Session stored on a single machine (stateful EC2)**: many people keep login state or the shopping cart in one EC2's local memory. Then Auto Scaling shrinks the fleet, or the ALB routes your next request to a different instance, and the user is "mysteriously logged out, cart emptied". **Make the app tier stateless**: push session out to <Term en="ElastiCache" desc="AWS's managed in-memory cache (Redis / Memcached), often used to store sessions and hot data.">ElastiCache</Term> (e.g. Redis) or DynamoDB, so EC2 can be added, removed, and replaced at will.
 :::
 
 <Refs title="📚 Official docs & further reading">
