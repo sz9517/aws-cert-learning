@@ -182,5 +182,17 @@
   "sidebar.tutorialSidebar.category.Domain 4 · 疑難排解與最佳化 (22%).link.generated-index.description": {
     "message": "Weighted 22%. Learn to observe, debug, and speed up your apps: CloudWatch logs and metrics, X-Ray distributed tracing, error handling such as retries and exponential backoff, performance and cost optimization, and the AI-assisted debugging added in C03.",
     "description": "The generated-index page description for category 'Domain 4 · 疑難排解與最佳化 (22%)' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.DVA 考前衝刺與模擬考": {
+    "message": "DVA Exam Prep & Mock Exam",
+    "description": "The label for category 'DVA 考前衝刺與模擬考' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.DVA 考前衝刺與模擬考.link.generated-index.title": {
+    "message": "DVA Exam Prep & Mock Exam",
+    "description": "The generated-index page title for category 'DVA 考前衝刺與模擬考' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.DVA 考前衝刺與模擬考.link.generated-index.description": {
+    "message": "Once you have finished all four domains, use the developer-focused cheat sheet / decision guide to quickly review the key selections and trade-offs, then take a 65-question full mock exam to test yourself and get used to the pacing.",
+    "description": "The generated-index page description for category 'DVA 考前衝刺與模擬考' in sidebar 'tutorialSidebar'"
   }
 }

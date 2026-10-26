@@ -1,0 +1,12 @@
+{
+  "label": "DVA 考前衝刺與模擬考",
+  "position": 6,
+  "collapsible": true,
+  "collapsed": false,
+  "link": {
+    "type": "generated-index",
+    "slug": "/dva/exam-prep",
+    "title": "DVA 考前衝刺與模擬考",
+    "description": "四大領域都讀完後，用開發者視角的速查/決策頁把關鍵選型與取捨快速掃一遍，再做一份 65 題的綜合模擬考檢驗實力、熟悉應試節奏。"
+  }
+}
