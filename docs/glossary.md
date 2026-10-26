@@ -101,6 +101,39 @@ sidebar_class_name: sidebar-secondary
 | **Direct Connect** | — | 到 AWS 的專線，前期成本高但大流量長期較省、傳輸費低。 |
 | **Right-Sizing** | 右規模 | 把過大／閒置資源調到合適大小；用 Compute Optimizer／Trusted Advisor 找。 |
 
+## DVA 開發人員名詞
+
+> DVA（AWS Certified Developer – Associate）常考的開發者視角名詞。
+
+| 縮寫／名詞 | 英文全名 | 白話說明 |
+| --- | --- | --- |
+| **版本／別名** | Version / Alias | Lambda 發布後的版本是唯讀快照；別名是指向某版本的可移動標籤（如 prod），切流量或回滾時改別名就好。 |
+| **保留併發** | Reserved Concurrency | 幫某個函式「鎖住」一定數量的併發，保證它有量可用、也不會吃光帳號額度。 |
+| **預置併發** | Provisioned Concurrency | 預先暖好一批執行環境並保持待命，消除冷啟動延遲，適合對延遲敏感的服務（要額外付費）。 |
+| **冷啟動** | Cold Start | Lambda 沒有現成環境時，首次請求要先初始化，造成的額外延遲。 |
+| **事件來源映射** | Event Source Mapping | Lambda 的輪詢器，自動從 SQS／Kinesis／DynamoDB Streams 拉取紀錄並批次送進函式。 |
+| **冪等** | Idempotency | 同一個請求重送多次，結果與做一次相同；用於重試不會造成重複扣款或重複建立。 |
+| **指數退避＋抖動** | Exponential Backoff + Jitter | 重試時每次等待時間倍增，再加一點隨機偏移，避免大量用戶端同時重試打垮服務。 |
+| **DLQ 死信佇列** | Dead-Letter Queue | 收容多次處理失敗的訊息或事件，便於事後排查，避免卡住主流程。 |
+| **可見性逾時** | Visibility Timeout | SQS 訊息被取出處理時暫時隱藏的時間；超時沒刪除就會重新出現給別人處理。 |
+| **使用者池** | Cognito User Pool | 使用者目錄與登入／註冊服務，負責驗證身分並簽發 JWT 權杖。 |
+| **身分池** | Cognito Identity Pool | 把已驗證身分換成臨時 AWS 憑證，讓前端能直接存取 AWS 資源（如 S3）。 |
+| **JWT** | JSON Web Token | 一段帶簽章的權杖，內含使用者宣告資訊，用於無狀態驗證與授權。 |
+| **SigV4 簽章** | Signature Version 4 | AWS API 請求的標準簽章流程，用金鑰對請求簽名以驗證身分與防竄改。 |
+| **預簽章 URL** | Presigned URL | 一條帶臨時簽章、限時有效的連結，讓沒有 AWS 憑證的人也能上傳或下載指定 S3 物件。 |
+| **STS AssumeRole** | Security Token Service AssumeRole | 扮演某個角色以取得一組臨時憑證，用於跨帳號存取或短期授權。 |
+| **信封加密** | Envelope Encryption | 用資料金鑰加密資料、再用 KMS 主金鑰加密那把資料金鑰，兼顧效能與安全。 |
+| **資料金鑰** | Data Key | KMS 產生、實際用來加解密資料的金鑰；通常與密文一起保存其加密版本。 |
+| **Secrets Manager vs Parameter Store** | — | 兩者都存設定／機密；Secrets Manager 支援自動輪替、按筆收費，Parameter Store 標準參數免費、適合一般設定。 |
+| **變更集** | CloudFormation Change Set | 部署前先預覽這次堆疊更新會新增／修改／刪除哪些資源，確認後再執行。 |
+| **SAM** | Serverless Application Model | 以精簡語法撰寫無伺服器資源的框架，`sam` CLI 可本機測試並部署成 CloudFormation。 |
+| **CDK** | Cloud Development Kit | 用程式語言（TypeScript／Python 等）寫基礎設施，再合成為 CloudFormation 範本。 |
+| **CodePipeline／CodeBuild／CodeDeploy** | — | CI/CD 三件組：Pipeline 串接流程、Build 編譯與測試、Deploy 把成品送上線。 |
+| **buildspec／appspec** | — | buildspec.yml 告訴 CodeBuild 每階段要跑什麼指令；appspec 告訴 CodeDeploy 怎麼部署與掛哪些生命週期掛鉤。 |
+| **任務定義** | Task Definition | ECS 的藍圖，描述容器映像、CPU／記憶體、連接埠與環境變數等執行設定。 |
+| **ECR** | Elastic Container Registry | AWS 的私有容器映像倉庫，推送映像供 ECS／EKS／Lambda 使用。 |
+| **X-Ray segment／annotation** | — | X-Ray 追蹤裡，segment 是一段呼叫的耗時紀錄；annotation 是可索引過濾的鍵值標記。 |
+
 :::tip
 這張表會隨著各領域內容增加而持續擴充。
 :::
